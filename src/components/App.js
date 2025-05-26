@@ -21,6 +21,7 @@ function App() {
     const [chatDelay, setChatDelay] = useState(0)
     const [videoPlayer, setVideoPlayer] = useState(null)
     const [funnyMoments, setFunnyMoments] = useState([])
+    const [videoMetadata, setVideoMetadata] = useState(null)
 
     const findCommentIndexForOffset = (offset) => {
         let left = 0
@@ -87,11 +88,21 @@ function App() {
         setChatDelay(0);
         setChatEnabled(false);
         setFunnyMoments([]);
-        window.history.pushState("home", "Twitch Chat Replay", "/")
+        setVideoMetadata(null);
+
+  			let basePath = "/"
+  			if (getQueryParam("chatAutoSelect") != null) {
+	    			basePath += "?chatAutoSelect=" + getQueryParam("chatAutoSelect")
+			  }
+        window.history.pushState("home", "Twitch Chat Replay", basePath)
     }
 
     const onReady = (event) => {
         setVideoPlayer(event.target)
+
+        if (getQueryParam("chatAutoSelect") === "true") {
+            fetchVideoMetadata(event.target)
+        }
     }
 
     const onPlay = (event) => {
@@ -153,6 +164,15 @@ function App() {
         setVideoId(youtubeId)
     }
 
+    const fetchVideoMetadata = async (player) => {
+        if (player) {
+            setVideoMetadata({
+                title: player.videoTitle,
+                duration: player.getDuration(),
+            })
+        }
+    }
+
     const fetchDataForVideo = useCallback((twitchId) => {
         const fetchVideoJson = (twitchId) => {
             fetch("/content/videos/" + twitchId + ".json")
@@ -203,7 +223,9 @@ function App() {
 
     useEffect(() => {
         if (!videoId && getQueryParam("youtubeId")) {
-            setVideoId(getQueryParam("youtubeId"))
+            const youtubeId = getQueryParam("youtubeId")
+            setVideoId(youtubeId)
+
         }
     }, [videoId])
 
@@ -250,7 +272,7 @@ function App() {
             </div>
             <div className="chat-container">
                 {messages && <Chat resetFunction={resetAll} chatMessages={messagesToRender} bttvEmotes={currentVodBttvEmotes}/>}
-                {!messages && <ChatSelector onSelectKnownJson={onSelectKnownVod} onUploadCustomJson={onUploadCustomVod}/>}
+                {!messages && <ChatSelector onSelectKnownJson={onSelectKnownVod} onUploadCustomJson={onUploadCustomVod} videoMetadata={videoMetadata}/>}
             </div>
         </div>
     )

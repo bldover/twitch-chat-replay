@@ -1,14 +1,11 @@
 import './ChatSelector.css'
-import React, {FC, useState, useEffect} from 'react'
-
-type ChatSelectorProps = {
-    onSelectKnownJson: Function,
-    onUploadCustomJson: Function
-}
+import React, {useState, useEffect} from 'react'
+import { getQueryParam } from '../utils/queryParams'
+import { filterAndRankChatOptions } from '../utils/chatMatcher'
 
 const SEARCH_PROMPT = "Search for NL vods here!";
 
-const ChatSelector: FC<ChatSelectorProps> = ({onSelectKnownJson, onUploadCustomJson}) => {
+const ChatSelector = ({onSelectKnownJson, onUploadCustomJson, videoMetadata}) => {
     const [currentFilter, setCurrentFilter] = useState("")
     const [summaries, setSummaries] = useState()
 
@@ -33,11 +30,29 @@ const ChatSelector: FC<ChatSelectorProps> = ({onSelectKnownJson, onUploadCustomJ
         return parts.every((part) => videoTitle.includes(part))
     }
 
+    const getFilteredAndRankedSummaries = () => {
+        if (!summaries) return []
+
+        const isAutoSelectMode = getQueryParam("chatAutoSelect") === "true"
+
+        if (currentFilter.length === 0 && isAutoSelectMode && videoMetadata) {
+            return filterAndRankChatOptions(videoMetadata, summaries)
+        } else {
+            return summaries.filter(filterFunction)
+        }
+    }
+
     const getButtonText = function (summary) {
+        const isAutoSelectMode = getQueryParam("chatAutoSelect") === "true"
+        const hasMatchScore = typeof summary.matchScore === 'number'
+
         return <>
             <p className="chat-selection-button-title">{summary.title}</p>
             <p>{summary.created_at.slice(0, 10)}</p>
             <p>{summary.duration}</p>
+            {isAutoSelectMode && hasMatchScore && (
+                <p className="match-score">Match: {summary.matchScore}%</p>
+            )}
         </>
     }
 
@@ -63,6 +78,9 @@ const ChatSelector: FC<ChatSelectorProps> = ({onSelectKnownJson, onUploadCustomJ
             .catch((error) => console.log(error))
     }
 
+    const isAutoSelectMode = getQueryParam("chatAutoSelect") === "true"
+    const filteredSummaries = getFilteredAndRankedSummaries()
+
     return (
         <>
             <form className="search-form">
@@ -85,19 +103,19 @@ const ChatSelector: FC<ChatSelectorProps> = ({onSelectKnownJson, onUploadCustomJ
                     onChange={updateFilter}
                     className="chat-search-box"
                 />
+                  )}
             </form>
             {summaries &&
                 <div className="chat-selector">
-                    {summaries.filter(filterFunction)
-                        .map((summary) =>
-                            <button
-                                key={summary.id}
-                                className="chat-selection-button"
-                                onClick={() => onSelectKnownJson(summary)}
-                            >
-                                {getButtonText(summary)}
-                            </button>
-                        )}
+                    {filteredSummaries.map((summary) =>
+                        <button
+                            key={summary.id}
+                            className={`chat-selection-button ${summary.matchScore >= 80 ? 'high-match' : summary.matchScore >= 60 ? 'medium-match' : 'low-match'}`}
+                            onClick={() => onSelectKnownJson(summary)}
+                        >
+                            {getButtonText(summary)}
+                        </button>
+                    )}
                 </div>
             }
         </>

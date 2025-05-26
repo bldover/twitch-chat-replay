@@ -67,3 +67,51 @@
     margin-top: 3px;
     margin-bottom: 3px;
 }
+
+/* Auto-select mode styles */
+.auto-select-info {
+    background-color: #f0f8ff;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    text-align: center;
+    border: 1px solid #007acc;
+}
+
+.auto-select-info p {
+    margin: 2px 0;
+    font-size: 0.9em;
+}
+
+.match-score {
+    font-weight: bold;
+    color: #007acc;
+}
+
+/* Match quality indicators */
+.high-match {
+    border-left: 4px solid #28a745;
+    background-color: #f8fff9;
+}
+
+.medium-match {
+    border-left: 4px solid #ffc107;
+    background-color: #fffef8;
+}
+
+.low-match {
+    border-left: 4px solid #dc3545;
+    background-color: #fff8f8;
+}
+
+.high-match:hover {
+    background-color: #e8f5e8;
+}
+
+.medium-match:hover {
+    background-color: #fffbf0;
+}
+
+.low-match:hover {
+    background-color: #fdf2f2;
+}
