@@ -1,4 +1,6 @@
-const MATCHING_CONFIG = {
+import { MatchingConfig, VideoMetadata, VodSummary } from '../types';
+
+const MATCHING_CONFIG: MatchingConfig = {
     DURATION_TOLERANCE_PERCENT: 3,
     WEIGHTS: {
         DURATION: 0,
@@ -6,58 +8,22 @@ const MATCHING_CONFIG = {
     }
 }
 
-const parseDurationToSeconds = (durationStr) => {
+const parseDurationToSeconds = (durationStr: string): number => {
     if (!durationStr) return 0
 
-    const hours = (durationStr.match(/(\d+)h/) || [0, 0])[1]
-    const minutes = (durationStr.match(/(\d+)m/) || [0, 0])[1]
-    const seconds = (durationStr.match(/(\d+)s/) || [0, 0])[1]
+    const hours = (durationStr.match(/(\d+)h/) || ['0', '0'])[1]
+    const minutes = (durationStr.match(/(\d+)m/) || ['0', '0'])[1]
+    const seconds = (durationStr.match(/(\d+)s/) || ['0', '0'])[1]
 
     return parseInt(hours) * 3600 + parseInt(minutes) * 60 + parseInt(seconds)
 }
 
-const formatSecondsToReadable = (seconds) => {
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
-
-    let result = ''
-    if (hours > 0) result += `${hours}h`
-    if (minutes > 0) result += `${minutes}m`
-    if (secs > 0) result += `${secs}s`
-
-    return result || '0s'
-}
-
-// Use Jaccard similarity, comparing unordered full word similarity beteen titles
-// const calculateTitleSimilarity = (title1, title2) => {
-//     if (!title1 || !title2) return 0
-
-//     const normalize = (str) => str.toLowerCase()
-//         .replace(/[^\w\s\d]/g, '')
-//         .split(/\s+/)
-//         .filter(word => word.length > 2)
-
-//     const words1 = normalize(title1)
-//     const words2 = normalize(title2)
-
-//     if (words1.length === 0 || words2.length === 0) return 0
-
-//     const set1 = new Set(words1)
-//     const set2 = new Set(words2)
-
-//     const intersection = new Set([...set1].filter(word => set2.has(word)))
-//     const union = new Set([...set1, ...set2])
-
-//     return Math.round((intersection.size / union.size) * 100)
-// }
-
 // extension of Jaccard similarity, to consider not only the unordered full word similarity,
 // but also the frequency of word and increasing the weight of numbers in the title
-const calculateTitleSimilarity = (title1, title2, numericWeight = 4) => {
+const calculateTitleSimilarity = (title1: string, title2: string, numericWeight: number = 4): number => {
     if (!title1 || !title2) return 0
 
-    const normalize = (str) => str.toLowerCase()
+    const normalize = (str: string): string[] => str.toLowerCase()
         .replace(/[^\w\s\d]/g, '')
         .split(/\s+/)
         .filter(word => word.length > 0)
@@ -70,8 +36,8 @@ const calculateTitleSimilarity = (title1, title2, numericWeight = 4) => {
     // numbers are used for episode indicators and original vs sequel title naming, sometimes in
     // otherwise very similar titles. due to small variances in wording of titles, increasing the
     // weight of numbers matching helps to avoid selecting the wrong title
-    const countFrequency = (words) => {
-        const freq = new Map()
+    const countFrequency = (words: string[]): Map<string, number> => {
+        const freq = new Map<string, number>()
         words.forEach(word => {
             const weight = /^\d+$/.test(word) ? numericWeight : 1
             freq.set(word, (freq.get(word) || 0) + weight)
@@ -97,7 +63,7 @@ const calculateTitleSimilarity = (title1, title2, numericWeight = 4) => {
     return Math.round((intersectionSize / unionSize) * 100)
 }
 
-const isDurationMatch = (videoDurationSeconds, chatDurationSeconds) => {
+const isDurationMatch = (videoDurationSeconds: number, chatDurationSeconds: number): boolean => {
     if (!videoDurationSeconds || !chatDurationSeconds) return false
 
     const tolerance = chatDurationSeconds * (MATCHING_CONFIG.DURATION_TOLERANCE_PERCENT / 100)
@@ -106,19 +72,9 @@ const isDurationMatch = (videoDurationSeconds, chatDurationSeconds) => {
     return diff <= tolerance
 }
 
-const isDateMatch = (videoUploadDate, chatCreatedAt) => {
-    if (!videoUploadDate || !chatCreatedAt) return false
-
-    const videoDate = new Date(videoUploadDate)
-    const chatDate = new Date(chatCreatedAt)
-    const diffDays = Math.abs((videoDate - chatDate) / (1000 * 60 * 60 * 24))
-
-    return diffDays <= MATCHING_CONFIG.DATE_TOLERANCE_DAYS
-}
-
-const calculateMatchScore = (videoMetadata, chatSummary) => {
+const calculateMatchScore = (videoMetadata: VideoMetadata, chatSummary: VodSummary): number => {
     const { title: videoTitle, duration: videoDuration } = videoMetadata
-    const { title: chatTitle, duration: chatDuration  } = chatSummary
+    const { title: chatTitle, duration: chatDuration } = chatSummary
 
     const videoDurationSeconds = videoDuration
     const chatDurationSeconds = parseDurationToSeconds(chatDuration)
@@ -139,10 +95,10 @@ const calculateMatchScore = (videoMetadata, chatSummary) => {
     return Math.round(compositeScore)
 }
 
-export const filterAndRankChatOptions = (videoMetadata, chatSummaries) => {
+export const filterAndRankChatOptions = (videoMetadata: VideoMetadata, chatSummaries: VodSummary[]): VodSummary[] => {
     if (!videoMetadata || !chatSummaries) return []
 
-    const { duration: videoDuration, uploadDate } = videoMetadata
+    const { duration: videoDuration } = videoMetadata
 
     const candidates = chatSummaries.filter(summary => {
         const chatDurationSeconds = parseDurationToSeconds(summary.duration)

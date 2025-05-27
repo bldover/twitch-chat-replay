@@ -9,17 +9,14 @@
 
 .chat-container {
     height: 100vh;
-    min-width: 350px;
-    max-width: 350px;
+    width: 350px;
+    flex-shrink: 0;
     color: white;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
-    overflow-y: scroll;
     font-size: 13.8125px;
-    font-family: "Inter", "Roobert", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: 'Inter', 'Roobert', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
     font-weight: 400;
-    padding-right: 7px;
 }
 
 .player-container {

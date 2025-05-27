@@ -1,34 +1,35 @@
-import "./Video.css"
-import YouTube, {YouTubeEvent} from "react-youtube"
-import {FC} from "react"
-import {setQueryParam} from "../utils/queryParams"
+import './Video.css'
+import YouTube, { YouTubeEvent } from 'react-youtube'
+import { FC } from 'react'
+import { setQueryParam } from '../utils/queryParams'
 
 const youtubeRegex = /.*((v=)|(youtu.be\/))([a-zA-Z0-9_-]{11})&?/
 
 type VideoProps = {
-    videoId: string,
-    onSelectVideo: Function,
+    videoId: string | null,
+    onSelectVideo: (videoId: string) => void,
     onReady: (event: YouTubeEvent) => void,
     onPlaybackRateChange: (event: YouTubeEvent) => void,
     onStateChange: (event: YouTubeEvent) => void,
 }
 
-export const Video: FC<VideoProps> = ({videoId, onSelectVideo, onReady, onPlaybackRateChange, onStateChange}) => {
-    const setVideoId = (event: any) => {
+export const Video: FC<VideoProps> = ({ videoId, onSelectVideo, onReady, onPlaybackRateChange, onStateChange }) => {
+    const setVideoId = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        const entered = event.target.youtubeId.value
-        const [, , , , youtubeId] = youtubeRegex.exec(entered || "") || []
+        const formData = new FormData(event.currentTarget)
+        const entered = formData.get('youtubeId') as string
+        const [, , , , youtubeId] = youtubeRegex.exec(entered || '') || []
         if (youtubeId) {
-            setQueryParam("youtubeId", youtubeId)
+            setQueryParam('youtubeId', youtubeId)
             onSelectVideo(youtubeId)
         }
     }
 
-    const getVideoBody = () => {
+    const getVideoBody = (): React.ReactElement => {
         if (videoId) {
             return <YouTube
-                className="video"
-                opts={{playerVars: {autoplay: 1}}}
+                className='video'
+                opts={{ playerVars: { autoplay: 1 } }}
                 videoId={videoId}
                 onReady={onReady}
                 onPlaybackRateChange={onPlaybackRateChange}
@@ -36,13 +37,13 @@ export const Video: FC<VideoProps> = ({videoId, onSelectVideo, onReady, onPlayba
             />
         }
         return <>
-            <a className="source-code-link" href="https://github.com/charlie-collard/twitch-chat-replay" target="_blank" rel="noreferrer">View source on GitHub</a>
-            <form className="url-input-form" onSubmit={setVideoId}>
+            <a className='source-code-link' href='https://github.com/charlie-collard/twitch-chat-replay' target='_blank' rel='noreferrer'>View source on GitHub</a>
+            <form className='url-input-form' onSubmit={setVideoId}>
                 <label>
                     Youtube URL:
-                    <input type="text" name="youtubeId"/>
+                    <input type='text' name='youtubeId' />
                 </label>
-                <input className="submit-button" type="submit" value="Submit" />
+                <input className='submit-button' type='submit' value='Submit' />
             </form>
         </>
     }
