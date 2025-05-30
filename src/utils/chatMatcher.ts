@@ -1,7 +1,7 @@
 import { MatchingConfig, VideoMetadata, VodSummary } from '../types';
 
 const MATCHING_CONFIG: MatchingConfig = {
-    DURATION_TOLERANCE_PERCENT: 3,
+    DURATION_TOLERANCE_PERCENT: 10,
     WEIGHTS: {
         DURATION: 0,
         TITLE: 100,
@@ -18,8 +18,8 @@ const parseDurationToSeconds = (durationStr: string): number => {
     return parseInt(hours) * 3600 + parseInt(minutes) * 60 + parseInt(seconds)
 }
 
-// extension of Jaccard similarity, to consider not only the unordered full word similarity,
-// but also the frequency of word and increasing the weight of numbers in the title
+// extension of Jaccard similarity, comparing unordered presence of full words between titles.
+// considers the frequency of words in each title and applies extra weighting to numeric values
 const calculateTitleSimilarity = (title1: string, title2: string, numericWeight: number = 4): number => {
     if (!title1 || !title2) return 0
 

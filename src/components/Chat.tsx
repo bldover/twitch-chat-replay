@@ -5,11 +5,10 @@ import { ChatMessage, BttvEmoteMap, } from '../types'
 
 type ChatProps = {
     chatMessages: ChatMessage[],
-    bttvEmotes: BttvEmoteMap | null,
-    resetFunction: () => void
+    bttvEmotes: BttvEmoteMap | null
 }
 
-const Chat: FC<ChatProps> = ({ chatMessages, bttvEmotes, resetFunction }) => {
+const Chat: FC<ChatProps> = ({ chatMessages, bttvEmotes }) => {
     const predictionBlueUrl = 'https://static-cdn.jtvnw.net/badges/v1/e33d8b46-f63b-4e67-996d-4a7dcec0ad33/1'
     const predictionPinkUrl = 'https://static-cdn.jtvnw.net/badges/v1/4b76d5f2-91cc-4400-adf2-908a1e6cfd1e/1'
     const twitchStaffUrl = 'https://static-cdn.jtvnw.net/badges/v1/d97c37bd-a6f5-4c38-8f57-4e4bef88af34/1'
@@ -131,7 +130,6 @@ const Chat: FC<ChatProps> = ({ chatMessages, bttvEmotes, resetFunction }) => {
     useEffect(scrollToBottom, [chatMessages])
 
     return <>
-        <div className='resetButton' onClick={() => resetFunction()}>X</div>
         <div className='messages-container'>
             {chatMessages.map(message => (
                 <p key={message._id} className='chatMessage'>{formatMessage(message)}</p>

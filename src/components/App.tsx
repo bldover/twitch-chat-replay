@@ -1,8 +1,7 @@
 import './App.css'
 import { Video } from './Video'
-import Chat from './Chat'
+import ChatSidebar from './ChatSidebar'
 import { useCallback, useEffect, useState } from 'react'
-import ChatSelector from './ChatSelector'
 import { getQueryParam, setQueryParam } from '../utils/queryParams'
 import YouTube, { YouTubeEvent } from 'react-youtube'
 import allBttvEmotes from '../data/bttv/emotes.json'
@@ -23,6 +22,7 @@ function App() {
     const [videoPlayer, setVideoPlayer] = useState<any>(null)
     const [funnyMoments, setFunnyMoments] = useState<number[]>([])
     const [videoMetadata, setVideoMetadata] = useState<VideoMetadata | null>(null)
+    const [searchFilter, setSearchFilter] = useState<string>('')
 
     const findCommentIndexForOffset = useCallback((offset: number): number => {
         console.debug('findCommentIndexForOffset')
@@ -95,6 +95,7 @@ function App() {
         setChatEnabled(false);
         setFunnyMoments([]);
         setVideoMetadata(null);
+        setSearchFilter('');
 
         let basePath = '/'
         if (getQueryParam('chatAutoSelect') != null) {
@@ -296,8 +297,17 @@ function App() {
                 />
             </div>
             <div className='chat-container'>
-                {messages && <Chat resetFunction={resetAll} chatMessages={messagesToRender} bttvEmotes={currentVodBttvEmotes} />}
-                {!messages && <ChatSelector onSelectKnownJson={onSelectKnownVod} onUploadCustomJson={onUploadCustomVod} videoMetadata={videoMetadata} />}
+                <ChatSidebar
+                    messages={messages}
+                    messagesToRender={messagesToRender}
+                    bttvEmotes={currentVodBttvEmotes}
+                    resetFunction={resetAll}
+                    onSelectKnownVod={onSelectKnownVod}
+                    onUploadCustomVod={onUploadCustomVod}
+                    videoMetadata={videoMetadata}
+                    searchFilter={searchFilter}
+                    onSearchFilterChange={setSearchFilter}
+                />
             </div>
         </div>
     )

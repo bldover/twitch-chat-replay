@@ -1,0 +1,209 @@
+.chat-sidebar-header {
+    background-color: #2a2a2a;
+    border-bottom: 1px solid #1a1a1a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 12px;
+    min-height: 30px;
+    box-sizing: border-box;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-search {
+    background-color: #333333;
+    border: 1px solid #444444;
+    border-radius: 4px;
+    color: #ffffff;
+    padding: 6px 10px;
+    font-size: 14px;
+    flex: 1;
+    max-width: 175px;
+}
+
+.header-search::placeholder {
+    color: #888888;
+}
+
+.header-search:focus {
+    outline: none;
+    border-color: #666666;
+    background-color: #3a3a3a;
+}
+
+.header-btn {
+    background-color: #333333;
+    border: 1px solid #444444;
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-btn:hover {
+    background-color: #3a3a3a;
+    border-color: #555555;
+}
+
+.header-btn-close {
+    background-color: #4a2a2a;
+    border-color: #5a3a3a;
+}
+
+.header-btn-close:hover {
+    background-color: #5a3a3a;
+    border-color: #6a4a4a;
+}
+
+.expand-header-btn {
+    position: absolute;
+    top: 5px;
+    right: 12px;
+    background-color: #2a2a2a;
+    z-index: 10;
+}
+
+.chat-sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+}
+
+.chat-sidebar-content {
+    display: flex;
+    position: relative;
+    height: 100%;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.5s ease;
+}
+
+.chat-sidebar-content.scrollbar-visible {
+    scrollbar-color: #555555 transparent;
+}
+
+.chat-sidebar-content.scrollbar-visible .chat-sidebar-content::-webkit-scrollbar-thumb {
+    opacity: 1;
+}
+
+.chat-sidebar-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-sidebar-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-sidebar-content::-webkit-scrollbar-thumb {
+    background-color: #555555;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.chat-sidebar-content::-webkit-scrollbar-thumb:hover {
+    background-color: #666666;
+}
+
+.chat-sidebar-content::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+.chat-sidebar-content::-webkit-scrollbar-button:vertical:start:increment
+.chat-sidebar-content::-webkit-scrollbar-button:vertical:end:decrement {
+    display: none;
+}
+
+.settings-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.settings-modal {
+    background-color: #2a2a2a;
+    border: 1px solid #444444;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-modal-header {
+    background-color: #333333;
+    border-bottom: 1px solid #444444;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.settings-modal-header h3 {
+    color: #ffffff;
+    margin: 0;
+    font-size: 18px;
+}
+
+.settings-modal-close {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.settings-modal-close:hover {
+    background-color: #4a4a4a;
+}
+
+.settings-modal-content {
+    padding: 20px;
+    color: #ffffff;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.settings-modal-content p {
+    margin: 0;
+    text-align: center;
+    color: #888888;
+    font-style: italic;
+}
