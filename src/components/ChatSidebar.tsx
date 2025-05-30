@@ -2,6 +2,7 @@ import './ChatSidebar.css'
 import { FC, useState, useRef } from 'react'
 import Chat from './Chat'
 import ChatSelector from './ChatSelector'
+import Settings from './Settings'
 import { ChatMessage, BttvEmoteMap, VodSummary, VideoMetadata, ChatData } from '../types'
 import { SettingsIcon, UploadIcon, CloseIcon, ArrowDownIcon, ArrowUpIcon } from './Icons'
 
@@ -15,31 +16,10 @@ interface ChatSidebarProps {
     videoMetadata: VideoMetadata | null
     searchFilter?: string
     onSearchFilterChange?: (filter: string) => void
+    selectedVod?: VodSummary | null
+    isVideoPlaying?: boolean
 }
 
-interface SettingsModalProps {
-    isOpen: boolean
-    onClose: () => void
-}
-
-const SettingsModal: FC<SettingsModalProps> = ({ isOpen, onClose }) => {
-    if (!isOpen) return null
-
-    return (
-        <div className="settings-modal-overlay" onClick={onClose}>
-            <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="settings-modal-header">
-                    <h3>Settings</h3>
-                    <button className="settings-modal-close" onClick={onClose}>{CloseIcon({})}</button>
-                </div>
-                <div className="settings-modal-content">
-                    {/* Settings content will go here */}
-                    <p>Settings coming soon...</p>
-                </div>
-            </div>
-        </div>
-    )
-}
 
 const ChatSidebar: FC<ChatSidebarProps> = ({
     messages,
@@ -50,7 +30,9 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     onUploadCustomVod,
     videoMetadata,
     searchFilter = '',
-    onSearchFilterChange
+    onSearchFilterChange,
+    selectedVod,
+    isVideoPlaying = false
 }) => {
     const [isHeaderMinimized, setIsHeaderMinimized] = useState(false)
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -184,6 +166,8 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                     <Chat
                         chatMessages={messagesToRender}
                         bttvEmotes={bttvEmotes}
+                        selectedVod={selectedVod}
+                        isVideoPlaying={isVideoPlaying}
                     />
                 ) : (
                     <ChatSelector
@@ -195,7 +179,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                 )}
             </div>
 
-            <SettingsModal
+            <Settings
                 isOpen={isSettingsOpen}
                 onClose={handleCloseSettings}
             />

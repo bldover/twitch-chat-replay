@@ -1,6 +1,6 @@
 import './ChatSelector.css'
 import { useState, useEffect, FC } from 'react'
-import { getQueryParam } from '../utils/queryParams'
+import { getChatSelectionMode } from '../utils/settings'
 import { filterAndRankChatOptions } from '../utils/chatMatcher'
 import { VodSummary, VideoMetadata, ChatData } from '../types'
 
@@ -37,9 +37,9 @@ const ChatSelector: FC<ChatSelectorProps> = ({ onSelectKnownJson, onUploadCustom
     const getFilteredAndRankedSummaries = (): VodSummary[] => {
         if (!summaries) return []
 
-        const isAutoSelectMode = getQueryParam('chatAutoSelect') === 'true'
+        const isAutoSearchMode = getChatSelectionMode() === 'automatic-search'
 
-        if (searchFilter.length === 0 && isAutoSelectMode && videoMetadata) {
+        if (searchFilter.length === 0 && isAutoSearchMode && videoMetadata) {
             return filterAndRankChatOptions(videoMetadata, summaries)
         } else {
             return summaries.filter(filterFunction)
@@ -47,33 +47,45 @@ const ChatSelector: FC<ChatSelectorProps> = ({ onSelectKnownJson, onUploadCustom
     }
 
     const getButtonText = function (summary: VodSummary) {
-        const isAutoSelectMode = getQueryParam('chatAutoSelect') === 'true'
+        const isAutoSearchMode = getChatSelectionMode() === 'automatic-search'
         const hasMatchScore = typeof summary.matchScore === 'number'
 
         return <>
             <p className='chat-selection-button-title'>{summary.title}</p>
             <p>{summary.created_at.slice(0, 10)}</p>
             <p>{summary.duration}</p>
-            {isAutoSelectMode && hasMatchScore && (
+            {isAutoSearchMode && hasMatchScore && (
                 <p className='match-score'>Match: {summary.matchScore}%</p>
             )}
         </>
     }
 
     const filteredSummaries = getFilteredAndRankedSummaries()
+    const isAutoSearchMode = getChatSelectionMode() === 'automatic-search'
+    const shouldShowNoMatchMessage = summaries &&
+        filteredSummaries.length === 0 &&
+        searchFilter.length === 0 &&
+        isAutoSearchMode &&
+        videoMetadata
 
     return (
         <>
             {summaries &&
                 <div className='chat-selector'>
-                    {filteredSummaries.map((summary) =>
-                        <button
-                            key={summary.id}
-                            className={'chat-selection-button'}
-                            onClick={() => onSelectKnownJson(summary)}
-                        >
-                            {getButtonText(summary)}
-                        </button>
+                    {shouldShowNoMatchMessage ? (
+                        <div className='no-match-message'>
+                            Unable to find any corresponding chats :( Is the video from a NL Twitch VOD after 3/4/2016?
+                        </div>
+                    ) : (
+                        filteredSummaries.map((summary) =>
+                            <button
+                                key={summary.id}
+                                className={'chat-selection-button'}
+                                onClick={() => onSelectKnownJson(summary)}
+                            >
+                                {getButtonText(summary)}
+                            </button>
+                        )
                     )}
                 </div>
             }

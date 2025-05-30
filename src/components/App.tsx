@@ -3,6 +3,7 @@ import { Video } from './Video'
 import ChatSidebar from './ChatSidebar'
 import { useCallback, useEffect, useState } from 'react'
 import { getQueryParam, setQueryParam } from '../utils/queryParams'
+import { getChatSelectionMode } from '../utils/settings'
 import YouTube, { YouTubeEvent } from 'react-youtube'
 import allBttvEmotes from '../data/bttv/emotes.json'
 import { ChatMessage, BttvEmoteMap, AllBttvEmotes, VideoMetadata, VodSummary, ChatData } from '../types'
@@ -23,6 +24,7 @@ function App() {
     const [funnyMoments, setFunnyMoments] = useState<number[]>([])
     const [videoMetadata, setVideoMetadata] = useState<VideoMetadata | null>(null)
     const [searchFilter, setSearchFilter] = useState<string>('')
+    const [selectedVod, setSelectedVod] = useState<VodSummary | null>(null)
 
     const findCommentIndexForOffset = useCallback((offset: number): number => {
         console.debug('findCommentIndexForOffset')
@@ -96,19 +98,16 @@ function App() {
         setFunnyMoments([]);
         setVideoMetadata(null);
         setSearchFilter('');
+        setSelectedVod(null);
 
-        let basePath = '/'
-        if (getQueryParam('chatAutoSelect') != null) {
-            basePath += '?chatAutoSelect=' + getQueryParam('chatAutoSelect')
-        }
-        window.history.pushState('home', 'Twitch Chat Replay', basePath)
+        window.history.pushState('home', 'Twitch Chat Replay', '/')
     }
 
     const onReady = (event: YouTubeEvent): void => {
         console.debug('onReady')
         setVideoPlayer(event.target)
 
-        if (getQueryParam('chatAutoSelect') === 'true') {
+        if (getChatSelectionMode() === 'automatic-search') {
             fetchVideoMetadata(event.target)
         }
     }
@@ -164,6 +163,7 @@ function App() {
 
     const onSelectKnownVod = (summary: VodSummary): void => {
         console.debug('onSelectKnownVod')
+        setSelectedVod(summary)
         setQueryParam('twitchId', summary.id)
         fetchDataForVideo(summary.id)
     }
@@ -307,6 +307,8 @@ function App() {
                     videoMetadata={videoMetadata}
                     searchFilter={searchFilter}
                     onSearchFilterChange={setSearchFilter}
+                    selectedVod={selectedVod}
+                    isVideoPlaying={chatEnabled}
                 />
             </div>
         </div>

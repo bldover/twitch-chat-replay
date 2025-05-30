@@ -44,3 +44,25 @@
     position: relative;
     bottom: 2px;
 }
+
+.chat-waiting-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.vod-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #888;
+}
+
+.waiting-instruction {
+    font-size: 1em;
+    color: #666;
+    text-align: center;
+}

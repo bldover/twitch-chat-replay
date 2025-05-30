@@ -40,6 +40,9 @@
     background-color: white;
     font-size: 0.9em;
     cursor: pointer;
+    margin: 4px 2px;
+    border-radius: 5px;
+    box-sizing: border-box;
 }
 
 .chat-selection-button:hover {
@@ -54,18 +57,18 @@
     font-weight: 800;
 }
 
-.chat-selection-button {
-    min-height: 80px;
-    margin-top: 10px;
-    border-radius: 5px;
-}
-
 .chat-selection-button p {
-    margin-top: 3px;
-    margin-bottom: 3px;
+    margin: 2px;
 }
 
 .match-score {
     font-weight: bold;
     color: #007acc;
+}
+
+.no-match-message {
+    color: #ff4444;
+    text-align: center;
+    margin: 20px 0;
+    font-size: 1em;
 }
