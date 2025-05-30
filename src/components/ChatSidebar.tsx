@@ -179,7 +179,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                 </button>
             )}
 
-            <div className={`chat-sidebar-content ${showScrollbar ? 'scrollbar-visible' : ''}`}>
+            <div className={`chat-sidebar-content ${hasMessages ? 'chat-mode' : ''} ${showScrollbar ? 'scrollbar-visible' : ''}`}>
                 {hasMessages ? (
                     <Chat
                         chatMessages={messagesToRender}

@@ -94,16 +94,16 @@
     height: 100%;
     overflow-y: scroll;
     scrollbar-width: thin;
+    scrollbar-color: #555555 transparent;
+}
+
+.chat-sidebar-content.chat-mode {
     scrollbar-color: transparent transparent;
     transition: scrollbar-color 0.5s ease;
 }
 
-.chat-sidebar-content.scrollbar-visible {
+.chat-sidebar-content.chat-mode.scrollbar-visible {
     scrollbar-color: #555555 transparent;
-}
-
-.chat-sidebar-content.scrollbar-visible .chat-sidebar-content::-webkit-scrollbar-thumb {
-    opacity: 1;
 }
 
 .chat-sidebar-content::-webkit-scrollbar {
@@ -117,8 +117,16 @@
 .chat-sidebar-content::-webkit-scrollbar-thumb {
     background-color: #555555;
     border-radius: 4px;
+    opacity: 1;
+}
+
+.chat-sidebar-content.chat-mode::-webkit-scrollbar-thumb {
     opacity: 0;
     transition: opacity 0.5s ease;
+}
+
+.chat-sidebar-content.chat-mode.scrollbar-visible::-webkit-scrollbar-thumb {
+    opacity: 1;
 }
 
 .chat-sidebar-content::-webkit-scrollbar-thumb:hover {
