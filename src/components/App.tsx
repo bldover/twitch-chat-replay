@@ -6,6 +6,9 @@ import { getQueryParam, setQueryParam } from '../utils/queryParams'
 import { YouTubeEvent, YouTubePlayer } from 'react-youtube'
 import allBttvEmotes from '../data/bttv/emotes.json'
 import { ChatMessage, BttvEmoteMap, AllBttvEmotes, VideoMetadata, VodSummary, ChatData, VideoData } from '../types'
+import { fetchVodSummaries } from '../api/vodApi'
+import { fetchChatMessages } from '../api/chatApi'
+import { fetchFunnyMoments } from '../api/contentApi'
 
 function App() {
     const [videoData, setVideoData] = useState<VideoData | null>(null)
@@ -28,10 +31,6 @@ function App() {
 
     const selectVideo = useCallback((data: VideoData): void => {
         console.debug('selectVideo: ', data)
-        if (data.videoId === videoData?.videoId && data.playlistId === videoData?.playlistId) {
-            console.debug("skip select due to no change")
-            return
-        }
         setVideoData(data)
         if (data.videoId) {
             setQueryParam("youtubeId", data.videoId)
@@ -39,14 +38,14 @@ function App() {
         if (data.playlistId) {
             setQueryParam("playlistId", data.playlistId)
         }
-    }, [videoData])
+    }, [])
 
-    const selectChat = (summary: VodSummary): void => {
+    const selectChat = async (summary: VodSummary): Promise<void> => {
         console.debug('selectChat: ' + summary)
         setSelectedVod(summary)
         setQueryParam("twitchId", summary.id)
         if (selectedVod?.id !== summary.id) {
-            fetchChatData(summary.id)
+            await loadChatData(summary.id)
         }
     }
 
@@ -211,54 +210,30 @@ function App() {
         setCurrentVodBttvEmotes(sortedMessages[0] ? findCorrectBttvEmotesForVod(sortedMessages[0].created_at) : null)
     }
 
-    const fetchVodSummaries = useCallback(() => {
-        console.debug('fetchVodSummaries')
-        fetch('/content/vod-summaries.json')
-            .then((response) => {
-                response.json().then(s => setVodSummaries(s))
-                    .catch(reason => {
-                        console.log('Converting summaries to json failed: ' + reason)
-                    })
-            }).catch(reason => {
-                console.log('Fetching summaries failed: ' + reason)
-            })
+    const loadVodSummaries = useCallback(async (): Promise<void> => {
+        console.debug('loadVodSummaries')
+        try {
+            const summaries = await fetchVodSummaries()
+            setVodSummaries(summaries)
+        } catch (error) {
+            console.log('Loading vod summaries failed: ' + error)
+        }
     }, [])
 
-    const fetchChatData = (twitchId: string): void => {
-        console.debug('fetchChatData')
-        const fetchChatMessages = (twitchId: string): void => {
-            const url = 'http://localhost:8083/clickityclack.co.uk/content/videos/' + twitchId + '.json'
-            fetch(url)
-                .then(response => {
-                    response.json().then((m: ChatData) => {
-                        const sortedMessages = m.comments.sort((a, b) => a.content_offset_seconds - b.content_offset_seconds)
-                        setMessages(sortedMessages)
-                        setCurrentVodBttvEmotes(sortedMessages[0] ? findCorrectBttvEmotesForVod(sortedMessages[0].created_at) : null)
-                    }
-                    ).catch(reason => {
-                        console.log('Converting comments to json failed: ' + reason)
-                    })
-                }).catch(reason => {
-                    console.log('Fetching comments failed: ' + reason)
-                })
-        }
+    const loadChatData = async (twitchId: string): Promise<void> => {
+        console.debug('loadChatData')
+        try {
+            const [messages, funnyMoments] = await Promise.all([
+                fetchChatMessages(twitchId),
+                fetchFunnyMoments(twitchId)
+            ])
 
-        const fetchFunnyMomentJson = function (twitchId: string): void {
-            const url = 'http://localhost:8083/clickityclack.co.uk/content/funny-moments/' + twitchId + '.json'
-            fetch(url)
-                .then(response => {
-                    response.json().then((funnyMoments: number[]) => {
-                        setFunnyMoments(funnyMoments.sort((a, b) => a - b))
-                    }).catch(reason => {
-                        console.log('Converting funny moments to json failed: ' + reason)
-                    })
-                }).catch(reason => {
-                    console.log('Fetching funny moments failed: ' + reason)
-                })
+            setMessages(messages)
+            setCurrentVodBttvEmotes(messages[0] ? findCorrectBttvEmotesForVod(messages[0].created_at) : null)
+            setFunnyMoments(funnyMoments)
+        } catch (error) {
+            console.log('Loading chat data failed: ' + error)
         }
-
-        fetchChatMessages(twitchId)
-        fetchFunnyMomentJson(twitchId)
     }
 
     useEffect(() => {
@@ -270,9 +245,9 @@ function App() {
 
     useEffect(() => {
         if (vodSummaries.length === 0) {
-            fetchVodSummaries()
+            loadVodSummaries()
         }
-    }, [vodSummaries, fetchVodSummaries])
+    }, [vodSummaries, loadVodSummaries])
 
     useEffect(() => {
         syncChat()
