@@ -74,4 +74,9 @@ export interface MatchingConfig {
     };
 }
 
+export type VideoData = {
+    playlistId?: string
+    videoId?: string
+}
+
 export {};

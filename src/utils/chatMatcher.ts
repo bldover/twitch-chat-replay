@@ -72,9 +72,9 @@ const isDurationMatch = (videoDurationSeconds: number, chatDurationSeconds: numb
     return diff <= tolerance
 }
 
-const calculateMatchScore = (videoMetadata: VideoMetadata, chatSummary: VodSummary): number => {
+const calculateMatchScore = (videoMetadata: VideoMetadata, vodSummary: VodSummary): number => {
     const { title: videoTitle, duration: videoDuration } = videoMetadata
-    const { title: chatTitle, duration: chatDuration } = chatSummary
+    const { title: chatTitle, duration: chatDuration } = vodSummary
 
     const videoDurationSeconds = videoDuration
     const chatDurationSeconds = parseDurationToSeconds(chatDuration)
@@ -95,12 +95,12 @@ const calculateMatchScore = (videoMetadata: VideoMetadata, chatSummary: VodSumma
     return Math.round(compositeScore)
 }
 
-export const filterAndRankChatOptions = (videoMetadata: VideoMetadata, chatSummaries: VodSummary[]): VodSummary[] => {
-    if (!videoMetadata || !chatSummaries) return []
+export const filterAndRankChatOptions = (videoMetadata: VideoMetadata, vodSummaries: VodSummary[]): VodSummary[] => {
+    if (!videoMetadata || !vodSummaries) return []
 
     const { duration: videoDuration } = videoMetadata
 
-    const candidates = chatSummaries.filter(summary => {
+    const candidates = vodSummaries.filter(summary => {
         const chatDurationSeconds = parseDurationToSeconds(summary.duration)
 
         return !(videoDuration && !isDurationMatch(videoDuration, chatDurationSeconds))

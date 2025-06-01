@@ -1,54 +1,75 @@
 import './Video.css'
 import YouTube, { YouTubeEvent } from 'react-youtube'
-import { FC } from 'react'
-import { setQueryParam } from '../utils/queryParams'
+import { FC, useMemo } from 'react'
+import { VideoSelector } from './VideoSelector'
+import { VideoData } from '../types'
 
-const youtubeRegex = /.*((v=)|(youtu.be\/))([a-zA-Z0-9_-]{11})&?/
-
-type VideoProps = {
-    videoId: string | null,
-    onSelectVideo: (videoId: string) => void,
-    onReady: (event: YouTubeEvent) => void,
-    onPlaybackRateChange: (event: YouTubeEvent) => void,
-    onStateChange: (event: YouTubeEvent) => void,
+type PlayerVars = {
+    autoplay: number,
+    listType?: string,
+    list?: string
 }
 
-export const Video: FC<VideoProps> = ({ videoId, onSelectVideo, onReady, onPlaybackRateChange, onStateChange }) => {
-    const setVideoId = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        const formData = new FormData(event.currentTarget)
-        const entered = formData.get('youtubeId') as string
-        const [, , , , youtubeId] = youtubeRegex.exec(entered || '') || []
-        if (youtubeId) {
-            setQueryParam('youtubeId', youtubeId)
-            onSelectVideo(youtubeId)
-        }
-    }
+type VideoProps = {
+    videoData: VideoData | null,
+    onSubmit: (data: VideoData) => void,
+    onReady: (event: YouTubeEvent) => void,
+    onPlaybackRateChange: (event: YouTubeEvent) => void,
+    onPlay: (event: YouTubeEvent) => void,
+    onPause: (event: YouTubeEvent) => void,
+    onEnd?: () => void
+}
 
-    const getVideoBody = (): React.ReactElement => {
-        if (videoId) {
-            return <YouTube
-                className='video'
-                opts={{ playerVars: { autoplay: 1 } }}
-                videoId={videoId}
-                onReady={onReady}
-                onPlaybackRateChange={onPlaybackRateChange}
-                onStateChange={onStateChange}
-            />
+export const Video: FC<VideoProps> = ({
+    videoData,
+    onSubmit,
+    onReady,
+    onPlaybackRateChange,
+    onPlay,
+    onPause,
+    onEnd
+}) => {
+    const playerVars = useMemo<PlayerVars>(() => {
+        if (!videoData) {
+            return { autoplay: 1 }
         }
-        return <>
-            <a className='source-code-link' href='https://github.com/charlie-collard/twitch-chat-replay' target='_blank' rel='noreferrer'>View source on GitHub</a>
-            <form className='url-input-form' onSubmit={setVideoId}>
-                <label>
-                    Youtube URL:
-                    <input type='text' name='youtubeId' />
-                </label>
-                <input className='submit-button' type='submit' value='Submit' />
-            </form>
-        </>
-    }
+
+        const listType = videoData.playlistId ? 'playlist' : undefined
+
+        return {
+            autoplay: 1,
+            listType: listType,
+            list: videoData.playlistId
+        }
+    }, [videoData])
 
     return (
-        <>{getVideoBody()}</>
+        <>
+            {videoData ? (
+                <YouTube
+                    className='video'
+                    opts={{ playerVars }}
+                    videoId={videoData?.videoId}
+                    onReady={onReady}
+                    onPlaybackRateChange={onPlaybackRateChange}
+                    onStateChange={
+                        (event) => {
+                            if (event.data === YouTube.PlayerState.BUFFERING) {
+                                onPause(event)
+                            }
+                        }
+                    }
+                    onEnd={onEnd}
+                    onPlay={onPlay}
+                    onPause={onPause} />
+            ) : (
+                <>
+                    <VideoSelector onSubmit={onSubmit} />
+                    <a className='source-code-link' href='https://github.com/charlie-collard/twitch-chat-replay' target='_blank' rel='noreferrer'>
+                        View source code on GitHub
+                    </a>
+                </>
+            )}
+        </>
     )
 }

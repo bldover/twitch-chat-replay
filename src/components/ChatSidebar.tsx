@@ -1,5 +1,5 @@
 import './ChatSidebar.css'
-import { FC, useState, useRef } from 'react'
+import { FC, useState, useRef, useEffect } from 'react'
 import Chat from './Chat'
 import ChatSelector from './ChatSelector'
 import Settings from './Settings'
@@ -16,6 +16,7 @@ interface ChatSidebarProps {
     videoMetadata: VideoMetadata | null
     searchFilter?: string
     onSearchFilterChange?: (filter: string) => void
+    vodSummaries: VodSummary[]
     selectedVod?: VodSummary | null
     isVideoPlaying?: boolean
 }
@@ -31,6 +32,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     videoMetadata,
     searchFilter = '',
     onSearchFilterChange,
+    vodSummaries,
     selectedVod,
     isVideoPlaying = false
 }) => {
@@ -39,6 +41,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     const [showScrollbar, setShowScrollbar] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
     const hideScrollbarTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const scrollContainerRef = useRef<HTMLDivElement>(null)
 
     const hasMessages = messages !== null
     const showHeader = !hasMessages || !isHeaderMinimized
@@ -104,6 +107,12 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
         }, 2000)
     }
 
+    useEffect(() => {
+        if (!hasMessages && scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = 0
+        }
+    }, [hasMessages])
+
     return (
         <div
             className='chat-sidebar'
@@ -161,7 +170,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                 </button>
             )}
 
-            <div className={`chat-sidebar-content ${hasMessages ? 'chat-mode' : ''} ${showScrollbar ? 'scrollbar-visible' : ''}`}>
+            <div ref={scrollContainerRef} className={`chat-sidebar-content ${hasMessages ? 'chat-mode' : ''} ${showScrollbar ? 'scrollbar-visible' : ''}`}>
                 {hasMessages ? (
                     <Chat
                         chatMessages={messagesToRender}
@@ -171,8 +180,8 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                     />
                 ) : (
                     <ChatSelector
+                        vodSummaries={vodSummaries}
                         onSelectKnownJson={onSelectKnownVod}
-                        onUploadCustomJson={onUploadCustomVod}
                         videoMetadata={videoMetadata}
                         searchFilter={searchFilter}
                     />

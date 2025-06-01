@@ -1,16 +1,19 @@
 import './App.css'
 import { Video } from './Video'
 import ChatSidebar from './ChatSidebar'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { getQueryParam, setQueryParam } from '../utils/queryParams'
-import { getChatSelectionMode } from '../utils/settings'
-import YouTube, { YouTubeEvent } from 'react-youtube'
+import { YouTubeEvent, YouTubePlayer } from 'react-youtube'
 import allBttvEmotes from '../data/bttv/emotes.json'
-import { ChatMessage, BttvEmoteMap, AllBttvEmotes, VideoMetadata, VodSummary, ChatData } from '../types'
+import { ChatMessage, BttvEmoteMap, AllBttvEmotes, VideoMetadata, VodSummary, ChatData, VideoData } from '../types'
 
 function App() {
+    const [videoData, setVideoData] = useState<VideoData | null>(null)
+    const [vodSummaries, setVodSummaries] = useState<VodSummary[]>([])
+    const [selectedVod, setSelectedVod] = useState<VodSummary | null>(null)
+    const [videoMetadata, setVideoMetadata] = useState<VideoMetadata | null>(null)
+    const [searchFilter, setSearchFilter] = useState<string>('')
     const [messages, setMessages] = useState<ChatMessage[] | null>(null)
-    const [videoId, setVideoId] = useState<string | null>(null)
     const [messagesToRender, setMessagesToRender] = useState<ChatMessage[]>([])
     const [currentVodBttvEmotes, setCurrentVodBttvEmotes] = useState<BttvEmoteMap | null>(null)
     const [currentMessageIndex, setCurrentMessageIndex] = useState<number>(0)
@@ -20,11 +23,32 @@ function App() {
     const [playbackRate, setPlaybackRate] = useState<number>(1)
     const [lastPlayEventTime, setLastPlayEventTime] = useState<Date>(new Date())
     const [chatDelay, setChatDelay] = useState<number>(0)
-    const [videoPlayer, setVideoPlayer] = useState<any>(null)
+    const [videoPlayer, setVideoPlayer] = useState<YouTubePlayer | null>(null)
     const [funnyMoments, setFunnyMoments] = useState<number[]>([])
-    const [videoMetadata, setVideoMetadata] = useState<VideoMetadata | null>(null)
-    const [searchFilter, setSearchFilter] = useState<string>('')
-    const [selectedVod, setSelectedVod] = useState<VodSummary | null>(null)
+
+    const selectVideo = useCallback((data: VideoData): void => {
+        console.debug('selectVideo: ', data)
+        if (data.videoId === videoData?.videoId && data.playlistId === videoData?.playlistId) {
+            console.debug("skip select due to no change")
+            return
+        }
+        setVideoData(data)
+        if (data.videoId) {
+            setQueryParam("youtubeId", data.videoId)
+        }
+        if (data.playlistId) {
+            setQueryParam("playlistId", data.playlistId)
+        }
+    }, [videoData])
+
+    const selectChat = (summary: VodSummary): void => {
+        console.debug('selectChat: ' + summary)
+        setSelectedVod(summary)
+        setQueryParam("twitchId", summary.id)
+        if (selectedVod?.id !== summary.id) {
+            fetchChatData(summary.id)
+        }
+    }
 
     const findCommentIndexForOffset = useCallback((offset: number): number => {
         console.debug('findCommentIndexForOffset')
@@ -71,8 +95,8 @@ function App() {
         }
     }
 
-    const resetChat = useCallback((): void => {
-        console.debug('resetChat')
+    const syncChat = useCallback((): void => {
+        console.debug('syncChat')
         if (!messages || !videoPlayer) {
             return
         }
@@ -87,7 +111,7 @@ function App() {
 
     const resetAll = (): void => {
         console.debug('resetAll')
-        setVideoId(null);
+        setVideoData(null);
         setMessages(null);
         setMessagesToRender([]);
         setCurrentVodBttvEmotes(null)
@@ -103,19 +127,46 @@ function App() {
         window.history.pushState('home', 'Twitch Chat Replay', '/')
     }
 
+    const clearChat = (): void => {
+        console.debug('clearChat')
+        setMessages(null);
+        setMessagesToRender([]);
+        setCurrentVodBttvEmotes(null)
+        setCurrentMessageIndex(0);
+        setChatEnabled(false);
+    }
+
     const onReady = (event: YouTubeEvent): void => {
         console.debug('onReady')
-        setVideoPlayer(event.target)
+        const player = event.target
+        setVideoPlayer(player)
+        setVideoMetadata({
+            title: player.playerInfo.videoData.title,
+            duration: player.getDuration()
+        })
+    }
 
-        if (getChatSelectionMode() === 'automatic-search') {
-            fetchVideoMetadata(event.target)
-        }
+    const onVideoChange = (event: YouTubeEvent): void => {
+        console.debug('onVideoChange')
+
+        const player = event.target
+        const newVideoId = player.playerInfo?.videoData?.video_id
+        setQueryParam("youtubeId", newVideoId)
+
+        clearChat()
+        setVideoMetadata({
+            title: player.playerInfo.videoData.title,
+            duration: player.getDuration()
+        })
     }
 
     const onPlay = (event: YouTubeEvent): void => {
         console.debug('onPlay')
+        if (event.target.videoTitle !== videoMetadata?.title) {
+            onVideoChange(event)
+        }
+
         setChatEnabled(true)
-        resetChat()
     }
 
     const onPause = (event: YouTubeEvent): void => {
@@ -123,22 +174,14 @@ function App() {
         setChatEnabled(false)
     }
 
-    const onStateChange = (event: YouTubeEvent): void => {
-        console.debug('onStateChange')
-        if (event.data === YouTube.PlayerState.BUFFERING
-            || event.data === YouTube.PlayerState.PAUSED
-        ) {
-            onPause(event)
-        }
-        if (event.data === YouTube.PlayerState.PLAYING) {
-            onPlay(event)
-        }
+    const onEnd = (): void => {
+        console.debug('onEnd')
+        clearChat()
     }
 
     const onPlaybackRateChange = (event: YouTubeEvent): void => {
         console.debug('onPlaybackRateChange')
         setPlaybackRate(event.data)
-        resetChat()
     }
 
     const findCorrectBttvEmotesForVod = (created_at: string): BttvEmoteMap => {
@@ -161,13 +204,6 @@ function App() {
         return resultMap
     }
 
-    const onSelectKnownVod = (summary: VodSummary): void => {
-        console.debug('onSelectKnownVod')
-        setSelectedVod(summary)
-        setQueryParam('twitchId', summary.id)
-        fetchDataForVideo(summary.id)
-    }
-
     const onUploadCustomVod = (json: ChatData): void => {
         console.debug('onUploadCustomVod')
         const sortedMessages = json.comments.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
@@ -175,24 +211,22 @@ function App() {
         setCurrentVodBttvEmotes(sortedMessages[0] ? findCorrectBttvEmotesForVod(sortedMessages[0].created_at) : null)
     }
 
-    const onSelectVideo = (youtubeId: string): void => {
-        console.debug('onSelectVideo')
-        setVideoId(youtubeId)
-    }
-
-    const fetchVideoMetadata = async (player: any): Promise<void> => {
-        console.debug('fetchVideoMetadata')
-        if (player) {
-            setVideoMetadata({
-                title: player.videoTitle,
-                duration: player.getDuration(),
+    const fetchVodSummaries = useCallback(() => {
+        console.debug('fetchVodSummaries')
+        fetch('/content/vod-summaries.json')
+            .then((response) => {
+                response.json().then(s => setVodSummaries(s))
+                    .catch(reason => {
+                        console.log('Converting summaries to json failed: ' + reason)
+                    })
+            }).catch(reason => {
+                console.log('Fetching summaries failed: ' + reason)
             })
-        }
-    }
+    }, [])
 
-    const fetchDataForVideo = useCallback((twitchId: string): void => {
-        console.debug('fetchDataForVideo')
-        const fetchVideoJson = (twitchId: string): void => {
+    const fetchChatData = (twitchId: string): void => {
+        console.debug('fetchChatData')
+        const fetchChatMessages = (twitchId: string): void => {
             const url = 'http://localhost:8083/clickityclack.co.uk/content/videos/' + twitchId + '.json'
             fetch(url)
                 .then(response => {
@@ -223,9 +257,9 @@ function App() {
                 })
         }
 
-        fetchVideoJson(twitchId)
+        fetchChatMessages(twitchId)
         fetchFunnyMomentJson(twitchId)
-    }, [])
+    }
 
     useEffect(() => {
         if (messages) {
@@ -235,31 +269,37 @@ function App() {
     })
 
     useEffect(() => {
-        const twitchId = getQueryParam('twitchId')
-        if (!messages && twitchId) {
-            fetchDataForVideo(twitchId)
+        if (vodSummaries.length === 0) {
+            fetchVodSummaries()
         }
-    }, [fetchDataForVideo, messages])
+    }, [vodSummaries, fetchVodSummaries])
 
     useEffect(() => {
-        const youtubeId = getQueryParam('youtubeId')
-        if (!videoId && youtubeId) {
-            setVideoId(youtubeId)
-        }
-    }, [videoId])
+        syncChat()
+    }, [messages, videoPlayer, playbackRate, chatEnabled, syncChat])
 
-    useEffect(() => {
-        const delay = getQueryParam('delay')
-        if (!chatDelay && delay) {
-            setChatDelay(parseFloat(delay))
-        }
-    }, [chatDelay])
+    const twitchId = getQueryParam('twitchId')
+    if (selectedVod?.id !== twitchId) {
 
+    }
+
+    const youtubeId = getQueryParam('youtubeId')
+    const playlistId = getQueryParam('playlistId')
     useEffect(() => {
-        if (messages && videoPlayer) {
-            resetChat()
+        if (!videoData && youtubeId) {
+            console.debug(`queryParams change new: youtubeId=${youtubeId}, playlistId=${playlistId}`)
+            selectVideo({
+                videoId: youtubeId || undefined,
+                playlistId: playlistId || undefined
+            })
         }
-    }, [messages, videoPlayer, resetChat])
+    }, [youtubeId, playlistId, videoData, selectVideo])
+
+    const delay = parseFloat(getQueryParam('delay') || '0');
+    if (chatDelay !== delay) {
+        console.debug("delay not match")
+        setChatDelay(delay)
+    }
 
     useEffect(() => {
         const seekToFunnyMoment = (direction: string): void => {
@@ -285,15 +325,18 @@ function App() {
         return () => window.removeEventListener('keydown', listenerFunction)
     }, [videoPlayer, funnyMoments])
 
+
     return (
         <div className='App'>
             <div className='player-container'>
                 <Video
-                    videoId={videoId}
-                    onSelectVideo={onSelectVideo}
+                    videoData={videoData}
+                    onSubmit={selectVideo}
                     onReady={onReady}
                     onPlaybackRateChange={onPlaybackRateChange}
-                    onStateChange={onStateChange}
+                    onPlay={onPlay}
+                    onPause={onPause}
+                    onEnd={onEnd}
                 />
             </div>
             <div className='chat-container'>
@@ -302,11 +345,12 @@ function App() {
                     messagesToRender={messagesToRender}
                     bttvEmotes={currentVodBttvEmotes}
                     resetFunction={resetAll}
-                    onSelectKnownVod={onSelectKnownVod}
+                    onSelectKnownVod={selectChat}
                     onUploadCustomVod={onUploadCustomVod}
                     videoMetadata={videoMetadata}
                     searchFilter={searchFilter}
                     onSearchFilterChange={setSearchFilter}
+                    vodSummaries={vodSummaries}
                     selectedVod={selectedVod}
                     isVideoPlaying={chatEnabled}
                 />

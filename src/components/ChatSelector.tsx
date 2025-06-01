@@ -1,32 +1,17 @@
 import './ChatSelector.css'
-import { useState, useEffect, FC } from 'react'
+import { FC } from 'react'
 import { getChatSelectionMode } from '../utils/settings'
 import { filterAndRankChatOptions } from '../utils/chatMatcher'
-import { VodSummary, VideoMetadata, ChatData } from '../types'
+import { VodSummary, VideoMetadata } from '../types'
 
 interface ChatSelectorProps {
-    onSelectKnownJson: (summary: VodSummary) => void;
-    onUploadCustomJson: (json: ChatData) => void;
-    videoMetadata: VideoMetadata | null;
-    searchFilter?: string;
+    vodSummaries: VodSummary[]
+    onSelectKnownJson: (summary: VodSummary) => void
+    videoMetadata: VideoMetadata | null
+    searchFilter?: string
 }
 
-const ChatSelector: FC<ChatSelectorProps> = ({ onSelectKnownJson, onUploadCustomJson, videoMetadata, searchFilter = '' }) => {
-    const [summaries, setSummaries] = useState<VodSummary[]>()
-
-    useEffect(() => {
-        if (!summaries) {
-            fetch('/content/vod-summaries.json')
-                .then((response) => {
-                    response.json().then(s => setSummaries(s))
-                        .catch(reason => {
-                            console.log('Converting summaries to json failed: ' + reason)
-                        })
-                }).catch(reason => {
-                    console.log('Fetching summaries failed: ' + reason)
-                })
-        }
-    })
+const ChatSelector: FC<ChatSelectorProps> = ({ vodSummaries, onSelectKnownJson, videoMetadata, searchFilter = '' }) => {
 
     const filterFunction = function (summary: VodSummary): boolean {
         const videoTitle = summary.title.toLowerCase()
@@ -35,14 +20,14 @@ const ChatSelector: FC<ChatSelectorProps> = ({ onSelectKnownJson, onUploadCustom
     }
 
     const getFilteredAndRankedSummaries = (): VodSummary[] => {
-        if (!summaries) return []
+        if (!vodSummaries) return []
 
         const isAutoSearchMode = getChatSelectionMode() === 'automatic-search'
 
         if (searchFilter.length === 0 && isAutoSearchMode && videoMetadata) {
-            return filterAndRankChatOptions(videoMetadata, summaries)
+            return filterAndRankChatOptions(videoMetadata, vodSummaries)
         } else {
-            return summaries.filter(filterFunction)
+            return vodSummaries.filter(filterFunction)
         }
     }
 
@@ -62,7 +47,7 @@ const ChatSelector: FC<ChatSelectorProps> = ({ onSelectKnownJson, onUploadCustom
 
     const filteredSummaries = getFilteredAndRankedSummaries()
     const isAutoSearchMode = getChatSelectionMode() === 'automatic-search'
-    const shouldShowNoMatchMessage = summaries &&
+    const shouldShowNoMatchMessage = vodSummaries &&
         filteredSummaries.length === 0 &&
         searchFilter.length === 0 &&
         isAutoSearchMode &&
@@ -70,11 +55,11 @@ const ChatSelector: FC<ChatSelectorProps> = ({ onSelectKnownJson, onUploadCustom
 
     return (
         <>
-            {summaries &&
+            {vodSummaries &&
                 <div className='chat-selector'>
                     {shouldShowNoMatchMessage ? (
                         <div className='no-match-message'>
-                            Unable to find any corresponding chats :( Is the video from a NL Twitch VOD after 3/4/2016?
+                            Unable to find any corresponding chats :(
                         </div>
                     ) : (
                         filteredSummaries.map((summary) =>
