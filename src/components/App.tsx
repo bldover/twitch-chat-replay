@@ -9,6 +9,7 @@ import { ChatMessage, BttvEmoteMap, AllBttvEmotes, VideoMetadata, VodSummary, Ch
 import { fetchVodSummaries } from '../api/vodApi'
 import { fetchChatMessages } from '../api/chatApi'
 import { fetchFunnyMoments } from '../api/contentApi'
+import { useChatSync } from '../hooks/useChatSync'
 
 function App() {
     const [videoData, setVideoData] = useState<VideoData | null>(null)
@@ -17,17 +18,16 @@ function App() {
     const [videoMetadata, setVideoMetadata] = useState<VideoMetadata | null>(null)
     const [searchFilter, setSearchFilter] = useState<string>('')
     const [messages, setMessages] = useState<ChatMessage[] | null>(null)
-    const [messagesToRender, setMessagesToRender] = useState<ChatMessage[]>([])
     const [currentVodBttvEmotes, setCurrentVodBttvEmotes] = useState<BttvEmoteMap | null>(null)
-    const [currentMessageIndex, setCurrentMessageIndex] = useState<number>(0)
-    const [mediaStartTime, setMediaStartTime] = useState<Date>(new Date())
-    const [chatEnabled, setChatEnabled] = useState<boolean>(false)
-    const [dirtyChat, setDirtyChat] = useState<boolean>(false)
-    const [playbackRate, setPlaybackRate] = useState<number>(1)
-    const [lastPlayEventTime, setLastPlayEventTime] = useState<Date>(new Date())
     const [chatDelay, setChatDelay] = useState<number>(0)
     const [videoPlayer, setVideoPlayer] = useState<YouTubePlayer | null>(null)
     const [funnyMoments, setFunnyMoments] = useState<number[]>([])
+
+    const { messagesToRender, isEnabled: chatEnabled, enableChat, disableChat, syncToVideo, setPlaybackRate, resetChat } = useChatSync(
+        messages,
+        videoPlayer,
+        chatDelay
+    )
 
     const selectVideo = useCallback((data: VideoData): void => {
         console.debug('selectVideo: ', data)
@@ -49,79 +49,18 @@ function App() {
         }
     }
 
-    const findCommentIndexForOffset = useCallback((offset: number): number => {
-        console.debug('findCommentIndexForOffset')
-        if (!messages) return 0
-        let left = 0
-        let right = messages.length
-        let middle = 0
-        while (left !== right) {
-            middle = left + Math.floor((right - left) / 2)
-            const commentTime = messages[middle].content_offset_seconds
-            if ((commentTime - offset) > 0) {
-                right = middle
-            } else if ((commentTime - offset) < 0) {
-                left = middle + 1
-            } else {
-                return middle
-            }
-        }
-        return left
-    }, [messages])
-
-    const updateChatMessages = (): void => {
-        console.debug('updateChatMessages')
-        if (!chatEnabled || !messages) {
-            return
-        }
-        const currentTime = new Date()
-        currentTime.setSeconds(currentTime.getSeconds() + (currentTime.getTime() - lastPlayEventTime.getTime()) * (playbackRate - 1) / 1000)
-        let messagesToAdd: ChatMessage[] = []
-        let i = currentMessageIndex
-        while (i < messages.length && Math.ceil((currentTime.getTime() - mediaStartTime.getTime()) / 1000) >= (messages[i].content_offset_seconds + chatDelay)) {
-            messagesToAdd = messagesToAdd.concat(messages[i])
-            i += 1
-        }
-        setCurrentMessageIndex(i)
-
-        const isDirty = dirtyChat
-        const newChatMessages = isDirty ? messagesToAdd : messagesToRender.concat(messagesToAdd)
-        const start = Math.max(newChatMessages.length - 100, 0)
-        const end = newChatMessages.length
-        setMessagesToRender(newChatMessages.slice(start, end))
-        if (isDirty) {
-            setDirtyChat(false)
-        }
-    }
-
-    const syncChat = useCallback((): void => {
-        console.debug('syncChat')
-        if (!messages || !videoPlayer) {
-            return
-        }
-        const currentTime = videoPlayer.getCurrentTime();
-        setCurrentMessageIndex(Math.max(0, findCommentIndexForOffset(currentTime - chatDelay) - 100))
-        const startTime = new Date()
-        startTime.setSeconds(startTime.getSeconds() - currentTime)
-        setMediaStartTime(startTime)
-        setDirtyChat(true)
-        setLastPlayEventTime(new Date())
-    }, [messages, videoPlayer, chatDelay, findCommentIndexForOffset])
 
     const resetAll = (): void => {
         console.debug('resetAll')
         setVideoData(null);
         setMessages(null);
-        setMessagesToRender([]);
         setCurrentVodBttvEmotes(null)
-        setCurrentMessageIndex(0);
-        setPlaybackRate(1);
         setChatDelay(0);
-        setChatEnabled(false);
         setFunnyMoments([]);
         setVideoMetadata(null);
         setSearchFilter('');
         setSelectedVod(null);
+        resetChat();
 
         window.history.pushState('home', 'Twitch Chat Replay', '/')
     }
@@ -129,10 +68,8 @@ function App() {
     const clearChat = (): void => {
         console.debug('clearChat')
         setMessages(null);
-        setMessagesToRender([]);
         setCurrentVodBttvEmotes(null)
-        setCurrentMessageIndex(0);
-        setChatEnabled(false);
+        resetChat();
     }
 
     const onReady = (event: YouTubeEvent): void => {
@@ -165,12 +102,12 @@ function App() {
             onVideoChange(event)
         }
 
-        setChatEnabled(true)
+        enableChat()
     }
 
     const onPause = (event: YouTubeEvent): void => {
         console.debug('onPause')
-        setChatEnabled(false)
+        disableChat()
     }
 
     const onEnd = (): void => {
@@ -237,21 +174,10 @@ function App() {
     }
 
     useEffect(() => {
-        if (messages) {
-            const timer = setTimeout(updateChatMessages, 500)
-            return () => clearTimeout(timer)
-        }
-    })
-
-    useEffect(() => {
         if (vodSummaries.length === 0) {
             loadVodSummaries()
         }
     }, [vodSummaries, loadVodSummaries])
-
-    useEffect(() => {
-        syncChat()
-    }, [messages, videoPlayer, playbackRate, chatEnabled, syncChat])
 
     const twitchId = getQueryParam('twitchId')
     if (selectedVod?.id !== twitchId) {
