@@ -1,4 +1,4 @@
-export const colors = [
+export const chatNameColors = [
     'rgb(0, 231, 0)',
     'rgb(0, 255, 127)',
     'rgb(10, 255, 0)',

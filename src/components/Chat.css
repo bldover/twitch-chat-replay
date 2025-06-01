@@ -8,7 +8,7 @@
 }
 
 .chatMessage {
-    color: white;
+    color: var(--text-primary);
     padding-left: 10px;
     padding-bottom: 5px;
     margin-bottom: 5px;
@@ -58,11 +58,11 @@
     font-weight: bold;
     margin-bottom: 10px;
     text-align: center;
-    color: #888;
+    color: var(--text-muted);
 }
 
 .waiting-instruction {
     font-size: 1em;
-    color: #666;
+    color: var(--text-dark);
     text-align: center;
 }

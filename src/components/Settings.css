@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--overlay-medium);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -12,14 +12,14 @@
 }
 
 .settings-modal {
-    background-color: #1f1925;
-    border: 1px solid #333;
+    background-color: var(--bg-purple-dark);
+    border: 1px solid var(--border-purple);
     border-radius: 8px;
     max-width: 400px;
     width: 90%;
     max-height: 80vh;
     overflow-y: auto;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 16px var(--shadow-dark);
 }
 
 .settings-modal-header {
@@ -27,14 +27,14 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
-    border-bottom: 1px solid #333;
-    background-color: #2a1f3d;
+    border-bottom: 1px solid var(--border-purple);
+    background-color: var(--bg-purple-medium);
     border-radius: 8px 8px 0 0;
 }
 
 .settings-modal-header h3 {
     margin: 0;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 18px;
     font-weight: 600;
 }
@@ -42,7 +42,7 @@
 .settings-modal-close {
     background: none;
     border: none;
-    color: #9a97b8;
+    color: var(--text-secondary);
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
@@ -50,8 +50,8 @@
 }
 
 .settings-modal-close:hover {
-    background-color: #333;
-    color: #fff;
+    background-color: var(--border-purple);
+    color: var(--text-primary);
 }
 
 .settings-modal-content {
@@ -74,24 +74,24 @@
 .setting-icon-placeholder {
     width: 16px;
     height: 16px;
-    color: #9a97b8;
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .setting-name {
-    color: #fff;
+    color: var(--text-primary);
     font-size: 14px;
     font-weight: 500;
     cursor: help;
 }
 
 .setting-dropdown {
-    background-color: #2a1f3d;
-    border: 1px solid #333;
+    background-color: var(--bg-purple-medium);
+    border: 1px solid var(--border-purple);
     border-radius: 4px;
-    color: #fff;
+    color: var(--text-primary);
     padding: 6px 12px;
     font-size: 14px;
     min-width: 140px;
@@ -100,13 +100,13 @@
 
 .setting-dropdown:focus {
     outline: none;
-    border-color: #9147ff;
-    box-shadow: 0 0 0 2px rgba(145, 71, 255, 0.2);
+    border-color: var(--accent-purple);
+    box-shadow: 0 0 0 2px var(--shadow-purple-medium);
 }
 
 .setting-dropdown option {
-    background-color: #2a1f3d;
-    color: #fff;
+    background-color: var(--bg-purple-medium);
+    color: var(--text-primary);
 }
 
 .settings-modal-footer {
@@ -114,8 +114,8 @@
     justify-content: flex-end;
     gap: 12px;
     padding: 16px 20px;
-    border-top: 1px solid #333;
-    background-color: #1f1925;
+    border-top: 1px solid var(--border-purple);
+    background-color: var(--bg-purple-dark);
     border-radius: 0 0 8px 8px;
 }
 
@@ -131,24 +131,24 @@
 }
 
 .settings-btn-discard {
-    background-color: transparent;
-    color: #9a97b8;
-    border-color: #333;
+    background-color: var(--transparent);
+    color: var(--text-secondary);
+    border-color: var(--border-purple);
 }
 
 .settings-btn-discard:hover {
-    background-color: #333;
-    color: #fff;
-    border-color: #555;
+    background-color: var(--border-purple);
+    color: var(--text-primary);
+    border-color: var(--border-secondary);
 }
 
 .settings-btn-save {
-    background-color: #9147ff;
-    color: #fff;
-    border-color: #9147ff;
+    background-color: var(--accent-purple);
+    color: var(--text-primary);
+    border-color: var(--accent-purple);
 }
 
 .settings-btn-save:hover {
-    background-color: #7c3aed;
-    border-color: #7c3aed;
+    background-color: var(--accent-purple-hover);
+    border-color: var(--accent-purple-hover);
 }

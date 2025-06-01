@@ -1,6 +1,6 @@
 import './Chat.css'
 import { FC, useEffect, useRef } from 'react'
-import { colors } from '../utils/colors'
+import { chatNameColors } from '../utils/colors'
 import { ChatMessage, BttvEmoteMap, VodSummary } from '../types'
 
 type ChatProps = {
@@ -102,7 +102,7 @@ const Chat: FC<ChatProps> = ({ chatMessages, bttvEmotes, selectedVod, isVideoPla
 
     const getColor = function (commenterName: string): string {
         let colorHash = Math.abs(hashCode(commenterName))
-        return colors[colorHash % colors.length]
+        return chatNameColors[colorHash % chatNameColors.length]
     }
 
     const hasBadge = function (message: ChatMessage, badgeId: string, badgeVersion?: string): boolean {

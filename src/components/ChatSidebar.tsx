@@ -21,7 +21,6 @@ interface ChatSidebarProps {
     isVideoPlaying?: boolean
 }
 
-
 const ChatSidebar: FC<ChatSidebarProps> = ({
     messages,
     messagesToRender,

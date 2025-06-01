@@ -1,6 +1,6 @@
 export const CHAT_SELECTION_OPTIONS = [
     'manual',
-    'automatic-search', 
+    'automatic-search',
     'automatic-selection'
 ] as const
 
@@ -11,7 +11,7 @@ export interface AppSettings {
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
-    chatSelection: 0 // Default to 'manual'
+    chatSelection: 0
 }
 
 const SETTINGS_KEY = 'twitch-chat-replay-settings'
