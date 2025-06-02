@@ -1,7 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import { ChatMessage } from '../types';
-import { YouTubePlayer } from 'react-youtube';
 import { findCommentIndexForOffset } from '../utils/chatSync';
+import { VideoPlayerState } from './useVideoPlayer';
+import { getQueryParam } from '../utils/queryParams';
 
 interface ChatSyncState {
     messagesToRender: ChatMessage[];
@@ -11,31 +12,30 @@ interface ChatSyncState {
     playbackRate: number;
     chatEnabled: boolean;
     dirtyChat: boolean;
+    chatDelay: number;
 }
 
 interface ChatSyncControls {
     messagesToRender: ChatMessage[];
-    isEnabled: boolean;
-    enableChat: () => void;
-    disableChat: () => void;
+    chatEnabled: boolean;
     syncToVideo: () => void;
-    setPlaybackRate: (rate: number) => void;
     resetChat: () => void;
 }
 
 export const useChatSync = (
     messages: ChatMessage[] | null,
-    videoPlayer: YouTubePlayer | null,
-    chatDelay: number
+    playerState: VideoPlayerState
 ): ChatSyncControls => {
+
     const [state, setState] = useState<ChatSyncState>({
         messagesToRender: [],
         currentMessageIndex: 0,
         mediaStartTime: new Date(),
         lastPlayEventTime: new Date(),
-        playbackRate: 1,
-        chatEnabled: false,
-        dirtyChat: false
+        playbackRate: playerState.playbackRate,
+        chatEnabled: playerState.playState === 'playing',
+        dirtyChat: false,
+        chatDelay: parseFloat(getQueryParam('delay') || '0')
     });
 
     const updateChatMessages = useCallback((): void => {
@@ -43,13 +43,13 @@ export const useChatSync = (
         if (!state.chatEnabled || !messages) {
             return;
         }
-        
+
         const currentTime = new Date();
         currentTime.setSeconds(currentTime.getSeconds() + (currentTime.getTime() - state.lastPlayEventTime.getTime()) * (state.playbackRate - 1) / 1000);
-        
+
         let messagesToAdd: ChatMessage[] = [];
         let i = state.currentMessageIndex;
-        while (i < messages.length && Math.ceil((currentTime.getTime() - state.mediaStartTime.getTime()) / 1000) >= (messages[i].content_offset_seconds + chatDelay)) {
+        while (i < messages.length && Math.ceil((currentTime.getTime() - state.mediaStartTime.getTime()) / 1000) >= (messages[i].content_offset_seconds + state.chatDelay)) {
             messagesToAdd = messagesToAdd.concat(messages[i]);
             i += 1;
         }
@@ -65,16 +65,16 @@ export const useChatSync = (
             messagesToRender: newChatMessages.slice(start, end),
             dirtyChat: false
         }));
-    }, [state.chatEnabled, state.currentMessageIndex, state.mediaStartTime, state.lastPlayEventTime, state.playbackRate, state.dirtyChat, state.messagesToRender, messages, chatDelay]);
+    }, [state.chatEnabled, state.currentMessageIndex, state.mediaStartTime, state.lastPlayEventTime, state.playbackRate, state.dirtyChat, state.messagesToRender, messages, state.chatDelay]);
 
     const syncToVideo = useCallback((): void => {
         console.debug('syncChat');
-        if (!messages || !videoPlayer) {
+        if (!messages || !playerState.videoPlayer) {
             return;
         }
-        
-        const currentTime = videoPlayer.getCurrentTime();
-        const newCurrentMessageIndex = Math.max(0, findCommentIndexForOffset(messages, currentTime - chatDelay) - 100);
+
+        const currentTime = playerState.videoPlayer.getCurrentTime();
+        const newCurrentMessageIndex = Math.max(0, findCommentIndexForOffset(messages, currentTime - state.chatDelay) - 100);
         const startTime = new Date();
         startTime.setSeconds(startTime.getSeconds() - currentTime);
 
@@ -85,19 +85,7 @@ export const useChatSync = (
             dirtyChat: true,
             lastPlayEventTime: new Date()
         }));
-    }, [messages, videoPlayer, chatDelay]);
-
-    const enableChat = useCallback((): void => {
-        setState(prev => ({ ...prev, chatEnabled: true }));
-    }, []);
-
-    const disableChat = useCallback((): void => {
-        setState(prev => ({ ...prev, chatEnabled: false }));
-    }, []);
-
-    const setPlaybackRate = useCallback((rate: number): void => {
-        setState(prev => ({ ...prev, playbackRate: rate }));
-    }, []);
+    }, [messages, playerState.videoPlayer, state.chatDelay]);
 
     const resetChat = useCallback((): void => {
         setState({
@@ -107,7 +95,8 @@ export const useChatSync = (
             lastPlayEventTime: new Date(),
             playbackRate: 1,
             chatEnabled: false,
-            dirtyChat: false
+            dirtyChat: false,
+            chatDelay: parseFloat(getQueryParam('delay') || '0')
         });
     }, []);
 
@@ -119,16 +108,32 @@ export const useChatSync = (
     }, [updateChatMessages, messages]);
 
     useEffect(() => {
+        const delay = parseFloat(getQueryParam('delay') || '0');
+        setState(prev => ({
+            ...prev,
+            chatEnabled: playerState.playState === 'playing',
+            playbackRate: playerState.playbackRate,
+            chatDelay: delay
+        }));
+
+        if (playerState.playState === 'changed' || playerState.playState === 'ended') {
+            setState(prev => ({
+                ...prev,
+                messagesToRender: [],
+                currentMessageIndex: 0,
+                dirtyChat: false
+            }));
+        }
+    }, [playerState.playState, playerState.playbackRate]);
+
+    useEffect(() => {
         syncToVideo();
-    }, [messages, videoPlayer, state.playbackRate, state.chatEnabled, syncToVideo]);
+    }, [messages, playerState.videoPlayer, state.playbackRate, state.chatEnabled, syncToVideo]);
 
     return {
         messagesToRender: state.messagesToRender,
-        isEnabled: state.chatEnabled,
-        enableChat,
-        disableChat,
+        chatEnabled: state.chatEnabled,
         syncToVideo,
-        setPlaybackRate,
         resetChat
     };
 };
