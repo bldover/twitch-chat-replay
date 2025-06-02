@@ -31,7 +31,7 @@ export const validateYouTubeUrl = (input: string): ValidationResult => {
             isValid: true,
             data: {
                 playlistId: listId,
-                videoId: videoId
+                initialVideoId: videoId
             }
         }
     }
@@ -49,7 +49,7 @@ export const validateYouTubeUrl = (input: string): ValidationResult => {
     if (youtubeId) {
         return {
             isValid: true,
-            data: { videoId: youtubeId }
+            data: { initialVideoId: youtubeId }
         }
     }
 

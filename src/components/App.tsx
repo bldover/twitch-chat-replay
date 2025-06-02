@@ -4,22 +4,28 @@ import ChatSidebar from './ChatSidebar'
 import { useChatSync } from '../hooks/useChatSync'
 import { useVideoPlayer } from '../hooks/useVideoPlayer'
 import { useVodData } from '../hooks/useVodData'
+import { YouTubeEvent } from 'react-youtube'
 
 function App() {
     const { videoState, selectVideo, videoHandlers, setFunnyMoments, resetVideo } = useVideoPlayer()
-    const { vodSummaries, selectedVod, messages, currentVodBttvEmotes, selectChat, onUploadCustomVod, resetVodData } =
-        useVodData(videoState.playState)
+    const { vodSummaries, selectedVod, messages, currentVodBttvEmotes, selectChat, onUploadCustomVod, resetSelectedChat } =
+        useVodData(setFunnyMoments)
     const { messagesToRender, chatEnabled, resetChat } = useChatSync(messages, videoState)
 
-    const handleSelectChat = (summary: any) => selectChat(summary, setFunnyMoments)
+    const handleSelectChat = (summary: any) => selectChat(summary)
 
     const resetAll = (): void => {
         console.debug('resetAll')
         resetChat();
         resetVideo();
-        resetVodData();
+        resetSelectedChat();
 
         window.history.pushState('home', 'Twitch Chat Replay', '/')
+    }
+
+    const handleVideoChange = (event: YouTubeEvent) => {
+        videoHandlers.onVideoChange(event);
+        resetSelectedChat();
     }
 
     return (
@@ -32,6 +38,7 @@ function App() {
                     onPlaybackRateChange={videoHandlers.onPlaybackRateChange}
                     onPlay={videoHandlers.onPlay}
                     onPause={videoHandlers.onPause}
+                    onVideoChange={handleVideoChange}
                     onEnd={videoHandlers.onEnd}
                 />
             </div>

@@ -9,9 +9,15 @@ export const getQueryParam = (key: string): string | undefined => {
     return undefined
 }
 
-export const setQueryParam = (key: string, value: string): void => {
+export const setQueryParam = (key: string, value: string | null): void => {
     const url = new URL(window.location.href);
-    url.searchParams.set(key, value);
-    console.log(`updated query params: ${window.location.href}`)
+
+    if (value === null) {
+        url.searchParams.delete(key);
+    } else {
+        url.searchParams.set(key, value);
+    }
+
+    console.log(`updated query params: ${url}`);
     window.history.replaceState({}, '', url.search.toString());
 }

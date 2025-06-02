@@ -19,6 +19,7 @@ interface VideoPlayerControls {
         onReady: (event: YouTubeEvent) => void;
         onPlay: (event: YouTubeEvent) => void;
         onPause: (event: YouTubeEvent) => void;
+        onVideoChange: (event: YouTubeEvent) => void;
         onEnd: () => void;
         onPlaybackRateChange: (event: YouTubeEvent) => void;
     };
@@ -33,15 +34,19 @@ export const useVideoPlayer = (): VideoPlayerControls => {
         videoMetadata: null,
         videoPlayer: null,
         funnyMoments: [],
-        playState: 'idle',
+        playState: 'initializing',
         playbackRate: 1
     });
 
     const selectVideo = useCallback((data: VideoData): void => {
         console.debug('selectVideo: ', data);
-        setState(prev => ({ ...prev, videoData: data }));
-        if (data.videoId) {
-            setQueryParam('youtubeId', data.videoId);
+        const videoData = {
+            ...data,
+            currentVideoId: data.initialVideoId
+        };
+        setState(prev => ({ ...prev, videoData }));
+        if (data.initialVideoId) {
+            setQueryParam('youtubeId', data.initialVideoId);
         }
         if (data.playlistId) {
             setQueryParam('playlistId', data.playlistId);
@@ -69,22 +74,21 @@ export const useVideoPlayer = (): VideoPlayerControls => {
 
         setState(prev => ({
             ...prev,
+            videoData: {
+                ...prev.videoData!,
+                currentVideoId: newVideoId
+            },
             videoMetadata: {
                 title: player.playerInfo.videoData.title,
                 duration: player.getDuration()
-            },
-            playState: 'changed'
+            }
         }));
     }, []);
 
     const onPlay = useCallback((event: YouTubeEvent): void => {
         console.debug('onPlay');
-        if (event.target.videoTitle !== state.videoMetadata?.title) {
-            onVideoChange(event);
-        } else {
-            setState(prev => ({ ...prev, playState: 'playing' }));
-        }
-    }, [state.videoMetadata?.title, onVideoChange]);
+        setState(prev => ({ ...prev, playState: 'playing' }));
+    }, []);
 
     const onPause = useCallback((event: YouTubeEvent): void => {
         console.debug('onPause');
@@ -141,17 +145,13 @@ export const useVideoPlayer = (): VideoPlayerControls => {
         return () => window.removeEventListener('keydown', listenerFunction);
     }, [state.videoPlayer, state.funnyMoments]);
 
-    // only want this captured on initial page load/refresh.
-    // afterwards, videoId is managed internal to the YouTube player, so
-    // even though we may update the query params, it shouldn't trigger a YouTube
-    // player recomposition when we change to the next video in a playlist
     if (state.playState === 'initializing') {
         const youtubeId = getQueryParam('youtubeId');
         const playlistId = getQueryParam('playlistId');
         if (!state.videoData && youtubeId) {
             console.debug(`queryParams change new: youtubeId=${youtubeId}, playlistId=${playlistId}`);
             selectVideo({
-                videoId: youtubeId || undefined,
+                initialVideoId: youtubeId,
                 playlistId: playlistId || undefined
             });
         }
@@ -164,6 +164,7 @@ export const useVideoPlayer = (): VideoPlayerControls => {
             onReady,
             onPlay,
             onPause,
+            onVideoChange,
             onEnd,
             onPlaybackRateChange
         },

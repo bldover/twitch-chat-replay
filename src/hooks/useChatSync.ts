@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
 import { ChatMessage } from '../types';
-import { findCommentIndexForOffset } from '../utils/chatSync';
 import { VideoPlayerState } from './useVideoPlayer';
 import { getQueryParam } from '../utils/queryParams';
 
@@ -37,6 +36,27 @@ export const useChatSync = (
         dirtyChat: false,
         chatDelay: parseFloat(getQueryParam('delay') || '0')
     });
+
+    const findCommentIndexForOffset = (messages: ChatMessage[], offset: number): number => {
+        console.debug('findCommentIndexForOffset');
+        if (!messages) return 0;
+        let left = 0;
+        let right = messages.length;
+        let middle = 0;
+        while (left !== right) {
+            middle = left + Math.floor((right - left) / 2);
+            const commentTime = messages[middle].content_offset_seconds;
+            if ((commentTime - offset) > 0) {
+                right = middle;
+            } else if ((commentTime - offset) < 0) {
+                left = middle + 1;
+            } else {
+                return middle;
+            }
+        }
+        return left;
+    };
+
 
     const updateChatMessages = useCallback((): void => {
         console.debug('updateChatMessages');
@@ -116,7 +136,7 @@ export const useChatSync = (
             chatDelay: delay
         }));
 
-        if (playerState.playState === 'changed' || playerState.playState === 'ended') {
+        if (playerState.playState === 'ended') {
             setState(prev => ({
                 ...prev,
                 messagesToRender: [],

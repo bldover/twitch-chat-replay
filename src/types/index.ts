@@ -1,5 +1,3 @@
-import { YouTubePlayer } from 'react-youtube';
-
 export interface Fragment {
     text: string;
     emoticon?: {
@@ -78,7 +76,8 @@ export interface MatchingConfig {
 
 export type VideoData = {
     playlistId?: string
-    videoId?: string
+    initialVideoId?: string
+    currentVideoId?: string
 }
 
 export type VideoPlayState = 'initializing' | 'idle' | 'playing' | 'paused' | 'ended' | 'changed';
