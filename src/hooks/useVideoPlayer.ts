@@ -141,7 +141,11 @@ export const useVideoPlayer = (): VideoPlayerControls => {
         return () => window.removeEventListener('keydown', listenerFunction);
     }, [state.videoPlayer, state.funnyMoments]);
 
-    useEffect(() => {
+    // only want this captured on initial page load/refresh.
+    // afterwards, videoId is managed internal to the YouTube player, so
+    // even though we may update the query params, it shouldn't trigger a YouTube
+    // player recomposition when we change to the next video in a playlist
+    if (state.playState === 'initializing') {
         const youtubeId = getQueryParam('youtubeId');
         const playlistId = getQueryParam('playlistId');
         if (!state.videoData && youtubeId) {
@@ -151,7 +155,7 @@ export const useVideoPlayer = (): VideoPlayerControls => {
                 playlistId: playlistId || undefined
             });
         }
-    }, [state.videoData, selectVideo]);
+    }
 
     return {
         videoState: state,

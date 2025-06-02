@@ -3,8 +3,8 @@ import { FC, useState, useRef, useEffect } from 'react'
 import Chat from './Chat'
 import ChatSelector from './ChatSelector'
 import Settings from './Settings'
+import ChatHeader from './ChatHeader'
 import { ChatMessage, BttvEmoteMap, VodSummary, VideoMetadata, ChatData } from '../types'
-import { SettingsIcon, UploadIcon, CloseIcon, ArrowDownIcon, ArrowUpIcon } from './Icons'
 
 interface ChatSidebarProps {
     messages: ChatMessage[] | null
@@ -14,8 +14,6 @@ interface ChatSidebarProps {
     onSelectKnownVod: (summary: VodSummary) => void
     onUploadCustomVod: (json: ChatData) => void
     videoMetadata: VideoMetadata | null
-    searchFilter?: string
-    onSearchFilterChange?: (filter: string) => void
     vodSummaries: VodSummary[]
     selectedVod?: VodSummary | null
     isVideoPlaying?: boolean
@@ -29,8 +27,6 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     onSelectKnownVod,
     onUploadCustomVod,
     videoMetadata,
-    searchFilter = '',
-    onSearchFilterChange,
     vodSummaries,
     selectedVod,
     isVideoPlaying = false
@@ -38,12 +34,11 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     const [isHeaderMinimized, setIsHeaderMinimized] = useState(false)
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
     const [showScrollbar, setShowScrollbar] = useState(false)
-    const fileInputRef = useRef<HTMLInputElement>(null)
+    const [searchFilter, setSearchFilter] = useState<string>('')
     const hideScrollbarTimeoutRef = useRef<NodeJS.Timeout | null>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
 
     const hasMessages = messages !== null
-    const showHeader = !hasMessages || !isHeaderMinimized
 
     const handleMinimizeHeader = () => {
         setIsHeaderMinimized(true)
@@ -61,35 +56,9 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
         setIsSettingsOpen(false)
     }
 
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (onSearchFilterChange) {
-            onSearchFilterChange(event.target.value)
-        }
-    }
-
-    const handleSearchClick = (event: React.MouseEvent<HTMLInputElement>) => {
-        const target = event.target as HTMLInputElement
-        if (target.value === 'Search for NL vods here!') {
-            target.value = ''
-        }
-    }
-
-    const handleUploadClick = () => {
-        fileInputRef.current?.click()
-    }
-
-    const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0]
-        if (!file) return
-
-        new Promise<string>((resolve, reject) => {
-            const reader = new FileReader()
-            reader.onload = () => resolve(reader.result as string)
-            reader.onerror = (error) => reject(error)
-            reader.readAsText(file)
-        })
-            .then((result) => onUploadCustomVod(JSON.parse(result)))
-            .catch((error) => console.log(error))
+    const handleSelectKnownVod = (summary: VodSummary) => {
+        setSearchFilter('')
+        onSelectKnownVod(summary)
     }
 
     const handleMouseEnter = () => {
@@ -118,56 +87,17 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            {showHeader && (
-                <div className="chat-sidebar-header">
-                    <div className="header-left">
-                        {!hasMessages && (
-                            <>
-                                <input
-                                    className="header-search"
-                                    placeholder="Search for NL vods here!"
-                                    value={searchFilter}
-                                    onChange={handleSearchChange}
-                                    onClick={handleSearchClick}
-                                />
-                                <button
-                                    className="header-btn"
-                                    onClick={handleUploadClick}
-                                    title="Upload chat file"
-                                >
-                                    {UploadIcon({})}
-                                </button>
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept=".json"
-                                    style={{ display: 'none' }}
-                                    onChange={handleFileUpload}
-                                />
-                            </>
-                        )}
-                    </div>
-                    <div className="header-right">
-                        <button className="header-btn" onClick={handleSettingsClick} title="Settings">
-                            {SettingsIcon({})}
-                        </button>
-                        {hasMessages && (
-                            <button className="header-btn" onClick={handleMinimizeHeader} title="Minimize header">
-                                {ArrowUpIcon({})}
-                            </button>
-                        )}
-                        <button className="header-btn header-btn-close" onClick={resetFunction} title="Close">
-                            {CloseIcon({})}
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {hasMessages && isHeaderMinimized && (
-                <button className="header-btn expand-header-btn" onClick={handleExpandHeader} title="Show header">
-                    {ArrowDownIcon({})}
-                </button>
-            )}
+            <ChatHeader
+                hasMessages={hasMessages}
+                isHeaderMinimized={isHeaderMinimized}
+                searchFilter={searchFilter}
+                onMinimizeHeader={handleMinimizeHeader}
+                onExpandHeader={handleExpandHeader}
+                onSettingsClick={handleSettingsClick}
+                onSearchFilterChange={setSearchFilter}
+                onUploadCustomVod={onUploadCustomVod}
+                resetFunction={resetFunction}
+            />
 
             <div ref={scrollContainerRef} className={`chat-sidebar-content ${hasMessages ? 'chat-mode' : ''} ${showScrollbar ? 'scrollbar-visible' : ''}`}>
                 {hasMessages ? (
@@ -180,7 +110,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                 ) : (
                     <ChatSelector
                         vodSummaries={vodSummaries}
-                        onSelectKnownJson={onSelectKnownVod}
+                        onSelectKnownJson={handleSelectKnownVod}
                         videoMetadata={videoMetadata}
                         searchFilter={searchFilter}
                     />

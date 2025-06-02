@@ -42,30 +42,30 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     }
 
     return (
-        <div className="settings-modal-overlay" onClick={handleDiscard}>
-            <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
-                <div className="settings-modal-header">
+        <div className='settings-modal-overlay' onClick={handleDiscard}>
+            <div className='settings-modal' onClick={(e) => e.stopPropagation()}>
+                <div className='settings-modal-header'>
                     <h3>Settings</h3>
-                    <button className="settings-modal-close" onClick={handleDiscard}>{CloseIcon({})}</button>
+                    <button className='settings-modal-close' onClick={handleDiscard}>{CloseIcon({})}</button>
                 </div>
-                <div className="settings-modal-content">
-                    <div className="setting-item">
-                        <div className="setting-label">
-                            <div className="setting-icon-placeholder">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0z"/>
-                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                <div className='settings-modal-content'>
+                    <div className='setting-item'>
+                        <div className='setting-label'>
+                            <div className='setting-icon-placeholder'>
+                                <svg width='16' height='16' viewBox='0 0 16 16' fill='currentColor'>
+                                    <path d='M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0z' />
+                                    <path d='M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z' />
                                 </svg>
                             </div>
-                            <span 
-                                className="setting-name"
+                            <span
+                                className='setting-name'
                                 title={getAllChatSelectionDescriptions()}
                             >
                                 Chat Selection
                             </span>
                         </div>
-                        <select 
-                            className="setting-dropdown"
+                        <select
+                            className='setting-dropdown'
                             value={tempChatSelectionIndex}
                             onChange={handleChatSelectionChange}
                         >
@@ -75,11 +75,11 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                         </select>
                     </div>
                 </div>
-                <div className="settings-modal-footer">
-                    <button className="settings-btn settings-btn-discard" onClick={handleDiscard}>
+                <div className='settings-modal-footer'>
+                    <button className='settings-btn settings-btn-discard' onClick={handleDiscard}>
                         Discard
                     </button>
-                    <button className="settings-btn settings-btn-save" onClick={handleSave}>
+                    <button className='settings-btn settings-btn-save' onClick={handleSave}>
                         Save
                     </button>
                 </div>

@@ -1,36 +1,26 @@
 import './App.css'
 import { Video } from './Video'
 import ChatSidebar from './ChatSidebar'
-import { useState } from 'react'
 import { useChatSync } from '../hooks/useChatSync'
 import { useVideoPlayer } from '../hooks/useVideoPlayer'
 import { useVodData } from '../hooks/useVodData'
 
 function App() {
-    const [searchFilter, setSearchFilter] = useState<string>('')
-
     const { videoState, selectVideo, videoHandlers, setFunnyMoments, resetVideo } = useVideoPlayer()
-
-    const { vodSummaries, selectedVod, messages, currentVodBttvEmotes, selectChat, onUploadCustomVod, resetVodData } = useVodData(videoState.playState)
+    const { vodSummaries, selectedVod, messages, currentVodBttvEmotes, selectChat, onUploadCustomVod, resetVodData } =
+        useVodData(videoState.playState)
+    const { messagesToRender, chatEnabled, resetChat } = useChatSync(messages, videoState)
 
     const handleSelectChat = (summary: any) => selectChat(summary, setFunnyMoments)
 
-    const { messagesToRender, chatEnabled, resetChat } = useChatSync(
-        messages,
-        videoState
-    )
-
-
     const resetAll = (): void => {
         console.debug('resetAll')
-        setSearchFilter('');
         resetChat();
         resetVideo();
         resetVodData();
 
         window.history.pushState('home', 'Twitch Chat Replay', '/')
     }
-
 
     return (
         <div className='App'>
@@ -54,8 +44,6 @@ function App() {
                     onSelectKnownVod={handleSelectChat}
                     onUploadCustomVod={onUploadCustomVod}
                     videoMetadata={videoState.videoMetadata}
-                    searchFilter={searchFilter}
-                    onSearchFilterChange={setSearchFilter}
                     vodSummaries={vodSummaries}
                     selectedVod={selectedVod}
                     isVideoPlaying={chatEnabled}

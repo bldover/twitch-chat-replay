@@ -81,6 +81,6 @@ export type VideoData = {
     videoId?: string
 }
 
-export type VideoPlayState = 'idle' | 'playing' | 'paused' | 'ended' | 'changed';
+export type VideoPlayState = 'initializing' | 'idle' | 'playing' | 'paused' | 'ended' | 'changed';
 
 export {};
