@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { ChatMessage } from '../types';
 import { VideoPlayerState } from './useVideoPlayer';
-import { getQueryParam } from '../utils/queryParams';
+import { getChatDelay } from '../utils/settings';
 
 interface ChatSyncState {
     messagesToRender: ChatMessage[];
@@ -34,7 +34,7 @@ export const useChatSync = (
         playbackRate: playerState.playbackRate,
         chatEnabled: playerState.playState === 'playing',
         dirtyChat: false,
-        chatDelay: parseFloat(getQueryParam('delay') || '0')
+        chatDelay: getChatDelay()
     });
 
     const findCommentIndexForOffset = (messages: ChatMessage[], offset: number): number => {
@@ -56,7 +56,6 @@ export const useChatSync = (
         }
         return left;
     };
-
 
     const updateChatMessages = useCallback((): void => {
         console.debug('updateChatMessages');
@@ -116,7 +115,7 @@ export const useChatSync = (
             playbackRate: 1,
             chatEnabled: false,
             dirtyChat: false,
-            chatDelay: parseFloat(getQueryParam('delay') || '0')
+            chatDelay: getChatDelay()
         });
     }, []);
 
@@ -128,7 +127,7 @@ export const useChatSync = (
     }, [updateChatMessages, messages]);
 
     useEffect(() => {
-        const delay = parseFloat(getQueryParam('delay') || '0');
+        const delay = getChatDelay();
         setState(prev => ({
             ...prev,
             chatEnabled: playerState.playState === 'playing',
@@ -149,6 +148,20 @@ export const useChatSync = (
     useEffect(() => {
         syncToVideo();
     }, [messages, playerState.videoPlayer, state.playbackRate, state.chatEnabled, syncToVideo]);
+
+    useEffect(() => {
+        const handleStorageChange = () => {
+            const newDelay = getChatDelay();
+            console.debug('handleStorageChange, new delay: ', newDelay)
+            setState(prev => ({
+                ...prev,
+                chatDelay: newDelay
+            }));
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, []);
 
     return {
         messagesToRender: state.messagesToRender,

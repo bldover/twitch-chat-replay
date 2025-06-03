@@ -79,7 +79,7 @@ const ChatHeader: FC<ChatHeaderProps> = ({
                                     onClick={handleUploadClick}
                                     title='Upload chat file'
                                 >
-                                    {UploadIcon({})}
+                                    <UploadIcon />
                                 </button>
                                 <input
                                     ref={fileInputRef}
@@ -93,15 +93,15 @@ const ChatHeader: FC<ChatHeaderProps> = ({
                     </div>
                     <div className='header-right'>
                         <button className='header-btn' onClick={onSettingsClick} title='Settings'>
-                            {SettingsIcon({})}
+                            <SettingsIcon />
                         </button>
                         {hasMessages && (
                             <button className='header-btn' onClick={onMinimizeHeader} title='Minimize header'>
-                                {ArrowUpIcon({})}
+                                <ArrowUpIcon />
                             </button>
                         )}
                         <button className='header-btn header-btn-close' onClick={resetFunction} title='Close'>
-                            {CloseIcon({})}
+                            <CloseIcon />
                         </button>
                     </div>
                 </div>
@@ -109,7 +109,7 @@ const ChatHeader: FC<ChatHeaderProps> = ({
 
             {hasMessages && isHeaderMinimized && (
                 <button className='header-btn expand-header-btn' onClick={onExpandHeader} title='Show header'>
-                    {ArrowDownIcon({})}
+                    <ArrowDownIcon />
                 </button>
             )}
         </>

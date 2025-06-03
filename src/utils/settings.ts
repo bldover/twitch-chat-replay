@@ -7,11 +7,13 @@ export const CHAT_SELECTION_OPTIONS = [
 export type ChatSelectionMode = typeof CHAT_SELECTION_OPTIONS[number]
 
 export interface AppSettings {
-    chatSelection: number
+    chatSelection: ChatSelectionMode
+    chatDelay: number
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
-    chatSelection: 0
+    chatSelection: 'manual',
+    chatDelay: 0
 }
 
 const SETTINGS_KEY = 'twitch-chat-replay-settings'
@@ -41,16 +43,18 @@ export const setSetting = <K extends keyof AppSettings>(key: K, value: AppSettin
 
 export const getChatSelectionMode = (): ChatSelectionMode => {
     const settings = getSettings()
-    const index = settings.chatSelection
-    return CHAT_SELECTION_OPTIONS[index] || CHAT_SELECTION_OPTIONS[0]
+    return settings.chatSelection
 }
 
-export const setChatSelectionMode = (index: number): void => {
-    if (index >= 0 && index < CHAT_SELECTION_OPTIONS.length) {
-        setSetting('chatSelection', index)
-    }
+export const setChatSelectionMode = (mode: ChatSelectionMode): void => {
+    setSetting('chatSelection', mode)
 }
 
-export const getChatSelectionIndex = (): number => {
-    return getSettings().chatSelection
+export const getChatDelay = (): number => {
+    const settings = getSettings()
+    return settings.chatDelay
+}
+
+export const setChatDelay = (delay: number): void => {
+    setSetting('chatDelay', delay)
 }

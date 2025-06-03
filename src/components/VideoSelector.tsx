@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from 'react'
 import { VideoData } from '../types'
-import { CloseIcon } from './Icons'
+import { InfoIcon } from './Icons'
 import { validateYouTubeUrl, urlPlaceholders } from '../utils/urls'
 import './VideoSelector.css'
 
@@ -104,17 +104,17 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
                                 onMouseEnter={() => setShowTooltip(true)}
                                 onMouseLeave={() => setShowTooltip(false)}
                             >
-                                <CloseIcon className='info-icon' />
+                                <InfoIcon className='info-icon' />
                                 {showTooltip && (
                                     <div className='tooltip'>
                                         <div className='tooltip-content'>
                                             <strong>Accepted URL types:</strong>
                                             <br />
-                                            • <strong>Video URLs:</strong> Load a single video
+                                            • <strong>Video URL:</strong> Load a single video
                                             <br />
-                                            • <strong>Playlist URLs:</strong> Load entire playlist from beginning
+                                            • <strong>Playlist URL:</strong> Load entire playlist from specified video number
                                             <br />
-                                            • <strong>Playlist + Video URLs:</strong> Load playlist starting at specific video
+                                            • <strong>Playlist + Video URL:</strong> Load playlist starting at specific video
                                         </div>
                                     </div>
                                 )}
@@ -152,7 +152,7 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
                                     onMouseEnter={() => setShowIndexTooltip(true)}
                                     onMouseLeave={() => setShowIndexTooltip(false)}
                                 >
-                                    <CloseIcon className='info-icon' />
+                                    <InfoIcon className='info-icon' />
                                     {showIndexTooltip && (
                                         <div className='tooltip'>
                                             <div className='tooltip-content'>

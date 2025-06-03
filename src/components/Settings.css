@@ -109,6 +109,23 @@
     color: var(--text-primary);
 }
 
+.setting-input {
+    background-color: var(--bg-purple-medium);
+    border: 1px solid var(--border-purple);
+    border-radius: 4px;
+    color: var(--text-primary);
+    padding: 6px 12px;
+    font-size: 14px;
+    min-width: 80px;
+    text-align: right;
+}
+
+.setting-input:focus {
+    outline: none;
+    border-color: var(--accent-purple);
+    box-shadow: 0 0 0 2px var(--shadow-purple-medium);
+}
+
 .settings-modal-footer {
     display: flex;
     justify-content: flex-end;
@@ -131,15 +148,14 @@
 }
 
 .settings-btn-discard {
-    background-color: var(--transparent);
-    color: var(--text-secondary);
-    border-color: var(--border-purple);
+    background-color: var(--interactive-bg-hover);
+    color: var(--text-primary);
+    border-color: var(--border-secondary);
 }
 
 .settings-btn-discard:hover {
-    background-color: var(--border-purple);
-    color: var(--text-primary);
-    border-color: var(--border-secondary);
+    background-color: var(--interactive-bg);
+    border-color: var(--border-primary);
 }
 
 .settings-btn-save {
