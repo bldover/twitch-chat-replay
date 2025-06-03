@@ -7,7 +7,8 @@ import { VideoData } from '../types'
 type PlayerVars = {
     autoplay: number,
     listType?: string,
-    list?: string
+    list?: string,
+    index?: number
 }
 
 type VideoProps = {
@@ -49,7 +50,8 @@ export const Video: FC<VideoProps> = ({
         return {
             autoplay: 1,
             listType: listType,
-            list: videoData.playlistId
+            list: videoData.playlistId,
+            index: videoData.initialVideoIndex
         }
     }, [videoData])
 

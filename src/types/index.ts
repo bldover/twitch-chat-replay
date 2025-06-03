@@ -78,6 +78,7 @@ export type VideoData = {
     playlistId?: string
     initialVideoId?: string
     currentVideoId?: string
+    initialVideoIndex?: number
 }
 
 export type VideoPlayState = 'initializing' | 'idle' | 'playing' | 'paused' | 'ended' | 'changed';

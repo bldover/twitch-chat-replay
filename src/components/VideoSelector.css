@@ -224,3 +224,9 @@
     opacity: 1;
     transform: translateY(0);
 }
+
+.url-input-field[type="number"]::-webkit-outer-spin-button,
+.url-input-field[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

@@ -15,6 +15,10 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
     const [placeholderOpacity, setPlaceholderOpacity] = useState(1)
     const [inputValue, setInputValue] = useState('')
     const [showTooltip, setShowTooltip] = useState(false)
+    const [showIndexTooltip, setShowIndexTooltip] = useState(false)
+    const [playlistIndex, setPlaylistIndex] = useState('1')
+    const [showPlaylistIndex, setShowPlaylistIndex] = useState(false)
+    const [errorField, setErrorField] = useState<'url' | 'index' | null>(null)
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -28,6 +32,17 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
         return () => clearInterval(interval)
     }, [])
 
+    useEffect(() => {
+        const result = validateYouTubeUrl(inputValue)
+        if (result.isValid && result.data?.playlistId && !result.data?.initialVideoId) {
+            setShowPlaylistIndex(true)
+            setPlaylistIndex('1')
+        } else {
+            setShowPlaylistIndex(false)
+            setPlaylistIndex('1')
+        }
+    }, [inputValue])
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
@@ -35,10 +50,37 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
         if (result.isValid && result.data) {
             setHasError(false)
             setErrorMessage('')
+            setErrorField(null)
+
+            if (showPlaylistIndex) {
+                const indexValue = parseInt(playlistIndex)
+                if (!playlistIndex || isNaN(indexValue)) {
+                    setHasError(true)
+                    setErrorMessage('Please enter a video number')
+                    setErrorField('index')
+                    setTimeout(() => setHasError(false), 600)
+                    return
+                } else if (indexValue < 1) {
+                    setHasError(true)
+                    setErrorMessage('Video numbers start at 1')
+                    setErrorField('index')
+                    setTimeout(() => setHasError(false), 600)
+                    return
+                } else if (indexValue > 200) {
+                    setHasError(true)
+                    setErrorMessage('Video number cannot be greater than 200. The embedded YouTube player does not support playlists larger than 200 videos.')
+                    setErrorField('index')
+                    setTimeout(() => setHasError(false), 600)
+                    return
+                }
+                result.data.initialVideoIndex = indexValue
+            }
+
             onSubmit(result.data)
         } else {
             setHasError(true)
             setErrorMessage(result.errorMessage || 'Invalid YouTube URL format')
+            setErrorField('url')
             setTimeout(() => setHasError(false), 600)
         }
     }
@@ -50,14 +92,14 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
                 <p className='video-input-subtitle'>
                     Recreate Twitch chat next to a YouTube video. Select an available NL chat or upload your own chat!
                 </p>
-                
+
                 <form className='url-input-form' onSubmit={handleSubmit}>
                     <div className='url-input-group'>
                         <div className='url-input-header'>
                             <label className='url-input-label' htmlFor='youtubeId'>
                                 YouTube URL
                             </label>
-                            <div 
+                            <div
                                 className='info-icon-container'
                                 onMouseEnter={() => setShowTooltip(true)}
                                 onMouseLeave={() => setShowTooltip(false)}
@@ -81,7 +123,7 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
                         <div className='url-input-container'>
                             <input
                                 id='youtubeId'
-                                className={`url-input-field${hasError ? ' error' : ''}`}
+                                className={`url-input-field${hasError && errorField === 'url' ? ' error' : ''}`}
                                 type='text'
                                 name='youtubeId'
                                 value={inputValue}
@@ -97,12 +139,49 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
                                 </div>
                             )}
                         </div>
-                        {errorMessage && (
-                            <div className={`error-message${errorMessage ? ' show' : ''}`}>
-                                {errorMessage}
-                            </div>
-                        )}
                     </div>
+
+                    {showPlaylistIndex && (
+                        <div className='url-input-group'>
+                            <div className='url-input-header'>
+                                <label className='url-input-label' htmlFor='playlistIndex'>
+                                    Playlist Video Number
+                                </label>
+                                <div
+                                    className='info-icon-container'
+                                    onMouseEnter={() => setShowIndexTooltip(true)}
+                                    onMouseLeave={() => setShowIndexTooltip(false)}
+                                >
+                                    <CloseIcon className='info-icon' />
+                                    {showIndexTooltip && (
+                                        <div className='tooltip'>
+                                            <div className='tooltip-content'>
+                                                Enter which video in the playlist to start with (e.g., enter 3 to start at the 3rd video)
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className='url-input-container'>
+                                <input
+                                    id='playlistIndex'
+                                    className={`url-input-field${hasError && errorField === 'index' ? ' error' : ''}`}
+                                    type='number'
+                                    name='playlistIndex'
+                                    value={playlistIndex}
+                                    onChange={(e) => setPlaylistIndex(e.target.value)}
+                                    placeholder='1'
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {errorMessage && (
+                        <div className={`error-message${errorMessage ? ' show' : ''}`}>
+                            {errorMessage}
+                        </div>
+                    )}
+
                     <input className='submit-button' type='submit' value='Load Video' />
                 </form>
             </div>
