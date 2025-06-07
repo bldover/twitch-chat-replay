@@ -1,6 +1,6 @@
 import './Settings.css'
 import { FC, useState, useEffect } from 'react'
-import { CloseIcon } from './Icons'
+import { CloseIcon, SettingsIcon } from './Icons'
 import NumericStepper from './NumericStepper'
 import DropdownSelector from './DropdownSelector'
 import { getChatSelectionMode, setChatSelectionMode, getChatDelay, setChatDelay, CHAT_SELECTION_OPTIONS, ChatSelectionMode } from '../utils/settings'
@@ -60,7 +60,10 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay }) 
         <div className='settings-modal-overlay' onClick={handleDiscard}>
             <div className='settings-modal' onClick={(e) => e.stopPropagation()}>
                 <div className='settings-modal-header'>
-                    <h3>Settings</h3>
+                    <div className='settings-modal-title'>
+                        <SettingsIcon />
+                        <h3>Settings</h3>
+                    </div>
                     <button className='settings-modal-close' onClick={handleDiscard}><CloseIcon /></button>
                 </div>
                 <div className='settings-modal-content'>
