@@ -90,7 +90,7 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
             <div className='video-input-card'>
                 <h1 className='video-input-title'>Twitch Chat Replay</h1>
                 <p className='video-input-subtitle'>
-                    Recreate Twitch chat next to a YouTube video. Select an available NL chat or upload your own chat!
+                    Recreate Twitch chat next to a YouTube video. Select an available Northernlion VOD or upload any chat!
                 </p>
 
                 <form className='url-input-form' onSubmit={handleSubmit}>

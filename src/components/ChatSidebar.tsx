@@ -17,6 +17,7 @@ interface ChatSidebarProps {
     vodSummaries: VodSummary[]
     selectedVod?: VodSummary | null
     isVideoPlaying?: boolean
+    updateChatDelay: (delay: number) => void
 }
 
 const ChatSidebar: FC<ChatSidebarProps> = ({
@@ -29,7 +30,8 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     videoMetadata,
     vodSummaries,
     selectedVod,
-    isVideoPlaying = false
+    isVideoPlaying = false,
+    updateChatDelay
 }) => {
     const [isHeaderMinimized, setIsHeaderMinimized] = useState(false)
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -120,6 +122,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
             <Settings
                 isOpen={isSettingsOpen}
                 onClose={handleCloseSettings}
+                updateChatDelay={updateChatDelay}
             />
         </div>
     )

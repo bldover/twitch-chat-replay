@@ -1,7 +1,7 @@
 import './ChatHeader.css';
 import { FC, useRef } from 'react';
 import { ChatData } from '../types';
-import { SettingsIcon, UploadIcon, CloseIcon, ArrowDownIcon, ArrowUpIcon } from './Icons';
+import { SettingsIcon, UploadIcon, CloseIcon, SelectArrowDownIcon, CollapseArrowUpIcon } from './Icons';
 
 interface ChatHeaderProps {
     hasMessages: boolean;
@@ -69,6 +69,7 @@ const ChatHeader: FC<ChatHeaderProps> = ({
                             <>
                                 <input
                                     className='header-search'
+                                    name='vodSearch'
                                     placeholder='Search for NL vods here!'
                                     value={searchFilter}
                                     onChange={handleSearchChange}
@@ -92,14 +93,14 @@ const ChatHeader: FC<ChatHeaderProps> = ({
                         )}
                     </div>
                     <div className='header-right'>
+                        {hasMessages && (
+                            <button className='header-btn' onClick={onMinimizeHeader} title='Minimize header'>
+                                <CollapseArrowUpIcon />
+                            </button>
+                        )}
                         <button className='header-btn' onClick={onSettingsClick} title='Settings'>
                             <SettingsIcon />
                         </button>
-                        {hasMessages && (
-                            <button className='header-btn' onClick={onMinimizeHeader} title='Minimize header'>
-                                <ArrowUpIcon />
-                            </button>
-                        )}
                         <button className='header-btn header-btn-close' onClick={resetFunction} title='Close'>
                             <CloseIcon />
                         </button>
@@ -109,7 +110,7 @@ const ChatHeader: FC<ChatHeaderProps> = ({
 
             {hasMessages && isHeaderMinimized && (
                 <button className='header-btn expand-header-btn' onClick={onExpandHeader} title='Show header'>
-                    <ArrowDownIcon />
+                    <SelectArrowDownIcon />
                 </button>
             )}
         </>

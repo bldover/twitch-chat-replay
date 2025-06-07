@@ -10,7 +10,7 @@ function App() {
     const { videoState, selectVideo, videoHandlers, setFunnyMoments, resetVideo } = useVideoPlayer()
     const { vodSummaries, selectedVod, messages, currentVodBttvEmotes, selectChat, onUploadCustomVod, resetSelectedChat } =
         useVodData(setFunnyMoments)
-    const { messagesToRender, chatEnabled, resetChat } = useChatSync(messages, videoState)
+    const { messagesToRender, chatEnabled, resetChat, updateChatDelay } = useChatSync(messages, videoState)
 
     const handleSelectChat = (summary: any) => selectChat(summary)
 
@@ -54,6 +54,7 @@ function App() {
                     vodSummaries={vodSummaries}
                     selectedVod={selectedVod}
                     isVideoPlaying={chatEnabled}
+                    updateChatDelay={updateChatDelay}
                 />
             </div>
         </div>

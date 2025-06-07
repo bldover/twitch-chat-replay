@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--overlay-medium);
+    background-color: var(--overlay-dark);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -16,9 +16,10 @@
     border: 1px solid var(--border-purple);
     border-radius: 8px;
     max-width: 400px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
     box-shadow: 0 4px 16px var(--shadow-dark);
 }
 
@@ -44,8 +45,10 @@
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    padding: 4px;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: all 0.2s ease;
 }
 
@@ -55,29 +58,22 @@
 }
 
 .settings-modal-content {
+    display: flex;
+    flex-direction: column;
     padding: 20px;
+    align-content: space-between;
+    gap: 16px;
 }
 
 .setting-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    height: 32px;
 }
 
 .setting-label {
     display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.setting-icon-placeholder {
-    width: 16px;
-    height: 16px;
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    min-width: 50%;
 }
 
 .setting-name {
@@ -87,42 +83,8 @@
     cursor: help;
 }
 
-.setting-dropdown {
-    background-color: var(--bg-purple-medium);
-    border: 1px solid var(--border-purple);
-    border-radius: 4px;
-    color: var(--text-primary);
-    padding: 6px 12px;
-    font-size: 14px;
-    min-width: 140px;
-    cursor: pointer;
-}
-
-.setting-dropdown:focus {
-    outline: none;
-    border-color: var(--accent-purple);
-    box-shadow: 0 0 0 2px var(--shadow-purple-medium);
-}
-
-.setting-dropdown option {
-    background-color: var(--bg-purple-medium);
-    color: var(--text-primary);
-}
-
-.setting-input {
-    background-color: var(--bg-purple-medium);
-    border: 1px solid var(--border-purple);
-    border-radius: 4px;
-    color: var(--text-primary);
-    padding: 6px 12px;
-    font-size: 14px;
-    min-width: 80px;
-    text-align: right;
-}
-
 .setting-input:focus {
     outline: none;
-    border-color: var(--accent-purple);
     box-shadow: 0 0 0 2px var(--shadow-purple-medium);
 }
 
@@ -130,21 +92,20 @@
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    padding: 16px 20px;
-    border-top: 1px solid var(--border-purple);
+    padding: 0 20px 20px 0;
     background-color: var(--bg-purple-dark);
     border-radius: 0 0 8px 8px;
 }
 
 .settings-btn {
-    padding: 8px 16px;
+    padding: 8px 12px;
     border-radius: 4px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     border: 1px solid;
-    min-width: 80px;
+    min-width: 75px;
 }
 
 .settings-btn-discard {

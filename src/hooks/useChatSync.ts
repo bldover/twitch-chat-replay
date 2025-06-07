@@ -19,6 +19,7 @@ interface ChatSyncControls {
     chatEnabled: boolean;
     syncToVideo: () => void;
     resetChat: () => void;
+    updateChatDelay: (delay: number) => void;
 }
 
 export const useChatSync = (
@@ -119,6 +120,13 @@ export const useChatSync = (
         });
     }, []);
 
+    const updateChatDelay = useCallback((delay: number): void => {
+        setState(prev => ({
+            ...prev,
+            chatDelay: delay
+        }));
+    }, []);
+
     useEffect(() => {
         if (messages) {
             const timer = setTimeout(updateChatMessages, 500);
@@ -147,7 +155,7 @@ export const useChatSync = (
 
     useEffect(() => {
         syncToVideo();
-    }, [messages, playerState.videoPlayer, state.playbackRate, state.chatEnabled, syncToVideo]);
+    }, [messages, playerState.videoPlayer, state.playbackRate, state.chatEnabled, state.chatDelay, syncToVideo]);
 
     useEffect(() => {
         const handleStorageChange = () => {
@@ -167,6 +175,7 @@ export const useChatSync = (
         messagesToRender: state.messagesToRender,
         chatEnabled: state.chatEnabled,
         syncToVideo,
-        resetChat
+        resetChat,
+        updateChatDelay
     };
 };
