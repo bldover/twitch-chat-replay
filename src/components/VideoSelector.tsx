@@ -88,75 +88,34 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
     return (
         <div className='video-input-container'>
             <div className='video-input-card'>
-                <h1 className='video-input-title'>Twitch Chat Replay</h1>
-                <p className='video-input-subtitle'>
-                    Recreate Twitch chat next to a YouTube video. Select an available Northernlion VOD or upload any chat!
-                </p>
+                <div className='video-input-content'>
+                    <h1 className='video-input-title'>Twitch Chat Replay</h1>
+                    <p className='video-input-subtitle'>
+                        Recreate Twitch chat next to a YouTube video. Select an available Northernlion VOD or upload any chat!
+                    </p>
 
-                <form className='url-input-form' onSubmit={handleSubmit}>
-                    <div className='url-input-group'>
-                        <div className='url-input-header'>
-                            <label className='url-input-label' htmlFor='youtubeId'>
-                                YouTube URL
-                            </label>
-                            <div
-                                className='info-icon-container'
-                                onMouseEnter={() => setShowTooltip(true)}
-                                onMouseLeave={() => setShowTooltip(false)}
-                            >
-                                <InfoIcon className='info-icon' />
-                                {showTooltip && (
-                                    <div className='tooltip'>
-                                        <div className='tooltip-content'>
-                                            <strong>Accepted URL types:</strong>
-                                            <br />
-                                            • <strong>Video URL:</strong> Load a single video
-                                            <br />
-                                            • <strong>Playlist URL:</strong> Load entire playlist from specified video number
-                                            <br />
-                                            • <strong>Playlist + Video URL:</strong> Load playlist starting at specific video
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                        <div className='url-input-container'>
-                            <input
-                                id='youtubeId'
-                                className={`url-input-field${hasError && errorField === 'url' ? ' error' : ''}`}
-                                type='text'
-                                name='youtubeId'
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                autoFocus
-                            />
-                            {!inputValue && (
-                                <div
-                                    className='animated-placeholder'
-                                    style={{ opacity: placeholderOpacity }}
-                                >
-                                    {urlPlaceholders[currentPlaceholder]}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {showPlaylistIndex && (
+                    <form className='url-input-form' onSubmit={handleSubmit}>
                         <div className='url-input-group'>
                             <div className='url-input-header'>
-                                <label className='url-input-label' htmlFor='playlistIndex'>
-                                    Playlist Video Number
+                                <label className='url-input-label' htmlFor='youtubeId'>
+                                    YouTube URL
                                 </label>
                                 <div
                                     className='info-icon-container'
-                                    onMouseEnter={() => setShowIndexTooltip(true)}
-                                    onMouseLeave={() => setShowIndexTooltip(false)}
+                                    onMouseEnter={() => setShowTooltip(true)}
+                                    onMouseLeave={() => setShowTooltip(false)}
                                 >
                                     <InfoIcon className='info-icon' />
-                                    {showIndexTooltip && (
+                                    {showTooltip && (
                                         <div className='tooltip'>
                                             <div className='tooltip-content'>
-                                                Enter which video in the playlist to start with (e.g., enter 3 to start at the 3rd video)
+                                                <strong>Accepted URL types:</strong>
+                                                <br />
+                                                • <strong>Video URL:</strong> Load a single video
+                                                <br />
+                                                • <strong>Playlist URL:</strong> Load entire playlist from specified video number
+                                                <br />
+                                                • <strong>Playlist + Video URL:</strong> Load playlist starting at specific video
                                             </div>
                                         </div>
                                     )}
@@ -164,26 +123,69 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
                             </div>
                             <div className='url-input-container'>
                                 <input
-                                    id='playlistIndex'
-                                    className={`url-input-field${hasError && errorField === 'index' ? ' error' : ''}`}
-                                    type='number'
-                                    name='playlistIndex'
-                                    value={playlistIndex}
-                                    onChange={(e) => setPlaylistIndex(e.target.value)}
-                                    placeholder='1'
+                                    id='youtubeId'
+                                    className={`url-input-field${hasError && errorField === 'url' ? ' error' : ''}`}
+                                    type='text'
+                                    name='youtubeId'
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value)}
+                                    autoFocus
                                 />
+                                {!inputValue && (
+                                    <div
+                                        className='animated-placeholder'
+                                        style={{ opacity: placeholderOpacity }}
+                                    >
+                                        {urlPlaceholders[currentPlaceholder]}
+                                    </div>
+                                )}
                             </div>
                         </div>
-                    )}
 
-                    {errorMessage && (
-                        <div className={`error-message${errorMessage ? ' show' : ''}`}>
-                            {errorMessage}
-                        </div>
-                    )}
+                        {showPlaylistIndex && (
+                            <div className='url-input-group'>
+                                <div className='url-input-header'>
+                                    <label className='url-input-label' htmlFor='playlistIndex'>
+                                        Playlist Video Number
+                                    </label>
+                                    <div
+                                        className='info-icon-container'
+                                        onMouseEnter={() => setShowIndexTooltip(true)}
+                                        onMouseLeave={() => setShowIndexTooltip(false)}
+                                    >
+                                        <InfoIcon className='info-icon' />
+                                        {showIndexTooltip && (
+                                            <div className='tooltip'>
+                                                <div className='tooltip-content'>
+                                                    Enter which video in the playlist to start with (e.g., enter 3 to start at the 3rd video)
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className='url-input-container'>
+                                    <input
+                                        id='playlistIndex'
+                                        className={`url-input-field${hasError && errorField === 'index' ? ' error' : ''}`}
+                                        type='number'
+                                        name='playlistIndex'
+                                        value={playlistIndex}
+                                        onChange={(e) => setPlaylistIndex(e.target.value)}
+                                        placeholder='1'
+                                    />
+                                </div>
+                            </div>
+                        )}
 
-                    <input className='submit-button' type='submit' value='Load Video' />
-                </form>
+                        {errorMessage && (
+                            <div className={`error-message${errorMessage ? ' show' : ''}`}>
+                                {errorMessage}
+                            </div>
+                        )}
+
+                        <input className='submit-button' type='submit' value='Load Video' />
+                    </form>
+                </div>
             </div>
         </div>
     )

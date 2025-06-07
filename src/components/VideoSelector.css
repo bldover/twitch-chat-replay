@@ -7,16 +7,21 @@
     width: 100%;
     background: var(--gradient-bg);
     box-sizing: border-box;
+    padding: 20px;
 }
 
 .video-input-card {
     background-color: var(--bg-tertiary);
     border: 1px solid var(--border-primary);
     border-radius: 12px;
-    padding: 40px;
     box-shadow: 0 8px 32px var(--shadow-dark);
     max-width: 600px;
+    min-width: 320px;
     width: 100%;
+}
+
+.video-input-content {
+    padding: 40px;
     text-align: center;
 }
 
@@ -229,4 +234,57 @@
 .url-input-field[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+
+@media (max-width: 768px) {
+    .video-input-container {
+        padding: 16px;
+    }
+    
+    .video-input-content {
+        padding: 24px;
+    }
+    
+    .video-input-title {
+        font-size: 1.8em;
+    }
+    
+    .video-input-subtitle {
+        font-size: 1em;
+        margin-bottom: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .video-input-container {
+        padding: 12px;
+    }
+    
+    .video-input-content {
+        padding: 20px;
+    }
+    
+    .video-input-title {
+        font-size: 1.6em;
+        margin-bottom: 8px;
+    }
+    
+    .video-input-subtitle {
+        font-size: 0.9em;
+        margin-bottom: 20px;
+    }
+    
+    .url-input-form {
+        gap: 20px;
+    }
+    
+    .url-input-field {
+        padding: 14px 16px;
+        font-size: 0.95em;
+    }
+    
+    .submit-button {
+        padding: 14px 28px;
+        font-size: 1em;
+    }
 }
