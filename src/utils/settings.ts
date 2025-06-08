@@ -1,19 +1,29 @@
+import { Theme } from '../types'
+
 export const CHAT_SELECTION_OPTIONS = [
     'manual',
     'automatic-search',
     'automatic-selection'
 ] as const
 
+export const THEME_OPTIONS: Theme[] = [
+    'ttv',
+    'midnight',
+    'light'
+]
+
 export type ChatSelectionMode = typeof CHAT_SELECTION_OPTIONS[number]
 
 export interface AppSettings {
     chatSelection: ChatSelectionMode
     chatDelay: number
+    theme: Theme
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
     chatSelection: 'manual',
-    chatDelay: 0
+    chatDelay: 0,
+    theme: 'ttv'
 }
 
 const SETTINGS_KEY = 'twitch-chat-replay-settings'
@@ -57,4 +67,26 @@ export const getChatDelay = (): number => {
 
 export const setChatDelay = (delay: number): void => {
     setSetting('chatDelay', delay)
+}
+
+export const getTheme = (): Theme => {
+    const settings = getSettings()
+    return settings.theme
+}
+
+export const setTheme = (theme: Theme): void => {
+    setSetting('theme', theme)
+}
+
+export const getThemeDisplayName = (theme: Theme): string => {
+    switch (theme) {
+        case 'ttv':
+            return 'Twitch TV'
+        case 'midnight':
+            return 'Midnight'
+        case 'light':
+            return 'Light'
+        default:
+            return 'Dark'
+    }
 }

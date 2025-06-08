@@ -1,4 +1,4 @@
-/* Theme System - CSS Custom Properties */
+/* Theme Color Scheme Definitions */
 :root {
   /* Background Colors */
   --bg-primary: #111111;
@@ -73,34 +73,34 @@
   --pulse-red-end: #ef444400;
 }
 
-/* Dark Theme (default) */
-[data-theme='dark'] {
+/* Dark Theme */
+[data-theme='ttv'] {
   /* Inherits from :root */
 }
 
-/* Dark Grey Theme */
-[data-theme='dark-grey'] {
-  /* Background Colors - Darker greys */
+/* Midnight Theme */
+[data-theme='midnight'] {
+  /* Background Colors */
   --bg-primary: #0a0a0a;
   --bg-secondary: #151515;
   --bg-tertiary: #1a1a1a;
   --bg-quaternary: #202020;
   --bg-input: #252525;
   --bg-dark: #0f0f0f;
-  --bg-purple-dark: #1a1520;
-  --bg-purple-medium: #221a35;
+  --bg-purple-dark: #12101a;
+  --bg-purple-medium: #1a1528;
   --bg-red-dark: #3a2020;
   --bg-red-darker: #4a2a2a;
   --bg-error: #2a1010;
   
-  /* Border Colors - Darker greys */
+  /* Border Colors */
   --border-primary: #2a2a2a;
   --border-secondary: #353535;
   --border-tertiary: #404040;
   --border-dark: #0f0f0f;
   --border-red: #4a2a2a;
   --border-red-hover: #5a3a3a;
-  --border-purple: #202020;
+  --border-purple: #1a1528;
   
   /* Text Colors */
   --text-primary: #ffffff;
@@ -112,21 +112,21 @@
   --text-red: #ef4444;
   
   /* Accent Colors */
-  --accent-purple: #9147ff;
-  --accent-purple-hover: #7c3aed;
-  --accent-purple-dark: #6d28d9;
+  --accent-purple: #7c3aed;
+  --accent-purple-hover: #6d28d9;
+  --accent-purple-dark: #5b21b6;
   
-  /* Scrollbar Colors - Darker */
+  /* Scrollbar Colors */
   --scrollbar-thumb: #353535;
   --scrollbar-thumb-hover: #404040;
   
-  /* Interactive States - Darker */
+  /* Interactive States*/
   --interactive-bg: #202020;
   --interactive-bg-hover: #252525;
   --interactive-bg-close: #3a2020;
   --interactive-bg-close-hover: #4a2a2a;
   
-  /* Chat Colors - Much darker for sidebar */
+  /* Chat Colors */
   --chat-bg: #151515;
   --chat-text: #ffffff;
   --chat-search-bg: #606060;
@@ -137,15 +137,15 @@
   --overlay-dark: #000000cc;
   --overlay-medium: #00000099;
   --shadow-dark: #00000066;
-  --shadow-purple: #9147ff1a;
-  --shadow-purple-medium: #9147ff33;
-  --shadow-purple-strong: #9147ff4d;
+  --shadow-purple: #7c3aed1a;
+  --shadow-purple-medium: #7c3aed33;
+  --shadow-purple-strong: #7c3aed4d;
   --transparent: #00000000;
   
   /* Gradient Colors */
-  --gradient-purple: linear-gradient(135deg, #9147ff, #7c3aed);
-  --gradient-purple-hover: linear-gradient(135deg, #7c3aed, #6d28d9);
-  --gradient-bg: linear-gradient(135deg, #1a1520 0%, #221a35 50%, #1a1520 100%);
+  --gradient-purple: linear-gradient(135deg, #7c3aed, #6d28d9);
+  --gradient-purple-hover: linear-gradient(135deg, #6d28d9, #5b21b6);
+  --gradient-bg: linear-gradient(135deg, #12101a 0%, #1a1528 50%, #12101a 100%);
   
   /* Animation Colors */
   --pulse-red-start: #ef444466;
@@ -153,77 +153,77 @@
   --pulse-red-end: #ef444400;
 }
 
-/* Light Theme (future implementation) */
+/* Light Theme */
 [data-theme='light'] {
   /* Background Colors */
   --bg-primary: #ffffff;
   --bg-secondary: #f8f9fa;
   --bg-tertiary: #e9ecef;
   --bg-quaternary: #dee2e6;
-  --bg-input: #f1f3f4;
-  --bg-dark: #343a40;
-  --bg-purple-dark: #f8f5ff;
+  --bg-input: #ffffff;
+  --bg-dark: #6c757d;
+  --bg-purple-dark: #f3f0ff;
   --bg-purple-medium: #e9e3ff;
-  --bg-red-dark: #ffeaea;
-  --bg-red-darker: #ffdddd;
+  --bg-red-dark: #fff5f5;
+  --bg-red-darker: #fed7d7;
   --bg-error: #fff5f5;
   
   /* Border Colors */
-  --border-primary: #ced4da;
-  --border-secondary: #adb5bd;
-  --border-tertiary: #6c757d;
-  --border-dark: #495057;
-  --border-red: #dc3545;
-  --border-red-hover: #c82333;
-  --border-purple: #6f42c1;
+  --border-primary: #e2e8f0;
+  --border-secondary: #cbd5e0;
+  --border-tertiary: #a0aec0;
+  --border-dark: #4a5568;
+  --border-red: #fc8181;
+  --border-red-hover: #f56565;
+  --border-purple: #d6bcfa;
   
   /* Text Colors */
-  --text-primary: #212529;
-  --text-secondary: #6c757d;
-  --text-muted: #adb5bd;
-  --text-dark: #495057;
-  --text-accent: #0066cc;
-  --text-error: #dc3545;
-  --text-red: #dc3545;
+  --text-primary: #2d3748;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+  --text-dark: #1a202c;
+  --text-accent: #3182ce;
+  --text-error: #e53e3e;
+  --text-red: #e53e3e;
   
   /* Accent Colors */
-  --accent-purple: #6f42c1;
-  --accent-purple-hover: #5a2d91;
-  --accent-purple-dark: #4c1d95;
+  --accent-purple: #a78bfa;
+  --accent-purple-hover: #9363ea;
+  --accent-purple-dark: #7c3aed;
   
   /* Scrollbar Colors */
-  --scrollbar-thumb: #ced4da;
-  --scrollbar-thumb-hover: #adb5bd;
+  --scrollbar-thumb: #cbd5e0;
+  --scrollbar-thumb-hover: #a0aec0;
   
   /* Interactive States */
-  --interactive-bg: #f8f9fa;
-  --interactive-bg-hover: #e9ecef;
+  --interactive-bg: #f7fafc;
+  --interactive-bg-hover: #edf2f7;
   --interactive-bg-close: #fff5f5;
-  --interactive-bg-close-hover: #ffeaea;
+  --interactive-bg-close-hover: #fed7d7;
   
   /* Chat Colors */
-  --chat-bg: #f8f9fa;
-  --chat-text: #212529;
-  --chat-search-bg: #e9ecef;
-  --chat-button-bg: #ffffff;
-  --chat-button-bg-hover: #f8f9fa;
+  --chat-bg: #ffffff;
+  --chat-text: #2d3748;
+  --chat-search-bg: #edf2f7;
+  --chat-button-bg: #c4b5fd;
+  --chat-button-bg-hover: #a78bfa;
   
   /* Shadow & Overlay Colors */
   --overlay-dark: #0000004d;
   --overlay-medium: #0000001a;
   --shadow-dark: #0000001a;
-  --shadow-purple: #6f42c11a;
-  --shadow-purple-medium: #6f42c133;
-  --shadow-purple-strong: #6f42c14d;
+  --shadow-purple: #a78bfa1a;
+  --shadow-purple-medium: #a78bfa33;
+  --shadow-purple-strong: #a78bfa4d;
   --transparent: #00000000;
   
   /* Gradient Colors */
-  --gradient-purple: linear-gradient(135deg, #6f42c1, #5a2d91);
-  --gradient-purple-hover: linear-gradient(135deg, #5a2d91, #4c1d95);
-  --gradient-bg: linear-gradient(135deg, #f8f5ff 0%, #e9e3ff 50%, #f8f5ff 100%);
+  --gradient-purple: linear-gradient(135deg, #c4b5fd, #a78bfa);
+  --gradient-purple-hover: linear-gradient(135deg, #a78bfa, #9333ea);
+  --gradient-bg: linear-gradient(135deg, #f3f0ff 0%, #e9e3ff 50%, #f3f0ff 100%);
   
   /* Animation Colors */
-  --pulse-red-start: #dc354566;
-  --pulse-red-mid: #dc354533;
-  --pulse-red-end: #dc354500;
+  --pulse-red-start: #e53e3e66;
+  --pulse-red-mid: #e53e3e33;
+  --pulse-red-end: #e53e3e00;
 }

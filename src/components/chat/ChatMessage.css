@@ -1,0 +1,26 @@
+.chat-message {
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+
+.chat-message-time {
+    color: var(--text-primary);
+    flex-shrink: 0;
+    margin-right: 8px;
+    line-height: 1.4;
+}
+
+.chat-message-body {
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.4;
+    overflow-x: hidden;
+}
+
+.commenter {
+    font-weight: 700;
+}

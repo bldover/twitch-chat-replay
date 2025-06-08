@@ -1,0 +1,24 @@
+.emoticon {
+    vertical-align: middle;
+    display: inline-block;
+    max-height: 28px;
+    width: auto;
+}
+
+.modifier-wide {
+    width: 112px;
+    height: 28px;
+    object-fit: fill;
+}
+
+.modifier-vertical {
+    transform: scaleY(-1);
+}
+
+.modifier-horizontal {
+    transform: scaleX(-1);
+}
+
+.modifier-zero-space {
+    margin-left: -4px;
+}

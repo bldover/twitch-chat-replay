@@ -1,4 +1,6 @@
-export const chatNameColors = [
+import { hashCode } from "./hash";
+
+const chatNameColors = [
     'rgb(0, 231, 0)',
     'rgb(0, 255, 127)',
     'rgb(10, 255, 0)',
@@ -37,3 +39,8 @@ export const chatNameColors = [
     'rgb(255, 88, 26)',
     'rgb(255, 88, 88)',
 ]
+
+export const getColor = (commenterName: string): string => {
+    let colorHash = Math.abs(hashCode(commenterName));
+    return chatNameColors[colorHash % chatNameColors.length];
+};

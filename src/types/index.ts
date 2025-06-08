@@ -59,6 +59,7 @@ export interface VodSummary {
 }
 
 export interface ChatData {
+    video?: { user_name?: string };
     comments: ChatMessage[];
 }
 
@@ -82,6 +83,39 @@ export type VideoData = {
     shuffleEnabled?: boolean
 }
 
-export type VideoPlayState = 'initializing' | 'idle' | 'playing' | 'paused' | 'ended' | 'changed';
+export type VideoPlayState = 'initializing' | 'idle' | 'playing' | 'paused' | 'ended';
+
+export type Theme = 'ttv' | 'midnight' | 'light';
+
+export interface BadgeVersion {
+    id: string;
+    image_url_1x: string;
+    image_url_2x: string;
+    image_url_4x: string;
+    title: string;
+}
+
+export interface BadgeSet {
+    set_id: string;
+    versions: BadgeVersion[];
+}
+
+export interface BadgeMap {
+    [key: string]: BadgeVersion;
+}
+
+export interface BadgeMaps {
+    global: BadgeMap;
+    globalPlusNorthernlion: BadgeMap;
+}
+
+export interface VodState {
+    vodSummaries: VodSummary[];
+    selectedVod: VodSummary | null;
+    messages: ChatMessage[] | null;
+    currentVodBttvEmotes: BttvEmoteMap | null;
+    badgeMaps: BadgeMaps | null;
+    broadcaster: string | null;
+}
 
 export {};

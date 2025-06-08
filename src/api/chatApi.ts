@@ -1,6 +1,6 @@
-import { ChatData, ChatMessage } from '../types';
+import { ChatData } from '../types';
 
-export const fetchChatMessages = async (twitchId: string): Promise<ChatMessage[]> => {
+export const fetchChatMessages = async (twitchId: string): Promise<ChatData> => {
     const url = 'http://localhost:8083/clickityclack.co.uk/content/videos/' + twitchId + '.json';
     const response = await fetch(url);
 
@@ -10,5 +10,9 @@ export const fetchChatMessages = async (twitchId: string): Promise<ChatMessage[]
 
     const chatData: ChatData = await response.json();
     const sortedMessages = chatData.comments.sort((a, b) => a.content_offset_seconds - b.content_offset_seconds);
-    return sortedMessages;
+    
+    return {
+        ...chatData,
+        comments: sortedMessages
+    };
 };

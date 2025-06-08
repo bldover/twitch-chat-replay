@@ -3,28 +3,35 @@ import { FC, useState, useEffect } from 'react'
 import { CloseIcon, SettingsIcon } from './common/Icons'
 import NumericStepper from './common/NumericStepper'
 import DropdownSelector from './common/DropdownSelector'
-import { getChatSelectionMode, setChatSelectionMode, getChatDelay, setChatDelay, CHAT_SELECTION_OPTIONS, ChatSelectionMode } from '../utils/settings'
+import { getChatSelectionMode, setChatSelectionMode, getChatDelay, setChatDelay, getTheme, setTheme, getThemeDisplayName, CHAT_SELECTION_OPTIONS, THEME_OPTIONS, ChatSelectionMode } from '../utils/settings'
+import { Theme } from '../types'
 
 interface SettingsModalProps {
     isOpen: boolean
     onClose: () => void
     updateChatDelay: (delay: number) => void
+    updateTheme: (theme: Theme) => void
 }
 
-const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay }) => {
+const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, updateTheme }) => {
     const [tempChatSelectionMode, setTempChatSelectionMode] = useState(getChatSelectionMode())
     const [originalChatSelectionMode, setOriginalChatSelectionMode] = useState(getChatSelectionMode())
     const [tempChatDelay, setTempChatDelay] = useState(getChatDelay())
     const [originalChatDelay, setOriginalChatDelay] = useState(getChatDelay())
+    const [tempTheme, setTempTheme] = useState(getTheme())
+    const [originalTheme, setOriginalTheme] = useState(getTheme())
 
     useEffect(() => {
         if (isOpen) {
             const currentMode = getChatSelectionMode()
             const currentDelay = getChatDelay()
+            const currentTheme = getTheme()
             setTempChatSelectionMode(currentMode)
             setOriginalChatSelectionMode(currentMode)
             setTempChatDelay(currentDelay)
             setOriginalChatDelay(currentDelay)
+            setTempTheme(currentTheme)
+            setOriginalTheme(currentTheme)
         }
     }, [isOpen])
 
@@ -39,16 +46,24 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay }) 
         setTempChatDelay(value)
     }
 
+    const handleThemeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const newTheme = event.target.value as Theme
+        setTempTheme(newTheme)
+    }
+
     const handleSave = () => {
         setChatSelectionMode(tempChatSelectionMode)
         setChatDelay(tempChatDelay)
+        setTheme(tempTheme)
         updateChatDelay(tempChatDelay)
+        updateTheme(tempTheme)
         onClose()
     }
 
     const handleDiscard = () => {
         setTempChatSelectionMode(originalChatSelectionMode)
         setTempChatDelay(originalChatDelay)
+        setTempTheme(originalTheme)
         onClose()
     }
 
@@ -85,6 +100,25 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay }) 
                                 label: option === 'manual' ? 'Manual' :
                                     option === 'automatic-search' ? 'Automatic Search' :
                                         'Automatic Selection'
+                            }))}
+                        />
+                    </div>
+                    <div className='setting-item'>
+                        <div className='setting-label'>
+                            <span
+                                className='setting-name'
+                                title='Choose the color theme for the application interface.'
+                            >
+                                Theme
+                            </span>
+                        </div>
+                        <DropdownSelector
+                            value={tempTheme}
+                            onChange={handleThemeChange}
+                            name='themeDropdown'
+                            options={THEME_OPTIONS.map((theme) => ({
+                                value: theme,
+                                label: getThemeDisplayName(theme)
                             }))}
                         />
                     </div>

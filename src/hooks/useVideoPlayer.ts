@@ -56,6 +56,8 @@ export const useVideoPlayer = (): VideoPlayerControls => {
     const onReady = useCallback((event: YouTubeEvent): void => {
         console.debug('onReady');
         const player = event.target;
+        console.debug(player)
+
         setState(prev => ({
             ...prev,
             videoPlayer: player,
@@ -78,7 +80,7 @@ export const useVideoPlayer = (): VideoPlayerControls => {
         const player = event.target;
         const newVideoId = player.playerInfo?.videoData?.video_id;
         setQueryParam('youtubeId', newVideoId);
-
+        console.debug(player)
         setState(prev => ({
             ...prev,
             videoData: {

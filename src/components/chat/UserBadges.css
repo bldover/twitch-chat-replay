@@ -1,0 +1,14 @@
+.user-badges {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+.badge {
+    vertical-align: middle;
+    display: inline-block;
+    max-height: 18px;
+    width: auto;
+}

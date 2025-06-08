@@ -5,12 +5,23 @@ import { useChatSync } from '../hooks/useChatSync'
 import { useVideoPlayer } from '../hooks/useVideoPlayer'
 import { useVodData } from '../hooks/useVodData'
 import { YouTubeEvent } from 'react-youtube'
+import { useState, useEffect } from 'react'
+import { getTheme } from '../utils/settings'
+import { Theme } from '../types'
 
 function App() {
     const { videoState, selectVideo, videoHandlers, setFunnyMoments, resetVideo } = useVideoPlayer()
-    const { vodSummaries, selectedVod, messages, currentVodBttvEmotes, selectChat, onUploadCustomVod, resetSelectedChat } =
-        useVodData(setFunnyMoments)
-    const { messagesToRender, chatEnabled, resetChat, updateChatDelay } = useChatSync(messages, videoState)
+    const { state: vodState, selectChat, onUploadCustomVod, resetSelectedChat } = useVodData(setFunnyMoments)
+    const { messagesToRender, chatEnabled, resetChat, updateChatDelay } = useChatSync(vodState.messages, videoState)
+    const [currentTheme, setCurrentTheme] = useState<Theme>(getTheme())
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', currentTheme)
+    }, [currentTheme])
+
+    const handleThemeUpdate = (theme: Theme) => {
+        setCurrentTheme(theme)
+    }
 
     const handleSelectChat = (summary: any) => selectChat(summary)
 
@@ -46,17 +57,15 @@ function App() {
             </div>
             <div className='chat-container'>
                 <ChatSidebar
-                    messages={messages}
+                    vodState={vodState}
                     messagesToRender={messagesToRender}
-                    bttvEmotes={currentVodBttvEmotes}
                     resetFunction={resetAll}
                     onSelectKnownVod={handleSelectChat}
                     onUploadCustomVod={onUploadCustomVod}
                     videoMetadata={videoState.videoMetadata}
-                    vodSummaries={vodSummaries}
-                    selectedVod={selectedVod}
                     isVideoPlaying={chatEnabled}
                     updateChatDelay={updateChatDelay}
+                    updateTheme={handleThemeUpdate}
                 />
             </div>
         </div>

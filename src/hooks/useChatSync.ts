@@ -88,7 +88,7 @@ export const useChatSync = (
     }, [state.chatEnabled, state.currentMessageIndex, state.mediaStartTime, state.lastPlayEventTime, state.playbackRate, state.dirtyChat, state.messagesToRender, messages, state.chatDelay]);
 
     const syncToVideo = useCallback((): void => {
-        console.debug('syncChat');
+        console.debug('syncToVideo');
         if (!messages || !playerState.videoPlayer) {
             return;
         }
@@ -160,7 +160,6 @@ export const useChatSync = (
     useEffect(() => {
         const handleStorageChange = () => {
             const newDelay = getChatDelay();
-            console.debug('handleStorageChange, new delay: ', newDelay)
             setState(prev => ({
                 ...prev,
                 chatDelay: newDelay

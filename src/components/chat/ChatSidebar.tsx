@@ -4,34 +4,30 @@ import Chat from './Chat'
 import ChatSelector from './ChatSelector'
 import Settings from '../Settings'
 import ChatHeader from './ChatHeader'
-import { ChatMessage, BttvEmoteMap, VodSummary, VideoMetadata, ChatData } from '../../types'
+import { ChatMessage, VodSummary, VideoMetadata, ChatData, Theme, VodState } from '../../types'
 
 interface ChatSidebarProps {
-    messages: ChatMessage[] | null
+    vodState: VodState
     messagesToRender: ChatMessage[]
-    bttvEmotes: BttvEmoteMap | null
     resetFunction: () => void
     onSelectKnownVod: (summary: VodSummary) => void
     onUploadCustomVod: (json: ChatData) => void
     videoMetadata: VideoMetadata | null
-    vodSummaries: VodSummary[]
-    selectedVod?: VodSummary | null
     isVideoPlaying?: boolean
     updateChatDelay: (delay: number) => void
+    updateTheme: (theme: Theme) => void
 }
 
 const ChatSidebar: FC<ChatSidebarProps> = ({
-    messages,
+    vodState,
     messagesToRender,
-    bttvEmotes,
     resetFunction,
     onSelectKnownVod,
     onUploadCustomVod,
     videoMetadata,
-    vodSummaries,
-    selectedVod,
     isVideoPlaying = false,
-    updateChatDelay
+    updateChatDelay,
+    updateTheme
 }) => {
     const [isHeaderMinimized, setIsHeaderMinimized] = useState(false)
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -40,7 +36,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     const hideScrollbarTimeoutRef = useRef<NodeJS.Timeout | null>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
 
-    const hasMessages = messages !== null
+    const hasMessages = vodState.messages !== null
 
     const handleMinimizeHeader = () => {
         setIsHeaderMinimized(true)
@@ -105,13 +101,15 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                 {hasMessages ? (
                     <Chat
                         chatMessages={messagesToRender}
-                        bttvEmotes={bttvEmotes}
-                        selectedVod={selectedVod}
+                        bttvEmotes={vodState.currentVodBttvEmotes}
+                        badgeMaps={vodState.badgeMaps}
+                        broadcaster={vodState.broadcaster}
+                        selectedVod={vodState.selectedVod}
                         isVideoPlaying={isVideoPlaying}
                     />
                 ) : (
                     <ChatSelector
-                        vodSummaries={vodSummaries}
+                        vodSummaries={vodState.vodSummaries}
                         onSelectKnownJson={handleSelectKnownVod}
                         videoMetadata={videoMetadata}
                         searchFilter={searchFilter}
@@ -123,6 +121,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                 isOpen={isSettingsOpen}
                 onClose={handleCloseSettings}
                 updateChatDelay={updateChatDelay}
+                updateTheme={updateTheme}
             />
         </div>
     )
