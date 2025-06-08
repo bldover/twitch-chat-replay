@@ -13,12 +13,14 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
     const [errorMessage, setErrorMessage] = useState('')
     const [currentPlaceholder, setCurrentPlaceholder] = useState(0)
     const [placeholderOpacity, setPlaceholderOpacity] = useState(1)
-    const [inputValue, setInputValue] = useState('')
+    const [urlValue, setInputValue] = useState('')
     const [showTooltip, setShowTooltip] = useState(false)
     const [showIndexTooltip, setShowIndexTooltip] = useState(false)
     const [playlistIndex, setPlaylistIndex] = useState('1')
     const [showPlaylistIndex, setShowPlaylistIndex] = useState(false)
     const [errorField, setErrorField] = useState<'url' | 'index' | null>(null)
+    const [shuffleEnabled, setShuffleEnabled] = useState(false)
+    const [showShuffle, setShowShuffle] = useState(false)
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -33,20 +35,19 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
     }, [])
 
     useEffect(() => {
-        const result = validateYouTubeUrl(inputValue)
-        if (result.isValid && result.data?.playlistId && !result.data?.initialVideoId) {
-            setShowPlaylistIndex(true)
-            setPlaylistIndex('1')
+        const result = validateYouTubeUrl(urlValue)
+        if (result.isValid && result.data?.playlistId) {
+            setShowShuffle(true)
+            setShowPlaylistIndex(!result.data?.initialVideoId)
         } else {
             setShowPlaylistIndex(false)
-            setPlaylistIndex('1')
         }
-    }, [inputValue])
+    }, [urlValue])
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        const result = validateYouTubeUrl(inputValue)
+        const result = validateYouTubeUrl(urlValue)
         if (result.isValid && result.data) {
             setHasError(false)
             setErrorMessage('')
@@ -75,6 +76,8 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
                 }
                 result.data.initialVideoIndex = indexValue
             }
+
+            result.data.shuffleEnabled = shuffleEnabled
 
             onSubmit(result.data)
         } else {
@@ -109,13 +112,15 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
                                     {showTooltip && (
                                         <div className='tooltip'>
                                             <div className='tooltip-content'>
-                                                <strong>Accepted URL types:</strong>
+                                                <strong>Accepted URLs:</strong>
                                                 <br />
-                                                • <strong>Video URL:</strong> Load a single video
+                                                • <strong>Video (?v=123):</strong> Load a single video
                                                 <br />
-                                                • <strong>Playlist URL:</strong> Load entire playlist from specified video number
+                                                • <strong>Playlist (?list=abc):</strong> Load playlist with selectable starting video number
                                                 <br />
-                                                • <strong>Playlist + Video URL:</strong> Load playlist starting at specific video
+                                                • <strong>Playlist + Video (?v=123&list=abc):</strong> Load playlist starting at video
+                                                <br />
+                                                NOTE: Due to limitations of the YouTube embedded player, only the first 200 videos of a playlist can be played.
                                             </div>
                                         </div>
                                     )}
@@ -127,11 +132,11 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
                                     className={`url-input-field${hasError && errorField === 'url' ? ' error' : ''}`}
                                     type='text'
                                     name='youtubeId'
-                                    value={inputValue}
+                                    value={urlValue}
                                     onChange={(e) => setInputValue(e.target.value)}
                                     autoFocus
                                 />
-                                {!inputValue && (
+                                {!urlValue && (
                                     <div
                                         className='animated-placeholder'
                                         style={{ opacity: placeholderOpacity }}
@@ -173,6 +178,25 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
                                         onChange={(e) => setPlaylistIndex(e.target.value)}
                                         placeholder='1'
                                     />
+                                </div>
+                            </div>
+                        )}
+
+                        {showShuffle && (
+                            <div className='url-input-group'>
+                                <div className='shuffle-container'>
+                                    <label className='shuffle-label' htmlFor='shuffleToggle'>
+                                        Shuffle Playlist
+                                    </label>
+                                    <label className='toggle-switch'>
+                                        <input
+                                            id='shuffleToggle'
+                                            type='checkbox'
+                                            checked={shuffleEnabled}
+                                            onChange={(e) => setShuffleEnabled(e.target.checked)}
+                                        />
+                                        <span className='toggle-slider'></span>
+                                    </label>
                                 </div>
                             </div>
                         )}

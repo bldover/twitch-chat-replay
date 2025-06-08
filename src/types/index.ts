@@ -79,6 +79,7 @@ export type VideoData = {
     initialVideoId?: string
     currentVideoId?: string
     initialVideoIndex?: number
+    shuffleEnabled?: boolean
 }
 
 export type VideoPlayState = 'initializing' | 'idle' | 'playing' | 'paused' | 'ended' | 'changed';

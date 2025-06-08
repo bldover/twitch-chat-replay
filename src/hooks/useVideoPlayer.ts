@@ -44,7 +44,7 @@ export const useVideoPlayer = (): VideoPlayerControls => {
             ...data,
             currentVideoId: data.initialVideoId
         };
-        setState(prev => ({ ...prev, videoData }));
+        setState(prev => ({ ...prev, videoData: videoData }));
         if (data.initialVideoId) {
             setQueryParam('youtubeId', data.initialVideoId);
         }
@@ -64,7 +64,14 @@ export const useVideoPlayer = (): VideoPlayerControls => {
                 duration: player.getDuration()
             }
         }));
-    }, []);
+
+        if (state.videoData?.shuffleEnabled && state.videoData?.playlistId) {
+            player.setShuffle(true);
+            if (!state.videoData?.initialVideoId) {
+                player.playVideoAt(0);
+            }
+        }
+    }, [state.videoData]);
 
     const onVideoChange = useCallback((event: YouTubeEvent): void => {
         console.debug('onVideoChange');
