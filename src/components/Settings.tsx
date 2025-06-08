@@ -1,8 +1,8 @@
 import './Settings.css'
 import { FC, useState, useEffect } from 'react'
-import { CloseIcon, SettingsIcon } from './Icons'
-import NumericStepper from './NumericStepper'
-import DropdownSelector from './DropdownSelector'
+import { CloseIcon, SettingsIcon } from './common/Icons'
+import NumericStepper from './common/NumericStepper'
+import DropdownSelector from './common/DropdownSelector'
 import { getChatSelectionMode, setChatSelectionMode, getChatDelay, setChatDelay, CHAT_SELECTION_OPTIONS, ChatSelectionMode } from '../utils/settings'
 
 interface SettingsModalProps {

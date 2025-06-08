@@ -1,6 +1,6 @@
 import './App.css'
-import { Video } from './Video'
-import ChatSidebar from './ChatSidebar'
+import { Video } from './video/Video'
+import ChatSidebar from './chat/ChatSidebar'
 import { useChatSync } from '../hooks/useChatSync'
 import { useVideoPlayer } from '../hooks/useVideoPlayer'
 import { useVodData } from '../hooks/useVodData'
@@ -25,7 +25,9 @@ function App() {
 
     const handleVideoChange = (event: YouTubeEvent) => {
         videoHandlers.onVideoChange(event);
-        resetSelectedChat();
+        if (videoState.videoData?.currentVideoId) {
+            resetSelectedChat();
+        }
     }
 
     return (
