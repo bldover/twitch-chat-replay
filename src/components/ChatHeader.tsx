@@ -1,7 +1,7 @@
 import './ChatHeader.css';
 import { FC, useRef } from 'react';
 import { ChatData } from '../types';
-import { SettingsIcon, UploadIcon, CloseIcon, SelectArrowDownIcon, CollapseArrowUpIcon } from './Icons';
+import { SettingsIcon, UploadIcon, CloseIcon, CollapseArrowUpIcon, ExpandArrowDownIcon } from './Icons';
 
 interface ChatHeaderProps {
     hasMessages: boolean;
@@ -110,7 +110,7 @@ const ChatHeader: FC<ChatHeaderProps> = ({
 
             {hasMessages && isHeaderMinimized && (
                 <button className='header-btn expand-header-btn' onClick={onExpandHeader} title='Show header'>
-                    <SelectArrowDownIcon />
+                    <ExpandArrowDownIcon />
                 </button>
             )}
         </>
