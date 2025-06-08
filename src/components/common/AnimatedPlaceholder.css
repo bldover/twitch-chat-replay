@@ -1,0 +1,14 @@
+.animated-placeholder {
+    position: absolute;
+    left: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+    font-size: 1em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 40px);
+}

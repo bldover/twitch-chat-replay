@@ -1,0 +1,63 @@
+.url-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+}
+
+.url-input-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.url-input-label {
+    color: var(--text-primary);
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+.url-input-container {
+    position: relative;
+}
+
+.url-input-field {
+    background-color: var(--bg-quaternary);
+    border: 2px solid var(--border-primary);
+    border-radius: 8px;
+    color: var(--text-primary);
+    padding: 16px 20px;
+    font-size: 1em;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.url-input-field::placeholder {
+    color: var(--text-muted);
+}
+
+.url-input-field:focus {
+    outline: none;
+    border-color: var(--accent-purple);
+    background-color: var(--bg-input);
+    box-shadow: 0 0 0 3px var(--shadow-purple);
+}
+
+.url-input-field.error {
+    border-color: var(--text-red);
+    background-color: var(--bg-error);
+    animation: pulse-red 0.6s ease-in-out;
+}
+
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 0 0 var(--pulse-red-start);
+    }
+    50% {
+        box-shadow: 0 0 0 8px var(--pulse-red-mid);
+    }
+    100% {
+        box-shadow: 0 0 0 0 var(--pulse-red-end);
+    }
+}
