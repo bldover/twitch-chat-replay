@@ -1,41 +1,54 @@
-import './Settings.css'
-import { FC, useState, useEffect } from 'react'
-import { CloseIcon, SettingsIcon } from './common/Icons'
-import NumericStepper from './common/NumericStepper'
-import DropdownSelector from './common/DropdownSelector'
-import { getChatSelectionMode, setChatSelectionMode, getChatDelay, setChatDelay, getTheme, setTheme, getThemeDisplayName, CHAT_SELECTION_OPTIONS, THEME_OPTIONS, ChatSelectionMode } from '../utils/settings'
-import { Theme } from '../types'
+import './Settings.css';
+import { FC, useState, useEffect } from 'react';
+import { CloseIcon, SettingsIcon } from '../common/Icons';
+import { getChatSelectionMode, setChatSelectionMode, getChatDelay, setChatDelay, getTheme, setTheme, getBadgeSettings, setBadgeSettings, ChatSelectionMode, CHAT_SELECTION_OPTIONS, THEME_OPTIONS, getThemeDisplayName } from '../../utils/settings';
+import { Theme } from '../../types';
+import { BadgeSettings as BadgeSettingsType } from '../../utils/badges';
+import BadgeSettings from './BadgeSettings';
+import SettingItem from './SettingItem';
+import NumericStepper from './NumericStepper';
+import DropdownSelector from './DropdownSelector';
 
 interface SettingsModalProps {
     isOpen: boolean
     onClose: () => void
     updateChatDelay: (delay: number) => void
     updateTheme: (theme: Theme) => void
+    updateBadgeSettings?: (badges: BadgeSettingsType) => void
 }
 
-const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, updateTheme }) => {
+const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, updateTheme, updateBadgeSettings }) => {
     const [tempChatSelectionMode, setTempChatSelectionMode] = useState(getChatSelectionMode())
     const [originalChatSelectionMode, setOriginalChatSelectionMode] = useState(getChatSelectionMode())
     const [tempChatDelay, setTempChatDelay] = useState(getChatDelay())
     const [originalChatDelay, setOriginalChatDelay] = useState(getChatDelay())
     const [tempTheme, setTempTheme] = useState(getTheme())
     const [originalTheme, setOriginalTheme] = useState(getTheme())
+    const [tempBadgeSettings, setTempBadgeSettings] = useState(getBadgeSettings())
+    const [originalBadgeSettings, setOriginalBadgeSettings] = useState(getBadgeSettings())
 
     useEffect(() => {
         if (isOpen) {
             const currentMode = getChatSelectionMode()
             const currentDelay = getChatDelay()
             const currentTheme = getTheme()
+            const currentBadgeSettings = getBadgeSettings()
             setTempChatSelectionMode(currentMode)
             setOriginalChatSelectionMode(currentMode)
             setTempChatDelay(currentDelay)
             setOriginalChatDelay(currentDelay)
             setTempTheme(currentTheme)
             setOriginalTheme(currentTheme)
+            setTempBadgeSettings(currentBadgeSettings)
+            setOriginalBadgeSettings(currentBadgeSettings)
         }
     }, [isOpen])
 
     if (!isOpen) return null
+
+    const getAllChatSelectionDescriptions = (): string => {
+        return 'Manual: Manually browse and select chat files\nAutomatic Search: Automatically filter chats matching the selected video title\nAutomatic Selection: Automatically select the best matching chat (coming soon)';
+    };
 
     const handleChatSelectionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const newMode = event.target.value as ChatSelectionMode
@@ -51,12 +64,21 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
         setTempTheme(newTheme)
     }
 
+    const handleBadgeToggle = (key: keyof BadgeSettingsType) => {
+        setTempBadgeSettings(prev => ({
+            ...prev,
+            [key]: !prev[key]
+        }))
+    }
+
     const handleSave = () => {
         setChatSelectionMode(tempChatSelectionMode)
         setChatDelay(tempChatDelay)
         setTheme(tempTheme)
+        setBadgeSettings(tempBadgeSettings)
         updateChatDelay(tempChatDelay)
         updateTheme(tempTheme)
+        updateBadgeSettings?.(tempBadgeSettings)
         onClose()
     }
 
@@ -64,11 +86,8 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
         setTempChatSelectionMode(originalChatSelectionMode)
         setTempChatDelay(originalChatDelay)
         setTempTheme(originalTheme)
+        setTempBadgeSettings(originalBadgeSettings)
         onClose()
-    }
-
-    const getAllChatSelectionDescriptions = (): string => {
-        return 'Manual: Manually browse and select chat files\nAutomatic Search: Automatically filter chats matching the selected video title\nAutomatic Selection: Automatically select the best matching chat (coming soon)'
     }
 
     return (
@@ -82,15 +101,24 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                     <button className='settings-modal-close' onClick={handleDiscard}><CloseIcon /></button>
                 </div>
                 <div className='settings-modal-content'>
-                    <div className='setting-item'>
-                        <div className='setting-label'>
-                            <span
-                                className='setting-name'
-                                title={getAllChatSelectionDescriptions()}
-                            >
-                                Chat Selection
-                            </span>
-                        </div>
+                    <SettingItem
+                        name='Theme'
+                        description='Color theme for the application'
+                    >
+                        <DropdownSelector
+                            value={tempTheme}
+                            onChange={handleThemeChange}
+                            name='themeDropdown'
+                            options={THEME_OPTIONS.map((theme) => ({
+                                value: theme,
+                                label: getThemeDisplayName(theme)
+                            }))}
+                        />
+                    </SettingItem>
+                    <SettingItem
+                        name='Chat Selection'
+                        description={getAllChatSelectionDescriptions()}
+                    >
                         <DropdownSelector
                             value={tempChatSelectionMode}
                             onChange={handleChatSelectionChange}
@@ -102,42 +130,27 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                                         'Automatic Selection'
                             }))}
                         />
-                    </div>
-                    <div className='setting-item'>
-                        <div className='setting-label'>
-                            <span
-                                className='setting-name'
-                                title='Choose the color theme for the application interface.'
-                            >
-                                Theme
-                            </span>
-                        </div>
-                        <DropdownSelector
-                            value={tempTheme}
-                            onChange={handleThemeChange}
-                            name='themeDropdown'
-                            options={THEME_OPTIONS.map((theme) => ({
-                                value: theme,
-                                label: getThemeDisplayName(theme)
-                            }))}
-                        />
-                    </div>
-                    <div className='setting-item'>
-                        <div className='setting-label'>
-                            <span
-                                className='setting-name'
-                                title='Delay in seconds to synchronize chat with video. Positive values delay chat, negative values advance chat.'
-                            >
-                                Chat Delay
-                            </span>
-                        </div>
+                    </SettingItem>
+                    <SettingItem
+                        name='Chat Delay'
+                        description='Offset the chat file from the video timestamp (in seconds)'
+                    >
                         <NumericStepper
                             value={tempChatDelay}
                             onChange={handleChatDelayChange}
                             name='chatDelayStepper'
                             step={1}
                         />
-                    </div>
+                    </SettingItem>
+                    <SettingItem
+                        name='Chat Badges'
+                        description='Show user badges before usernames in chat'
+                    >
+                        <BadgeSettings
+                            value={tempBadgeSettings}
+                            onChange={handleBadgeToggle}
+                        />
+                    </SettingItem>
                 </div>
                 <div className='settings-modal-footer'>
                     <button className='settings-btn settings-btn-discard' onClick={handleDiscard}>

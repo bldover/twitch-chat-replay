@@ -1,40 +1,67 @@
-import { ChatMessage, BadgeMap } from '../types';
+import { BadgeMap, BadgeSet, BadgeMaps, BadgeCategory } from '../types';
+import globalBadges from '../data/badges/global.json';
+import nlBadges from '../data/badges/northernlion.json';
 
-export type BadgeConfig = {
-    id: string;
-    version?: string;
-    title: string;
-    src: string;
-    type: string;
+export type BadgeSettings = {
+    showUserStates: boolean;
+    showDonations: boolean;
+    showSubTiers: boolean;
+    showPredictions: boolean;
+    showEvents: boolean;
 };
 
-export const hasBadge = (message: ChatMessage, badgeId: string, badgeVersion?: string): boolean => {
-    const badges = message.message.user_badges;
-    return !!(badges && badges.some((badge) =>
-        badge._id === badgeId && (!badgeVersion || badge.version === badgeVersion)
-    ));
+const createBadgeMapFromSets = (badgeSets: BadgeSet[]): BadgeMap => {
+    const badgeMap: BadgeMap = {};
+    badgeSets.forEach(badgeSet => {
+        badgeSet.versions.forEach(version => {
+            const key = `${badgeSet.set_id}#${version.id}`;
+            const category = getBadgeCategory(badgeSet.set_id);
+            badgeMap[key] = {
+                id: badgeSet.set_id,
+                version: version.id,
+                title: version.title,
+                src: version.image_url_1x,
+                category
+            };
+        });
+    });
+    return badgeMap;
 };
 
-export const getUserBadges = (message: ChatMessage, badgeMap: BadgeMap | null): BadgeConfig[] => {
-    if (!badgeMap || !message.message.user_badges) {
-        return [];
+export const populateBadgeData = async (): Promise<BadgeMaps> => {
+    const globalBadgeSets = globalBadges as BadgeSet[];
+    const nlBadgeSets = nlBadges as BadgeSet[];
+
+    const globalMap = createBadgeMapFromSets(globalBadgeSets);
+    const nlMap = createBadgeMapFromSets([...globalBadgeSets, ...nlBadgeSets]);
+
+    return {
+        global: globalMap,
+        nl: nlMap
+    };
+};
+
+const userTypeBadges: string[] = ['admin', 'staff', 'moderator', 'broadcaster', 'verified', 'vip', 'ambassador', 'turbo', 'premium', 'game-developer', 'global_mod', 'no_audio', 'no_video', 'partner', 'twitch-dj', 'twitchbot', 'artist-badge', 'extension', 'user_anniversary'];
+const donationBadges: string[] = ['bits', 'bits-leader', 'sub-gifter', 'sub-gift-leader', 'cheer', 'anonymous-cheerer', 'hype-train'];
+const subBadges: string[] = ['subscriber', 'founder'];
+const predictionBadges: string[] = ['predictions'];
+
+export const getBadgeCategory = (badgeId: string): BadgeCategory => {
+    if (userTypeBadges.includes(badgeId)) {
+        return 'user_states';
     }
 
-    const badges: BadgeConfig[] = [];
+    if (donationBadges.includes(badgeId)) {
+        return 'donations';
+    }
 
-    message.message.user_badges.forEach(userBadge => {
-        const key = `${userBadge._id}#${userBadge.version}`;
-        const badgeVersion = badgeMap[key];
-        if (badgeVersion) {
-            badges.push({
-                id: userBadge._id,
-                version: userBadge.version,
-                title: badgeVersion.title,
-                src: badgeVersion.image_url_1x,
-                type: 'twitch'
-            });
-        }
-    });
+    if (subBadges.includes(badgeId)) {
+        return 'sub_tiers';
+    }
 
-    return badges;
+    if (predictionBadges.includes(badgeId)) {
+        return 'predictions';
+    }
+
+    return 'events';
 };

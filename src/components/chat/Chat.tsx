@@ -1,19 +1,17 @@
 import './Chat.css'
 import { FC, useEffect, useRef } from 'react'
-import { ChatMessage as ChatMessageType, BttvEmoteMap, VodSummary, BadgeMaps } from '../../types'
+import { ChatMessage as ChatMessageType, BttvEmoteMap, VodSummary, BadgeMap } from '../../types'
 import ChatMessage from './ChatMessage'
-import { getBadgeMapForAuthor as getBadgeMap } from '../../api/badgeApi'
 
 type ChatProps = {
     chatMessages: ChatMessageType[],
     bttvEmotes: BttvEmoteMap | null,
-    badgeMaps: BadgeMaps | null,
-    broadcaster: string | null,
+    badgeMap: BadgeMap | null,
     selectedVod?: VodSummary | null,
     isVideoPlaying?: boolean
 }
 
-const Chat: FC<ChatProps> = ({ chatMessages, bttvEmotes, badgeMaps, broadcaster, selectedVod, isVideoPlaying = false }) => {
+const Chat: FC<ChatProps> = ({ chatMessages, bttvEmotes, badgeMap, selectedVod, isVideoPlaying = false }) => {
 
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -22,8 +20,6 @@ const Chat: FC<ChatProps> = ({ chatMessages, bttvEmotes, badgeMaps, broadcaster,
     }
 
     useEffect(scrollToBottom, [chatMessages])
-
-    const badgeMap = getBadgeMap(badgeMaps, broadcaster || '')
 
     const shouldShowWaitingMessage = selectedVod && !isVideoPlaying && chatMessages.length === 0
 

@@ -1,10 +1,9 @@
 import allBttvEmotes from '../data/bttv/emotes.json';
 import { useState, useCallback, useEffect } from 'react';
-import { ChatMessage, BttvEmoteMap, VodSummary, ChatData, AllBttvEmotes, BadgeMaps, VodState } from '../types';
+import { ChatMessage, BttvEmoteMap, VodSummary, ChatData, AllBttvEmotes, VodState } from '../types';
 import { fetchVodSummaries } from '../api/vodApi';
 import { fetchChatMessages } from '../api/chatApi';
 import { fetchFunnyMoments } from '../api/funnyMomentApi';
-import { fetchBadgeData } from '../api/badgeApi';
 import { setQueryParam, getQueryParam } from '../utils/queryParams';
 
 interface VodDataState {
@@ -12,7 +11,6 @@ interface VodDataState {
     selectedVod: VodSummary | null;
     messages: ChatMessage[] | null;
     currentVodBttvEmotes: BttvEmoteMap | null;
-    badgeMaps: BadgeMaps | null;
     broadcaster: string | null;
 }
 
@@ -31,7 +29,6 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
         selectedVod: null,
         messages: null,
         currentVodBttvEmotes: null,
-        badgeMaps: null,
         broadcaster: null
     });
 
@@ -59,14 +56,6 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
         return resultMap;
     };
 
-    const loadBadgeData = useCallback((): void => {
-        if (state.badgeMaps) return;
-
-        console.debug('loadBadgeData');
-        fetchBadgeData()
-            .then((badgeMaps) => setState(prev => ({ ...prev, badgeMaps })))
-            .catch((err) => console.error('Loading badge data failed: ' + err));
-    }, [state.badgeMaps]);
 
     const loadChatMessages = useCallback((twitchId: string): void => {
         console.debug('loadChatMessages');
@@ -94,23 +83,21 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
         setState(prev => ({ ...prev, selectedVod: summary }));
         setQueryParam('twitchId', summary.id);
         if (state.selectedVod?.id !== summary.id) {
-            loadBadgeData();
             loadChatMessages(summary.id);
             loadFunnyMoments(summary.id);
         }
-    }, [state.selectedVod?.id, loadBadgeData, loadChatMessages, loadFunnyMoments]);
+    }, [state.selectedVod?.id, loadChatMessages, loadFunnyMoments]);
 
     const onUploadCustomVod = useCallback((json: ChatData): void => {
         console.debug('onUploadCustomVod');
         const sortedMessages = json.comments.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-        loadBadgeData();
         setState(prev => ({
             ...prev,
             messages: sortedMessages,
             broadcaster: json.video?.user_name || null,
             currentVodBttvEmotes: sortedMessages[0] ? findCorrectBttvEmotesForVod(sortedMessages[0].created_at) : null
         }));
-    }, [loadBadgeData]);
+    }, []);
 
     const resetSelectedChat = useCallback((): void => {
         console.debug('resetSelectedChat')
@@ -134,12 +121,11 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
             const matchingVod = state.vodSummaries.find(vod => vod.id === twitchId);
             if (matchingVod) {
                 setState(prev => ({ ...prev, selectedVod: matchingVod }));
-                loadBadgeData();
                 loadChatMessages(twitchId);
                 loadFunnyMoments(twitchId);
             }
         }
-    }, [state.vodSummaries, state.selectedVod?.id, loadBadgeData, loadChatMessages, loadFunnyMoments]);
+    }, [state.vodSummaries, state.selectedVod?.id, loadChatMessages, loadFunnyMoments]);
 
     return {
         state,

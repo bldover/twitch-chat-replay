@@ -2,9 +2,10 @@ import './ChatSidebar.css'
 import { FC, useState, useRef, useEffect } from 'react'
 import Chat from './Chat'
 import ChatSelector from './ChatSelector'
-import Settings from '../Settings'
+import Settings from '../settings/Settings'
 import ChatHeader from './ChatHeader'
-import { ChatMessage, VodSummary, VideoMetadata, ChatData, Theme, VodState } from '../../types'
+import { ChatMessage, VodSummary, VideoMetadata, ChatData, Theme, VodState, BadgeMap } from '../../types'
+import { BadgeSettings } from '../../utils/badges'
 
 interface ChatSidebarProps {
     vodState: VodState
@@ -16,6 +17,9 @@ interface ChatSidebarProps {
     isVideoPlaying?: boolean
     updateChatDelay: (delay: number) => void
     updateTheme: (theme: Theme) => void
+    badgeSettings: BadgeSettings
+    updateBadgeSettings: (badges: BadgeSettings) => void
+    badgeMap: BadgeMap | null
 }
 
 const ChatSidebar: FC<ChatSidebarProps> = ({
@@ -27,7 +31,10 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     videoMetadata,
     isVideoPlaying = false,
     updateChatDelay,
-    updateTheme
+    updateTheme,
+    badgeSettings,
+    updateBadgeSettings,
+    badgeMap
 }) => {
     const [isHeaderMinimized, setIsHeaderMinimized] = useState(false)
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -102,8 +109,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                     <Chat
                         chatMessages={messagesToRender}
                         bttvEmotes={vodState.currentVodBttvEmotes}
-                        badgeMaps={vodState.badgeMaps}
-                        broadcaster={vodState.broadcaster}
+                        badgeMap={badgeMap}
                         selectedVod={vodState.selectedVod}
                         isVideoPlaying={isVideoPlaying}
                     />
@@ -122,6 +128,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                 onClose={handleCloseSettings}
                 updateChatDelay={updateChatDelay}
                 updateTheme={updateTheme}
+                updateBadgeSettings={updateBadgeSettings}
             />
         </div>
     )

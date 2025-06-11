@@ -16,7 +16,7 @@
     border: 1px solid var(--border-purple);
     border-radius: 8px;
     max-width: 400px;
-    overflow: hidden;
+    overflow: visible;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -70,29 +70,7 @@
     padding: 20px;
     align-content: space-between;
     gap: 16px;
-}
-
-.setting-item {
-    display: flex;
-    align-items: center;
-    height: 32px;
-}
-
-.setting-label {
-    display: flex;
-    min-width: 50%;
-}
-
-.setting-name {
-    color: var(--text-primary);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: help;
-}
-
-.setting-input:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--shadow-purple-medium);
+    overflow: visible;
 }
 
 .settings-modal-footer {

@@ -100,13 +100,23 @@ export interface BadgeSet {
     versions: BadgeVersion[];
 }
 
+export interface BadgeConfig {
+    id: string;
+    version?: string;
+    title: string;
+    src: string;
+    category: BadgeCategory;
+}
+
+export type BadgeCategory = 'user_states' | 'donations' | 'sub_tiers' | 'predictions' | 'events';
+
 export interface BadgeMap {
-    [key: string]: BadgeVersion;
+    [key: string]: BadgeConfig;
 }
 
 export interface BadgeMaps {
     global: BadgeMap;
-    globalPlusNorthernlion: BadgeMap;
+    nl: BadgeMap;
 }
 
 export interface VodState {
@@ -114,7 +124,6 @@ export interface VodState {
     selectedVod: VodSummary | null;
     messages: ChatMessage[] | null;
     currentVodBttvEmotes: BttvEmoteMap | null;
-    badgeMaps: BadgeMaps | null;
     broadcaster: string | null;
 }
 

@@ -1,4 +1,5 @@
 import { Theme } from '../types'
+import { BadgeSettings } from './badges'
 
 export const CHAT_SELECTION_OPTIONS = [
     'manual',
@@ -18,12 +19,20 @@ export interface AppSettings {
     chatSelection: ChatSelectionMode
     chatDelay: number
     theme: Theme
+    badges: BadgeSettings
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
     chatSelection: 'manual',
     chatDelay: 0,
-    theme: 'ttv'
+    theme: 'ttv',
+    badges: {
+        showUserStates: true,
+        showDonations: true,
+        showSubTiers: true,
+        showPredictions: true,
+        showEvents: true
+    }
 }
 
 const SETTINGS_KEY = 'twitch-chat-replay-settings'
@@ -81,7 +90,7 @@ export const setTheme = (theme: Theme): void => {
 export const getThemeDisplayName = (theme: Theme): string => {
     switch (theme) {
         case 'ttv':
-            return 'Twitch TV'
+            return 'Twitch'
         case 'midnight':
             return 'Midnight'
         case 'light':
@@ -89,4 +98,13 @@ export const getThemeDisplayName = (theme: Theme): string => {
         default:
             return 'Dark'
     }
+}
+
+export const getBadgeSettings = (): BadgeSettings => {
+    const settings = getSettings()
+    return settings.badges
+}
+
+export const setBadgeSettings = (badges: BadgeSettings): void => {
+    setSetting('badges', badges)
 }

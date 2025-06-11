@@ -1,4 +1,4 @@
-import { MinusIcon, PlusIcon } from './Icons';
+import { MinusIcon, PlusIcon } from '../common/Icons';
 import './NumericStepper.css';
 import { FC, useState, useEffect } from 'react';
 

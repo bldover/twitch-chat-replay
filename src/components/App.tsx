@@ -4,6 +4,7 @@ import ChatSidebar from './chat/ChatSidebar'
 import { useChatSync } from '../hooks/useChatSync'
 import { useVideoPlayer } from '../hooks/useVideoPlayer'
 import { useVodData } from '../hooks/useVodData'
+import { useBadges } from '../hooks/useBadges'
 import { YouTubeEvent } from 'react-youtube'
 import { useState, useEffect } from 'react'
 import { getTheme } from '../utils/settings'
@@ -13,6 +14,7 @@ function App() {
     const { videoState, selectVideo, videoHandlers, setFunnyMoments, resetVideo } = useVideoPlayer()
     const { state: vodState, selectChat, onUploadCustomVod, resetSelectedChat } = useVodData(setFunnyMoments)
     const { messagesToRender, chatEnabled, resetChat, updateChatDelay } = useChatSync(vodState.messages, videoState)
+    const { badgeMap, badgeSettings, updateBadgeSettings } = useBadges(vodState.broadcaster)
     const [currentTheme, setCurrentTheme] = useState<Theme>(getTheme())
 
     useEffect(() => {
@@ -66,6 +68,9 @@ function App() {
                     isVideoPlaying={chatEnabled}
                     updateChatDelay={updateChatDelay}
                     updateTheme={handleThemeUpdate}
+                    badgeSettings={badgeSettings}
+                    updateBadgeSettings={updateBadgeSettings}
+                    badgeMap={badgeMap}
                 />
             </div>
         </div>

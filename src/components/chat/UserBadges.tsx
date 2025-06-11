@@ -1,7 +1,6 @@
 import './UserBadges.css';
 import { FC } from 'react';
 import { ChatMessage, BadgeMap } from '../../types';
-import { getUserBadges } from '../../utils/badges';
 
 type UserBadgesProps = {
     message: ChatMessage;
@@ -9,7 +8,16 @@ type UserBadgesProps = {
 };
 
 const UserBadges: FC<UserBadgesProps> = ({ message, badgeMap }) => {
-    const badges = getUserBadges(message, badgeMap);
+    if (!badgeMap || !message.message.user_badges) {
+        return null;
+    }
+
+    const badges = message.message.user_badges
+        .map(userBadge => {
+            const key = `${userBadge._id}#${userBadge.version}`;
+            return badgeMap[key] || null;
+        })
+        .filter((badge): badge is NonNullable<typeof badge> => badge !== null);
 
     if (badges.length === 0) {
         return null;
