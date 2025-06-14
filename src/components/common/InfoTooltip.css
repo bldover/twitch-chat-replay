@@ -41,7 +41,7 @@
     word-wrap: break-word;
 }
 
-.tooltip-content::after {
+.tooltip-content::before {
     content: '';
     position: absolute;
     top: 100%;
@@ -51,7 +51,7 @@
     border-top-color: var(--border-primary);
 }
 
-.tooltip-content::before {
+.tooltip-content::after {
     content: '';
     position: absolute;
     top: 100%;
@@ -60,4 +60,4 @@
     margin-top: -1px;
     border: 5px solid transparent;
     border-top-color: var(--bg-dark);
-}
+} 

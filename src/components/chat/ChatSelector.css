@@ -1,35 +1,3 @@
-.seen-upload-chat-file-button {
-    font-size: 1em;
-}
-
-.hidden-upload-chat-file-button {
-    display: none;
-}
-
-.chat-search-box {
-    margin-top: 2px;
-    padding-bottom: 2px;
-    padding-top: 2px;
-    font-size: 1em;
-    text-align: center;
-    width: 50%;
-}
-
-.search-form {
-    background-color: var(--chat-search-bg);
-    padding-bottom: 10px;
-    padding-top: 10px;
-    width: 100%;
-    height: 100px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.search-form p {
-    line-height: 0;
-}
-
 .chat-selector {
     display: flex;
     flex-direction: column;

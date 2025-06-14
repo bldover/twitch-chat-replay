@@ -65,7 +65,6 @@ const ExpandableChecklist: FC<ExpandableChecklistProps> = ({ options, onChange }
     const handleSelectAllChange = () => {
         const shouldCheckAll = !allChecked;
 
-        // Toggle all options to match the desired state
         options.forEach(option => {
             if (option.checked !== shouldCheckAll) {
                 onChange(option.key);
@@ -80,8 +79,8 @@ const ExpandableChecklist: FC<ExpandableChecklistProps> = ({ options, onChange }
     };
 
     return (
-        <div className='expandable-checklist' ref={containerRef}>
-            <div className='expandable-checklist-trigger' onClick={toggleExpanded} onKeyDown={handleKeyDown} tabIndex={0}>
+        <div className='expandable-checklist-container' ref={containerRef}>
+            <div className='expandable-checklist' onClick={toggleExpanded} onKeyDown={handleKeyDown} tabIndex={0}>
                 <span className='expandable-checklist-status'>{status}</span>
                 <span className={`expandable-checklist-arrow ${isExpanded ? 'expanded' : ''}`}>
                     <SelectArrowDownIcon />

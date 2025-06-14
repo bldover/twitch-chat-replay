@@ -3,7 +3,7 @@
     position: relative;
 }
 
-.dropdown-selector-trigger {
+.dropdown-selector {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -22,7 +22,7 @@
     position: relative;
 }
 
-.dropdown-selector-trigger:focus {
+.dropdown-selector:focus {
     outline: none;
     border-color: var(--accent-purple);
     box-shadow: 0 0 0 2px var(--shadow-purple-medium);

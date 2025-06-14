@@ -60,10 +60,10 @@ const DropdownSelector: FC<DropdownSelectorProps> = ({
 
     return (
         <div className={`dropdown-selector-container ${className}`.trim()} ref={containerRef}>
-            <div 
-                className='dropdown-selector-trigger' 
-                onClick={toggleExpanded} 
-                onKeyDown={handleKeyDown} 
+            <div
+                className='dropdown-selector'
+                onClick={toggleExpanded}
+                onKeyDown={handleKeyDown}
                 tabIndex={0}
             >
                 <span className='dropdown-selector-value'>{selectedLabel}</span>

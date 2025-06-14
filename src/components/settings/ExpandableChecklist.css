@@ -1,9 +1,9 @@
-.expandable-checklist {
+.expandable-checklist-container {
     min-width: 50%;
     position: relative;
 }
 
-.expandable-checklist-trigger {
+.expandable-checklist {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -22,7 +22,7 @@
     position: relative;
 }
 
-.expandable-checklist-trigger:focus {
+.expandable-checklist:focus {
     outline: none;
     border-color: var(--accent-purple);
     box-shadow: 0 0 0 2px var(--shadow-purple-medium);
