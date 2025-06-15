@@ -8,13 +8,13 @@
     position: fixed;
     bottom: 20px;
     left: 20px;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     text-decoration: none;
     font-size: 1em;
     padding: 6px 12px;
     border-radius: 4px;
     transition: all 0.2s ease;
-    background-color: var(--bg-tertiary);
+    background-color: var(--button-primary);
     border: 1px solid var(--border-primary);
     z-index: 100;
     opacity: 0.7;
@@ -22,7 +22,11 @@
 
 .source-code-link:hover {
     opacity: 1;
-    color: var(--text-primary);
-    background-color: var(--bg-quaternary);
-    border-color: var(--border-secondary);
+    background-color: var(--button-primary-hover);
+    border-color: var(--border-primary-hover);
+}
+
+.source-code-link:active {
+    background-color: var(--button-primary-input-active);
+    border-color: var(--border-primary-focus);
 }

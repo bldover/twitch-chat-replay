@@ -1,6 +1,5 @@
 .chat-header {
-    background-color: var(--bg-tertiary);
-    border-bottom: 1px solid var(--border-dark);
+    background-color: var(--bg-primary);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -23,7 +22,7 @@
 }
 
 .header-search {
-    background-color: var(--bg-quaternary);
+    background-color: var(--bg-primary-input);
     border: 1px solid var(--border-primary);
     border-radius: 4px;
     color: var(--text-primary);
@@ -34,17 +33,17 @@
 }
 
 .header-search::placeholder {
-    color: var(--text-muted);
+    color: var(--text-secondary);
 }
 
 .header-search:focus {
     outline: none;
-    border-color: var(--border-tertiary);
-    background-color: var(--bg-input);
+    border-color: var(--border-primary-focus);
+    background-color: var(--bg-primary-input-focus);
 }
 
 .header-btn {
-    background-color: var(--interactive-bg);
+    background-color: var(--button-primary);
     border: 1px solid var(--border-primary);
     border-radius: 4px;
     color: var(--text-primary);
@@ -59,24 +58,18 @@
 }
 
 .header-btn:hover {
-    background-color: var(--interactive-bg-hover);
-    border-color: var(--border-secondary);
+    background-color: var(--button-primary-hover);
+    border-color: var(--border-primary-hover);
 }
 
-.header-btn-close {
-    background-color: var(--interactive-bg-close);
-    border-color: var(--border-red);
-}
-
-.header-btn-close:hover {
-    background-color: var(--interactive-bg-close-hover);
-    border-color: var(--border-red-hover);
+.header-btn:active {
+    background-color: var(--button-primary-active);
 }
 
 .expand-header-btn {
     position: absolute;
     top: 5px;
     right: 12px;
-    background-color: var(--bg-tertiary);
+    background-color: var(--bg-primary);
     z-index: 10;
 }

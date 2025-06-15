@@ -9,8 +9,8 @@
     align-items: center;
     padding: 6px 12px;
     padding-right: 32px;
-    background-color: var(--bg-purple-medium);
-    border: 1px solid var(--border-purple);
+    background-color: var(--bg-primary-input);
+    border: 1px solid var(--border-primary);
     border-radius: 4px;
     color: var(--text-primary);
     font-size: 14px;
@@ -24,8 +24,8 @@
 
 .dropdown-selector:focus {
     outline: none;
-    border-color: var(--accent-purple);
-    box-shadow: 0 0 0 2px var(--shadow-purple-medium);
+    border-color: var(--border-accent);
+    box-shadow: 0 0 0 2px var(--shadow-accent-medium);
 }
 
 .dropdown-selector-value {
@@ -38,7 +38,7 @@
     top: 0;
     width: 32px;
     height: 32px;
-    color: var(--text-secondary);
+    color: var(--icon-alt);
     pointer-events: none;
     display: flex;
     align-items: center;
@@ -58,8 +58,8 @@
     z-index: 1001;
     margin-top: 4px;
     padding: 0;
-    background-color: var(--bg-purple-medium);
-    border: 1px solid var(--border-purple);
+    background-color: var(--bg-primary-input);
+    border: 1px solid var(--border-primary);
     border-radius: 4px;
     box-shadow: 0 2px 8px var(--shadow-dark);
     max-height: 250px;
@@ -100,11 +100,6 @@
 }
 
 .dropdown-selector-option:hover {
-    background-color: var(--interactive-bg-hover);
-}
-
-.dropdown-selector-option.selected {
-    background-color: var(--interactive-bg-hover);
-    font-weight: 500;
+    background-color: var(--button-accent-hover);
 }
 

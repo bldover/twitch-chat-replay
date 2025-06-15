@@ -6,8 +6,8 @@
 }
 
 .numeric-stepper {
-    background-color: var(--bg-purple-medium);
-    border: 1px solid var(--border-purple);
+    background-color: var(--bg-primary-input);
+    border: 1px solid var(--border-primary);
     border-radius: 4px 0 0 4px;
     border-right: none;    
     color: var(--text-primary);
@@ -33,15 +33,16 @@
 }
 
 .numeric-stepper-container:focus-within {
-    box-shadow: 0 0 0 2px var(--shadow-purple-medium);
+    background-color: var(--bg-primary-input-focus);
+    box-shadow: 0 0 0 2px var(--shadow-accent-medium);
     border-radius: 4px;
-    border: 1px solid var(--accent-purple);
+    border: 1px solid var(--border-accent);
 }
 
 .numeric-stepper-button {
-    background-color: var(--bg-purple-medium);
-    border: 1px solid var(--border-purple);
-    color: var(--text-secondary);
+    background-color: var(--button-primary);
+    border: 1px solid var(--border-primary);
+    color: var(--icon-alt);
     cursor: pointer;
     width: 32px;
     height: 100%;
@@ -52,12 +53,12 @@
 }
 
 .numeric-stepper-button:hover {
-    background-color: var(--accent-purple-hover);
+    background-color: var(--button-accent-hover);
     color: var(--text-primary);
 }
 
 .numeric-stepper-button:active {
-    background-color: var(--accent-purple-dark);
+    background-color: var(--button-accent-active);
     color: var(--text-primary);
 }
 

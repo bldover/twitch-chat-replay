@@ -49,7 +49,7 @@
 }
 
 .toggle-switch input:checked + .toggle-slider {
-    background-color: var(--accent-purple);
+    background-color: var(--icon-accent);
 }
 
 .toggle-switch input:checked + .toggle-slider::before {

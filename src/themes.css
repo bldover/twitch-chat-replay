@@ -1,208 +1,103 @@
-/* Theme Color Scheme Definitions */
 :root {
-  /* Background Colors */
-  --bg-secondary: #222222; /* chat bg */
-  --bg-tertiary: #2a2a2a; /* chat header, header expand button, video input card, source code card */
-  --bg-quaternary: #333333; /* search bars, source code on hover */
-  --bg-input: #3a3a3a; /* search bars on focus  */
-  --bg-dark: #1a1a1a; /* tooltip bg */
-  --bg-purple-dark: #1f1925; /* settings bg */
-  --bg-purple-medium: #2a1f3d; /* settings header and settings buttons */
-  --bg-error: #3d1a1a; /* search error bg */
+    /* colors */
+    --grey-dk-2: #1a1a1a;
+    --grey-dk-1: #222222;     
+    --grey: #2a2a2a;
+    --grey-lt-1: #333333; 
+    --grey-lt-2: #3a3a3a;
+    --grey-lt-3: #444444;
+    --grey-lt-4:  #4a4a4a;
+    --grey-lt-5: #555555;
+    --grey-lt-6: #666666;
 
-  /* Border Colors */
-  --border-primary: #444444; /* chat header button border, tooltip border, settings discard hover border, source code border, video input card border, shuffle background, url input field border */
-  --border-secondary: #555555; /* header button border, settings discard, source code hover border */
-  --border-tertiary: #666666; /* chat header search focus */
-  --border-dark: #1a1a1a; /* chat header bottom border */
-  --border-red: #5a3a3a; /* chat header close button border */
-  --border-red-hover: #6a4a4a; /* chat header close button border hover */
-  --border-purple: #333333; /* settings border, settings header bottom border, setting buttons borders
+    --purple: #9147ff; 
+    --purple-dk-1: #7c3aed;
+    --purple-dk-2: #6d28d9;
+    --deep-purple: #2a1f3d;
+    --deep-purple-dk-1: #1f1925;
+    
+    --purple-alpha-10: #9147ff1a;
+    --purple-alpha-20: #9147ff33;
+    --purple-alpha-30: #9147ff4d;
+    
+    --white: #ffffff;
+    --white-dk-1: #d3d3d3;
+    --white-dk-2: #bfbfbf;
+    --white-muted: #888888;
+
+    --blue: #007acc;
+
+    --red: #ef4444;
+    --red-alpha-20: #ef444433;        
+    --red-alpha-40: #ef444466;
+    --dark-red: #3d1a1a;
+
+    --transparent: #00000000;
+    --alpha-70: #000000b3;
+    --alpha-30: #0000004d;     
+
+    /* color scheme */
+    --bg-main: linear-gradient(135deg, var(--deep-purple-dk-1) 0%, var(--deep-purple) 50%, var(--deep-purple-dk-1) 100%);
+    --bg-primary: var(--grey);
+    --bg-primary-alt: var(--grey-dk-1); 
+    --bg-primary-contrast: var(--grey-dk-2);
+    --bg-primary-input: var(--grey-lt-1);
+    --bg-primary-input-focus: var(--grey-lt-2); 
+
+    --bg-error: var(--dark-red);
+
+    --anim-pulse-error-start: var(--red-alpha-2);
+    --anim-pulse-error-mid: var(--red-alpha-1);
+    --anim-pulse-error-end: var(--red);
+
+    --button-primary: var(--grey-lt-1);
+    --button-primary-hover: var(--grey);
+    --button-primary-active: var(--grey-dk-1);
+    --button-accent: var(--purple);
+    --button-accent-hover: var(--purple-dk-1);
+    --button-accent-active: var(--purple-dk-2);
+    --button-contrast: var(--white);
+    --button-contrast-hover: var(--white-dk-1);
+    --button-contrast-active: var(--white-dk-2);
+    
+    --icon: var(--white);
+    --icon-alt: var(--white-muted);
+    --icon-accent: var(--purple);
+    
+    --border-primary: var(--grey-lt-3);
+    --border-primary-hover: var(--grey-lt-2);        
+    --border-primary-focus: var(--grey-lt-4);
+    --border-accent: var(--purple-dk-1);
+    --border-accent-hover: var(--purple-dk-2);
+
+    --text-title: var(--purple);
+    --text-primary: var(--white);
+    --text-secondary: var(--white-muted);
+    --text-dark: var(--grey-lt-5); 
+    --text-accent: var(--blue);
+    --text-error: var(--red); 
   
-  /* Text Colors */
-  --text-primary: #ffffff; /*settings close button color hover, settings title icons buttons, chat text, header icons, search text, tooltip text, source code text hover, video selector submit, toggle circle, URL input text and header */
-  --text-secondary: #9a97b8; /* settings close button color, settings item expand arrows, source link text, video input subtitle */
-  --text-muted: #888888; /* waiting vod title, search placeholders, info icons */
-  --text-dark: #666666; /* waiting vod message */
-  --text-accent: #007acc; /* match % */
-  --text-error: #ff4444; /* no vod found */
-  --text-red: #ef4444; /* video input error */
+    --scrollbar-thumb: var(--grey-lt-5);
+    --scrollbar-thumb-hover: var(--grey-lt-6);
   
-  /* Accent Colors */
-  --accent-purple: #9147ff; /* info icon hover, settings save button bg and border, settings all options hover border, checkbox, checklist separator, shuffle enable color, URL input focus border */
-  --accent-purple-hover: #7c3aed; /* settings save button hover bg and border, settings stepper button hover */
-  --accent-purple-dark: #6d28d9; /* settings stepper button active */
-  
-  /* Scrollbar Colors */
-  --scrollbar-thumb: #555555; /* scrollbar thumb and corners */
-  --scrollbar-thumb-hover: #666666; /* scrollbar thumb and corners hover */
-  
-  /* Interactive States */
-  --interactive-bg: #333333; /* header button bg, settings discard bg hover */
-  --interactive-bg-hover: #3a3a3a; /* header button bg hover, settings discard bg, settings options select hover */
-  --interactive-bg-close: #4a2a2a; /* header close button bg */
-  --interactive-bg-close-hover: #5a3a3a; /* header close button bg dover */
-  
-  /* Chat Colors */
-  --chat-button-bg: #ffffff; /* vod selection bg, vod selection active*/
-  --chat-button-bg-hover: #d3d3d3; /* vod selection hover */
-  
-  /* Shadow & Overlay Colors */
-  --overlay-dark: #000000b3; /* translucent settings surround */
-  --shadow-dark: #0000004d; /* tooltip shadow, settings shadow, video input card shadow, settings options content shadow */
-  --shadow-purple: #9147ff1a; /* URL input field focus glow */
-  --shadow-purple-medium: #9147ff33; /* settings options focus shadow, URL submit button glow normal and active */
-  --shadow-purple-strong: #9147ff4d; /* URL submit button glow focus */
-  --transparent: #00000000; /* hidden scrollbars */
-  
-  /* Gradient Colors */
-  --gradient-purple: linear-gradient(135deg, #9147ff, #7c3aed); /* title, URL submit button */
-  --gradient-purple-hover: linear-gradient(135deg, #7c3aed, #6d28d9); /* URL submit button hover */
-  --gradient-bg: linear-gradient(135deg, #1f1925 0%, #2a1f3d 50%, #1f1925 100%); /* main bg */
-  
-  /* Animation Colors */
-  --pulse-red-start: #ef444466; /* URL input error outline box shadow */
-  --pulse-red-mid: #ef444433;
-  --pulse-red-end: #ef444400;
+    --overlay-dark: var(--alpha-70);
+    --shadow-dark: var(--alpha-30);
+    --shadow-accent: var(--purple-alpha-10); 
+    --shadow-accent-medium: var(--purple-alpha-20);
+    --shadow-accent-strong: var(--purple-alpha-30);     
 }
 
 /* Dark Theme */
 [data-theme='ttv'] {
-  /* Inherits from :root */
+    /* Inherits from :root */
 }
 
 /* Midnight Theme */
 [data-theme='midnight'] {
-  /* Background Colors */
-  --bg-secondary: #151515;
-  --bg-tertiary: #1a1a1a;
-  --bg-quaternary: #202020;
-  --bg-input: #252525;
-  --bg-dark: #0f0f0f;
-  --bg-purple-dark: #12101a;
-  --bg-purple-medium: #1a1528;
-  --bg-error: #2a1010;
-  
-  /* Border Colors */
-  --border-primary: #2a2a2a;
-  --border-secondary: #353535;
-  --border-tertiary: #404040;
-  --border-dark: #0f0f0f;
-  --border-red: #4a2a2a;
-  --border-red-hover: #5a3a3a;
-  --border-purple: #1a1528;
-  
-  /* Text Colors */
-  --text-primary: #ffffff;
-  --text-secondary: #9a97b8;
-  --text-muted: #707070;
-  --text-dark: #505050;
-  --text-accent: #007acc;
-  --text-error: #ff4444;
-  --text-red: #ef4444;
-  
-  /* Accent Colors */
-  --accent-purple: #7c3aed;
-  --accent-purple-hover: #6d28d9;
-  --accent-purple-dark: #5b21b6;
-  
-  /* Scrollbar Colors */
-  --scrollbar-thumb: #353535;
-  --scrollbar-thumb-hover: #404040;
-  
-  /* Interactive States*/
-  --interactive-bg: #202020;
-  --interactive-bg-hover: #252525;
-  --interactive-bg-close: #3a2020;
-  --interactive-bg-close-hover: #4a2a2a;
-  
-  /* Chat Colors */
-  --chat-button-bg: #ffffff;
-  --chat-button-bg-hover: #d3d3d3;
-  
-  /* Shadow & Overlay Colors */
-  --overlay-dark: #000000cc;
-  --shadow-dark: #00000066;
-  --shadow-purple: #7c3aed1a;
-  --shadow-purple-medium: #7c3aed33;
-  --shadow-purple-strong: #7c3aed4d;
-  --transparent: #00000000;
-  
-  /* Gradient Colors */
-  --gradient-purple: linear-gradient(135deg, #7c3aed, #6d28d9);
-  --gradient-purple-hover: linear-gradient(135deg, #6d28d9, #5b21b6);
-  --gradient-bg: linear-gradient(135deg, #12101a 0%, #1a1528 50%, #12101a 100%);
-  
-  /* Animation Colors */
-  --pulse-red-start: #ef444466;
-  --pulse-red-mid: #ef444433;
-  --pulse-red-end: #ef444400;
+
 }
 
 /* Light Theme */
 [data-theme='light'] {
-  /* Background Colors */
-  --bg-secondary: #f8f9fa;
-  --bg-tertiary: #e9ecef;
-  --bg-quaternary: #dee2e6;
-  --bg-input: #ffffff;
-  --bg-dark: #6c757d;
-  --bg-purple-dark: #f3f0ff;
-  --bg-purple-medium: #e9e3ff;
-  --bg-error: #fff5f5;
-  
-  /* Border Colors */
-  --border-primary: #e2e8f0;
-  --border-secondary: #cbd5e0;
-  --border-tertiary: #a0aec0;
-  --border-dark: #4a5568;
-  --border-red: #fc8181;
-  --border-red-hover: #f56565;
-  --border-purple: #d6bcfa;
-  
-  /* Text Colors */
-  --text-primary: #2d3748;
-  --text-secondary: #4a5568;
-  --text-muted: #718096;
-  --text-dark: #1a202c;
-  --text-accent: #3182ce;
-  --text-error: #e53e3e;
-  --text-red: #e53e3e;
-  
-  /* Accent Colors */
-  --accent-purple: #a78bfa;
-  --accent-purple-hover: #9363ea;
-  --accent-purple-dark: #7c3aed;
-  
-  /* Scrollbar Colors */
-  --scrollbar-thumb: #cbd5e0;
-  --scrollbar-thumb-hover: #a0aec0;
-  
-  /* Interactive States */
-  --interactive-bg: #f7fafc;
-  --interactive-bg-hover: #edf2f7;
-  --interactive-bg-close: #fff5f5;
-  --interactive-bg-close-hover: #fed7d7;
-  
-  /* Chat Colors */
-  --chat-button-bg: #c4b5fd;
-  --chat-button-bg-hover: #a78bfa;
-  
-  /* Shadow & Overlay Colors */
-  --overlay-dark: #0000004d;
-  --shadow-dark: #0000001a;
-  --shadow-purple: #a78bfa1a;
-  --shadow-purple-medium: #a78bfa33;
-  --shadow-purple-strong: #a78bfa4d;
-  --transparent: #00000000;
-  
-  /* Gradient Colors */
-  --gradient-purple: linear-gradient(135deg, #c4b5fd, #a78bfa);
-  --gradient-purple-hover: linear-gradient(135deg, #a78bfa, #9333ea);
-  --gradient-bg: linear-gradient(135deg, #f3f0ff 0%, #e9e3ff 50%, #f3f0ff 100%);
-  
-  /* Animation Colors */
-  --pulse-red-start: #e53e3e66;
-  --pulse-red-mid: #e53e3e33;
-  --pulse-red-end: #e53e3e00;
+
 }

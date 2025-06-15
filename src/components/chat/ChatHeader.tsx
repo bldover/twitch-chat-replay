@@ -101,7 +101,7 @@ const ChatHeader: FC<ChatHeaderProps> = ({
                         <button className='header-btn' onClick={onSettingsClick} title='Settings'>
                             <SettingsIcon />
                         </button>
-                        <button className='header-btn header-btn-close' onClick={resetFunction} title='Close'>
+                        <button className='header-btn' onClick={resetFunction} title='Close'>
                             <CloseIcon />
                         </button>
                     </div>

@@ -18,7 +18,7 @@
     font-weight: bold;
     margin-bottom: 10px;
     text-align: center;
-    color: var(--text-muted);
+    color: var(--text-secondary);
 }
 
 .waiting-instruction {

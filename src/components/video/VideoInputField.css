@@ -22,7 +22,7 @@
 }
 
 .url-input-field {
-    background-color: var(--bg-quaternary);
+    background-color: var(--bg-primary-input);
     border: 2px solid var(--border-primary);
     border-radius: 8px;
     color: var(--text-primary);
@@ -34,30 +34,30 @@
 }
 
 .url-input-field::placeholder {
-    color: var(--text-muted);
+    color: var(--text-secondary);
 }
 
 .url-input-field:focus {
     outline: none;
-    border-color: var(--accent-purple);
-    background-color: var(--bg-input);
-    box-shadow: 0 0 0 3px var(--shadow-purple);
+    border-color: var(--border-accent);
+    background-color: var(--bg-primary-input-focus);
+    box-shadow: 0 0 0 3px var(--shadow-accent);
 }
 
 .url-input-field.error {
-    border-color: var(--text-red);
+    border-color: var(--text-error);
     background-color: var(--bg-error);
-    animation: pulse-red 0.6s ease-in-out;
+    animation: pulse-error 0.6s ease-in-out;
 }
 
-@keyframes pulse-red {
+@keyframes pulse-error {
     0% {
-        box-shadow: 0 0 0 0 var(--pulse-red-start);
+        box-shadow: 0 0 0 0 var(--anim-pulse-error-start);
     }
     50% {
-        box-shadow: 0 0 0 8px var(--pulse-red-mid);
+        box-shadow: 0 0 0 8px var(--anim-pulse-error-mid);
     }
     100% {
-        box-shadow: 0 0 0 0 var(--pulse-red-end);
+        box-shadow: 0 0 0 0 var(--anim-pulse-error-end);
     }
 }

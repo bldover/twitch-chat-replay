@@ -12,8 +12,8 @@
 }
 
 .settings-modal {
-    background-color: var(--bg-purple-dark);
-    border: 1px solid var(--border-purple);
+    background-color: var(--bg-primary-alt);
+    border: 1px solid var(--border-primary);
     border-radius: 8px;
     max-width: 400px;
     overflow: visible;
@@ -28,21 +28,22 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    border-bottom: 1px solid var(--border-purple);
-    background-color: var(--bg-purple-medium);
+    background-color: var(--bg-primary);
     border-radius: 8px 8px 0 0;
 }
 
 .settings-modal-title {
     display: flex;
     align-items: center;
+    text-align: center;    
     gap: 8px;
-    color: var(--text-primary);
+    color: var(--icon);
 }
 
 .settings-modal-header h3 {
     margin: 0;
     font-size: 18px;
+    color: var(--text-primary);    
 }
 
 .settings-modal-close {
@@ -75,7 +76,7 @@
     justify-content: flex-end;
     gap: 12px;
     padding: 10px 20px;
-    background-color: var(--bg-purple-medium);
+    background-color: var(--bg-primary);
     border-radius: 0 0 8px 8px;
 }
 
@@ -91,23 +92,32 @@
 }
 
 .settings-btn-discard {
-    background-color: var(--interactive-bg-hover);
+    background-color: var(--button-primary);
     color: var(--text-primary);
-    border-color: var(--border-secondary);
-}
-
-.settings-btn-discard:hover {
-    background-color: var(--interactive-bg);
     border-color: var(--border-primary);
 }
 
+.settings-btn-discard:hover {
+    background-color: var(--button-primary-hover);
+    border-color: var(--border-primary-hover);
+}
+
+.settings-btn-discard:active {
+    background-color: var(--button-primary-active);
+    border-color: var(--border-primary-active);
+}
+
 .settings-btn-save {
-    background-color: var(--accent-purple);
+    background-color: var(--button-accent);
     color: var(--text-primary);
-    border-color: var(--accent-purple);
+    border-color: var(--border-accent);
 }
 
 .settings-btn-save:hover {
-    background-color: var(--accent-purple-hover);
-    border-color: var(--accent-purple-hover);
+    background-color: var(--button-accent-hover);
+    border-color: var(--button-accent-hover);
+}
+
+.settings-btn-save:active {
+    background-color: var(--button-accent-active);
 }

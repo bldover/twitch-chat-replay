@@ -5,13 +5,13 @@
     justify-content: center;
     height: 100vh;
     width: 100%;
-    background: var(--gradient-bg);
+    background: var(--bg-main);
     box-sizing: border-box;
     padding: 20px;
 }
 
 .video-input-card {
-    background-color: var(--bg-tertiary);
+    background-color: var(--bg-primary);
     border: 1px solid var(--border-primary);
     border-radius: 12px;
     box-shadow: 0 8px 32px var(--shadow-dark);
@@ -26,14 +26,10 @@
 }
 
 .video-input-title {
-    color: var(--text-primary);
+    color: var(--text-title);
     font-size: 2.2em;
     font-weight: 600;
     margin-bottom: 12px;
-    background: var(--gradient-purple);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 .video-input-subtitle {
@@ -51,7 +47,7 @@
 }
 
 .submit-button {
-    background: var(--gradient-purple);
+    background: var(--button-accent);
     border: none;
     border-radius: 8px;
     color: var(--text-primary);
@@ -60,22 +56,23 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 16px var(--shadow-purple-medium);
+    box-shadow: 0 4px 16px var(--shadow-accent-medium);
 }
 
 .submit-button:hover {
-    background: var(--gradient-purple-hover);
+    background: var(--button-accent-hover);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px var(--shadow-purple-strong);
+    box-shadow: 0 6px 20px var(--shadow-accent-strong);
 }
 
 .submit-button:active {
     transform: translateY(0);
-    box-shadow: 0 2px 8px var(--shadow-purple-medium);
+    background: var(--button-accent-active);
+    box-shadow: 0 2px 8px var(--shadow-accent-medium);
 }
 
 .error-message {
-    color: var(--text-red);
+    color: var(--text-error);
     font-size: 0.9em;
     margin-top: 8px;
     text-align: left;
