@@ -82,7 +82,7 @@ export const VideoSelector: FC<VideoSelectorProps> = ({ onSubmit }) => {
             setHasError(true)
             setErrorMessage(result.errorMessage || 'Invalid YouTube URL format')
             setErrorField('url')
-            setTimeout(() => setHasError(false), 600)
+            setTimeout(() => setHasError(false), 800)
         }
     }
 

@@ -18,7 +18,9 @@ const SettingItem: FC<SettingItemProps> = ({ name, description, children }) => {
                     {name}
                 </span>
             </div>
-            {children}
+            <div className='setting-selector'>
+                {children}
+            </div>
         </div>
     );
 };

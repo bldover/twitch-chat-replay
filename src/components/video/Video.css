@@ -27,6 +27,5 @@
 }
 
 .source-code-link:active {
-    background-color: var(--button-primary-input-active);
-    border-color: var(--border-primary-focus);
+    background-color: var(--button-primary-active);
 }

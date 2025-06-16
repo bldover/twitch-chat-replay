@@ -1,6 +1,5 @@
 .expandable-checklist-container {
-    min-width: 50%;
-    position: relative;
+    position: relative;    
 }
 
 .expandable-checklist {
@@ -10,22 +9,15 @@
     padding: 6px 12px;
     padding-right: 32px;
     background-color: var(--bg-primary-input);
-    border: 1px solid var(--border-primary);
+    border: 1px solid var(--border-primary);    
     border-radius: 4px;
     color: var(--text-primary);
     font-size: 14px;
     cursor: pointer;
-    transition: all 0.2s ease;
     user-select: none;
     height: 32px;
     box-sizing: border-box;
     position: relative;
-}
-
-.expandable-checklist:focus {
-    outline: none;
-    border-color: var(--border-accent);
-    box-shadow: 0 0 0 2px var(--shadow-accent-medium);
 }
 
 .expandable-checklist-status {
