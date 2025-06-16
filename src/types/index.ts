@@ -119,6 +119,20 @@ export interface BadgeMaps {
     nl: BadgeMap;
 }
 
+export interface AutoSelectNotification {
+    vod: VodSummary;
+    matchPercent: number;
+}
+
+export type NotificationType = 'info' | 'error';
+
+export interface NotificationState {
+    type: 'auto-select' | 'waiting' | 'no-match' | null;
+    message: string;
+    details?: string;
+    notificationType: NotificationType;
+}
+
 export interface VodState {
     vodSummaries: VodSummary[];
     selectedVod: VodSummary | null;

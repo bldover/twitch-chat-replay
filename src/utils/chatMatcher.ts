@@ -1,4 +1,10 @@
 import { MatchingConfig, VideoMetadata, VodSummary } from '../types';
+import { AutoSelectConfig } from './settings';
+
+export interface AutoSelectResult {
+    shouldAutoSelect: boolean;
+    selectedVod?: VodSummary;
+}
 
 const MATCHING_CONFIG: MatchingConfig = {
     DURATION_TOLERANCE_PERCENT: 10,
@@ -112,4 +118,28 @@ export const filterAndRankChatOptions = (videoMetadata: VideoMetadata, vodSummar
     })).sort((a, b) => b.matchScore - a.matchScore)
 
     return rankedOptions
+}
+
+export const evaluateAutoSelection = (matches: VodSummary[], config: AutoSelectConfig): AutoSelectResult => {
+    if (matches.length === 0) {
+        return { shouldAutoSelect: false }
+    }
+
+    const sortedMatches = [...matches].sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0))
+    const bestMatch = sortedMatches[0]
+    const secondBestMatch = sortedMatches[1]
+    if (!bestMatch.matchScore || bestMatch.matchScore < config.minMatchThreshold) {
+        return { shouldAutoSelect: false }
+    }
+    if (sortedMatches.length === 1) {
+        return { shouldAutoSelect: true, selectedVod: bestMatch }
+    }
+
+    const secondBestScore = secondBestMatch?.matchScore || 0
+    const margin = bestMatch.matchScore - secondBestScore
+    if (margin >= config.matchMarginThreshold) {
+        return { shouldAutoSelect: true, selectedVod: bestMatch }
+    }
+
+    return { shouldAutoSelect: false }
 }

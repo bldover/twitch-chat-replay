@@ -22,9 +22,11 @@ const ChatSelector: FC<ChatSelectorProps> = ({ vodSummaries, onSelectKnownJson, 
     const getFilteredAndRankedSummaries = (): VodSummary[] => {
         if (!vodSummaries) return []
 
-        const isAutoSearchMode = getChatSelectionMode() === 'automatic-search'
+        const chatMode = getChatSelectionMode()
+        const isAutoSearchMode = chatMode === 'automatic-search'
+        const isAutoSelectMode = chatMode === 'automatic-selection'
 
-        if (searchFilter.length === 0 && isAutoSearchMode && videoMetadata) {
+        if (searchFilter.length === 0 && (isAutoSearchMode || isAutoSelectMode) && videoMetadata) {
             return filterAndRankChatOptions(videoMetadata, vodSummaries)
         } else {
             return vodSummaries.filter(filterFunction)
@@ -32,45 +34,34 @@ const ChatSelector: FC<ChatSelectorProps> = ({ vodSummaries, onSelectKnownJson, 
     }
 
     const getButtonText = function (summary: VodSummary) {
-        const isAutoSearchMode = getChatSelectionMode() === 'automatic-search'
+        const chatMode = getChatSelectionMode()
+        const isAutoMode = chatMode === 'automatic-search' || chatMode === 'automatic-selection'
         const hasMatchScore = typeof summary.matchScore === 'number'
 
         return <>
             <p className='chat-selection-button-title'>{summary.title}</p>
             <p>{summary.created_at.slice(0, 10)}</p>
             <p>{summary.duration}</p>
-            {isAutoSearchMode && hasMatchScore && (
+            {isAutoMode && hasMatchScore && (
                 <p className='match-score'>Match: {summary.matchScore}%</p>
             )}
         </>
     }
 
     const filteredSummaries = getFilteredAndRankedSummaries()
-    const isAutoSearchMode = getChatSelectionMode() === 'automatic-search'
-    const shouldShowNoMatchMessage = vodSummaries &&
-        filteredSummaries.length === 0 &&
-        searchFilter.length === 0 &&
-        isAutoSearchMode &&
-        videoMetadata
 
     return (
         <>
             {vodSummaries &&
                 <div className='chat-selector'>
-                    {shouldShowNoMatchMessage ? (
-                        <div className='no-match-message'>
-                            Unable to find any corresponding chats :(
-                        </div>
-                    ) : (
-                        filteredSummaries.map((summary) =>
-                            <button
-                                key={summary.id}
-                                className={'chat-selection-button'}
-                                onClick={() => onSelectKnownJson(summary)}
-                            >
-                                {getButtonText(summary)}
-                            </button>
-                        )
+                    {filteredSummaries.map((summary) =>
+                        <button
+                            key={summary.id}
+                            className={'chat-selection-button'}
+                            onClick={() => onSelectKnownJson(summary)}
+                        >
+                            {getButtonText(summary)}
+                        </button>
                     )}
                 </div>
             }

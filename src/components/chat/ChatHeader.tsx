@@ -12,7 +12,7 @@ interface ChatHeaderProps {
     onSettingsClick: () => void;
     onSearchFilterChange?: (filter: string) => void;
     onUploadCustomVod: (json: ChatData) => void;
-    resetFunction: () => void;
+    onReset: () => void;
 }
 
 const ChatHeader: FC<ChatHeaderProps> = ({
@@ -24,7 +24,7 @@ const ChatHeader: FC<ChatHeaderProps> = ({
     onSettingsClick,
     onSearchFilterChange,
     onUploadCustomVod,
-    resetFunction
+    onReset
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const showHeader = !hasMessages || !isHeaderMinimized;
@@ -101,7 +101,7 @@ const ChatHeader: FC<ChatHeaderProps> = ({
                         <button className='header-btn' onClick={onSettingsClick} title='Settings'>
                             <SettingsIcon />
                         </button>
-                        <button className='header-btn' onClick={resetFunction} title='Close'>
+                        <button className='header-btn' onClick={onReset} title='Close'>
                             <CloseIcon />
                         </button>
                     </div>

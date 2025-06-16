@@ -4,8 +4,11 @@ import Chat from './Chat'
 import ChatSelector from './ChatSelector'
 import Settings from '../settings/Settings'
 import ChatHeader from './ChatHeader'
-import { ChatMessage, VodSummary, VideoMetadata, ChatData, Theme, VodState, BadgeMap } from '../../types'
+import ChatNotification from './ChatNotification'
+import { ChatMessage, VodSummary, VideoMetadata, ChatData, Theme, VodState, BadgeMap, NotificationState } from '../../types'
 import { BadgeSettings } from '../../utils/badges'
+import { getChatSelectionMode, getAutoSelectConfig } from '../../utils/settings'
+import { filterAndRankChatOptions } from '../../utils/chatMatcher'
 
 interface ChatSidebarProps {
     vodState: VodState
@@ -17,31 +20,34 @@ interface ChatSidebarProps {
     isVideoPlaying?: boolean
     updateChatDelay: (delay: number) => void
     updateTheme: (theme: Theme) => void
-    badgeSettings: BadgeSettings
     updateBadgeSettings: (badges: BadgeSettings) => void
     badgeMap: BadgeMap | null
+    evaluateAutoSelect: (videoMetadata: VideoMetadata | null) => VodSummary | null
 }
 
 const ChatSidebar: FC<ChatSidebarProps> = ({
     vodState,
     messagesToRender,
-    resetFunction,
+    resetFunction: onReset,
     onSelectKnownVod,
     onUploadCustomVod,
     videoMetadata,
     isVideoPlaying = false,
     updateChatDelay,
     updateTheme,
-    badgeSettings,
     updateBadgeSettings,
-    badgeMap
+    badgeMap,
+    evaluateAutoSelect
 }) => {
     const [isHeaderMinimized, setIsHeaderMinimized] = useState(false)
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
     const [showScrollbar, setShowScrollbar] = useState(false)
     const [searchFilter, setSearchFilter] = useState<string>('')
+    const [startedPlaying, setStartedPlaying] = useState<boolean>(false)
+    const [autoSelectNotification, setAutoSelectNotification] = useState<{ vod: VodSummary; matchPercent: number } | null>(null)
     const hideScrollbarTimeoutRef = useRef<NodeJS.Timeout | null>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
+    const autoSelectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
     const hasMessages = vodState.messages !== null
 
@@ -80,11 +86,87 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
         }, 2000)
     }
 
+    const handleReset = () => {
+        setStartedPlaying(false)
+        setAutoSelectNotification(null)
+        onReset()
+    }
+
     useEffect(() => {
         if (!hasMessages && scrollContainerRef.current) {
             scrollContainerRef.current.scrollTop = 0
         }
     }, [hasMessages])
+
+    useEffect(() => {
+        console.log('isVideoPlaying: ', isVideoPlaying, ' startedPlaying: ', startedPlaying)
+        if (!startedPlaying && isVideoPlaying) {
+            setStartedPlaying(true)
+        }
+    }, [isVideoPlaying])
+
+    useEffect(() => {
+        if (videoMetadata && !vodState.selectedVod) {
+            const autoSelectedVod = evaluateAutoSelect(videoMetadata);
+
+            if (autoSelectedVod) {
+                setAutoSelectNotification({
+                    vod: autoSelectedVod,
+                    matchPercent: autoSelectedVod.matchScore || 0
+                });
+
+                const autoSelectConfig = getAutoSelectConfig();
+
+                autoSelectTimeoutRef.current = setTimeout(() => {
+                    setAutoSelectNotification(null);
+                    onSelectKnownVod(autoSelectedVod);
+                }, autoSelectConfig.autoSelectNotificationDuration * 1000);
+            }
+        }
+
+        return () => {
+            if (autoSelectTimeoutRef.current) {
+                clearTimeout(autoSelectTimeoutRef.current);
+                autoSelectTimeoutRef.current = null;
+            }
+        };
+    }, [videoMetadata, vodState.selectedVod, evaluateAutoSelect, onSelectKnownVod])
+
+    const getNotificationState = (): NotificationState | null => {
+        if (autoSelectNotification) {
+            return {
+                type: 'auto-select',
+                message: `${autoSelectNotification.vod.title}`,
+                details: `${autoSelectNotification.vod.created_at.slice(0, 10)} • Match: ${autoSelectNotification.matchPercent}%`,
+                notificationType: 'info'
+            };
+        }
+
+        if (vodState.selectedVod && !startedPlaying && hasMessages) {
+            console.log('waiting')
+            return {
+                type: 'waiting',
+                message: vodState.selectedVod.title,
+                details: 'Play a video to start the chat replay',
+                notificationType: 'info'
+            };
+        }
+
+        const chatMode = getChatSelectionMode();
+        const isAutoMode = chatMode === 'automatic-search' || chatMode === 'automatic-selection';
+        if (isAutoMode && videoMetadata && searchFilter.length === 0) {
+            const filteredSummaries = filterAndRankChatOptions(videoMetadata, vodState.vodSummaries);
+            if (filteredSummaries.length === 0) {
+                return {
+                    type: 'no-match',
+                    message: 'Unable to find any corresponding chats :(',
+                    notificationType: 'error'
+                };
+            }
+        }
+
+        return null;
+    };
 
     return (
         <div
@@ -101,26 +183,42 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                 onSettingsClick={handleSettingsClick}
                 onSearchFilterChange={setSearchFilter}
                 onUploadCustomVod={onUploadCustomVod}
-                resetFunction={resetFunction}
+                onReset={handleReset}
             />
 
             <div ref={scrollContainerRef} className={`chat-sidebar-content ${hasMessages ? 'chat-mode' : ''} ${showScrollbar ? 'scrollbar-visible' : ''}`}>
-                {hasMessages ? (
-                    <Chat
-                        chatMessages={messagesToRender}
-                        bttvEmotes={vodState.currentVodBttvEmotes}
-                        badgeMap={badgeMap}
-                        selectedVod={vodState.selectedVod}
-                        isVideoPlaying={isVideoPlaying}
-                    />
-                ) : (
-                    <ChatSelector
-                        vodSummaries={vodState.vodSummaries}
-                        onSelectKnownJson={handleSelectKnownVod}
-                        videoMetadata={videoMetadata}
-                        searchFilter={searchFilter}
-                    />
-                )}
+                {(() => {
+                    const notificationState = getNotificationState();
+
+                    if (notificationState) {
+                        return (
+                            <ChatNotification
+                                message={notificationState.message}
+                                details={notificationState.details}
+                                type={notificationState.notificationType}
+                            />
+                        );
+                    }
+
+                    if (hasMessages) {
+                        return (
+                            <Chat
+                                chatMessages={messagesToRender}
+                                bttvEmotes={vodState.currentVodBttvEmotes}
+                                badgeMap={badgeMap}
+                            />
+                        );
+                    }
+
+                    return (
+                        <ChatSelector
+                            vodSummaries={vodState.vodSummaries}
+                            onSelectKnownJson={handleSelectKnownVod}
+                            videoMetadata={videoMetadata}
+                            searchFilter={searchFilter}
+                        />
+                    );
+                })()}
             </div>
 
             <Settings

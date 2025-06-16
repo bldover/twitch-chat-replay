@@ -8,6 +8,8 @@ interface NumericStepperProps {
     name: string;
     step?: number;
     placeholder?: string;
+    min?: number;
+    max?: number;
 }
 
 const NumericStepper: FC<NumericStepperProps> = ({
@@ -15,9 +17,17 @@ const NumericStepper: FC<NumericStepperProps> = ({
     onChange,
     name,
     step = 1,
-    placeholder
+    placeholder,
+    min,
+    max
 }) => {
     const [displayValue, setDisplayValue] = useState<string>(value.toString());
+
+    const clampValue = (val: number): number => {
+        if (min !== undefined && val < min) return min;
+        if (max !== undefined && val > max) return max;
+        return val;
+    };
 
     useEffect(() => {
         setDisplayValue(value.toString());
@@ -33,29 +43,32 @@ const NumericStepper: FC<NumericStepperProps> = ({
 
         const newValue = parseFloat(inputValue);
         if (!isNaN(newValue)) {
-            onChange(newValue);
+            const clampedValue = clampValue(newValue);
+            onChange(clampedValue);
         }
     };
 
     const handleBlur = () => {
         if (displayValue === '' || isNaN(parseFloat(displayValue))) {
-            setDisplayValue('0');
-            onChange(0);
+            const defaultValue = clampValue(0);
+            setDisplayValue(defaultValue.toString());
+            onChange(defaultValue);
         } else {
             const numValue = parseFloat(displayValue);
-            setDisplayValue(numValue.toString());
-            onChange(numValue);
+            const clampedValue = clampValue(numValue);
+            setDisplayValue(clampedValue.toString());
+            onChange(clampedValue);
         }
     };
 
     const increment = () => {
-        const newValue = value + step;
+        const newValue = clampValue(value + step);
         onChange(newValue);
         setDisplayValue(newValue.toString());
     };
 
     const decrement = () => {
-        const newValue = value - step;
+        const newValue = clampValue(value - step);
         onChange(newValue);
         setDisplayValue(newValue.toString());
     };
@@ -66,6 +79,8 @@ const NumericStepper: FC<NumericStepperProps> = ({
                 type='number'
                 name={name}
                 step={step}
+                min={min}
+                max={max}
                 className='numeric-stepper'
                 value={displayValue}
                 onChange={handleInputChange}

@@ -1,7 +1,7 @@
 import './Settings.css';
 import { FC, useState, useEffect } from 'react';
 import { CloseIcon, SettingsIcon } from '../common/Icons';
-import { getChatSelectionMode, setChatSelectionMode, getChatDelay, setChatDelay, getTheme, setTheme, getBadgeSettings, setBadgeSettings, ChatSelectionMode, CHAT_SELECTION_OPTIONS, THEME_OPTIONS, getThemeDisplayName } from '../../utils/settings';
+import { getChatSelectionMode, setChatSelectionMode, getChatDelay, setChatDelay, getTheme, setTheme, getBadgeSettings, setBadgeSettings, getAutoSelectConfig, setAutoSelectConfig, ChatSelectionMode, CHAT_SELECTION_OPTIONS, THEME_OPTIONS, getThemeDisplayName, AutoSelectConfig } from '../../utils/settings';
 import { Theme } from '../../types';
 import { BadgeSettings as BadgeSettingsType } from '../../utils/badges';
 import BadgeSettings from './BadgeSettings';
@@ -26,6 +26,8 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
     const [originalTheme, setOriginalTheme] = useState(getTheme())
     const [tempBadgeSettings, setTempBadgeSettings] = useState(getBadgeSettings())
     const [originalBadgeSettings, setOriginalBadgeSettings] = useState(getBadgeSettings())
+    const [tempAutoSelectConfig, setTempAutoSelectConfig] = useState(getAutoSelectConfig())
+    const [originalAutoSelectConfig, setOriginalAutoSelectConfig] = useState(getAutoSelectConfig())
 
     useEffect(() => {
         if (isOpen) {
@@ -33,6 +35,7 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
             const currentDelay = getChatDelay()
             const currentTheme = getTheme()
             const currentBadgeSettings = getBadgeSettings()
+            const currentAutoSelectConfig = getAutoSelectConfig()
             setTempChatSelectionMode(currentMode)
             setOriginalChatSelectionMode(currentMode)
             setTempChatDelay(currentDelay)
@@ -41,13 +44,15 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
             setOriginalTheme(currentTheme)
             setTempBadgeSettings(currentBadgeSettings)
             setOriginalBadgeSettings(currentBadgeSettings)
+            setTempAutoSelectConfig(currentAutoSelectConfig)
+            setOriginalAutoSelectConfig(currentAutoSelectConfig)
         }
     }, [isOpen])
 
     if (!isOpen) return null
 
     const getAllChatSelectionDescriptions = (): string => {
-        return 'Manual: Manually browse and select chat files\nAutomatic Search: Automatically filter chats matching the selected video title\nAutomatic Selection: Automatically select the best matching chat (coming soon)';
+        return 'Manual: Manually browse and select chat files\nAutomatic Search: Automatically filter chats matching the selected video title\nAutomatic Selection: Automatically select the best matching chat based on configurable thresholds';
     };
 
     const handleChatSelectionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -71,11 +76,19 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
         }))
     }
 
+    const handleAutoSelectConfigChange = (key: keyof AutoSelectConfig, value: number) => {
+        setTempAutoSelectConfig(prev => ({
+            ...prev,
+            [key]: value
+        }))
+    }
+
     const handleSave = () => {
         setChatSelectionMode(tempChatSelectionMode)
         setChatDelay(tempChatDelay)
         setTheme(tempTheme)
         setBadgeSettings(tempBadgeSettings)
+        setAutoSelectConfig(tempAutoSelectConfig)
         updateChatDelay(tempChatDelay)
         updateTheme(tempTheme)
         updateBadgeSettings?.(tempBadgeSettings)
@@ -87,6 +100,7 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
         setTempChatDelay(originalChatDelay)
         setTempTheme(originalTheme)
         setTempBadgeSettings(originalBadgeSettings)
+        setTempAutoSelectConfig(originalAutoSelectConfig)
         onClose()
     }
 
@@ -142,6 +156,49 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                             step={1}
                         />
                     </SettingItem>
+                    {tempChatSelectionMode === 'automatic-selection' && (
+                        <>
+                            <SettingItem
+                                name='Min Match Threshold'
+                                description='Minimum match percentage required for automatic selection (0-100%)'
+                            >
+                                <NumericStepper
+                                    value={tempAutoSelectConfig.minMatchThreshold}
+                                    onChange={(value) => handleAutoSelectConfigChange('minMatchThreshold', value)}
+                                    name='minMatchThresholdStepper'
+                                    step={5}
+                                    min={0}
+                                    max={100}
+                                />
+                            </SettingItem>
+                            <SettingItem
+                                name='Match Margin Threshold'
+                                description='Required percentage gap between best and second best match (0-100%)'
+                            >
+                                <NumericStepper
+                                    value={tempAutoSelectConfig.matchMarginThreshold}
+                                    onChange={(value) => handleAutoSelectConfigChange('matchMarginThreshold', value)}
+                                    name='matchMarginThresholdStepper'
+                                    step={5}
+                                    min={0}
+                                    max={100}
+                                />
+                            </SettingItem>
+                            <SettingItem
+                                name='Notification Duration'
+                                description='How long to show the auto-selected chat notification (1-60 seconds)'
+                            >
+                                <NumericStepper
+                                    value={tempAutoSelectConfig.autoSelectNotificationDuration}
+                                    onChange={(value) => handleAutoSelectConfigChange('autoSelectNotificationDuration', value)}
+                                    name='notificationDurationStepper'
+                                    step={1}
+                                    min={1}
+                                    max={60}
+                                />
+                            </SettingItem>
+                        </>
+                    )}
                     <SettingItem
                         name='Chat Badges'
                         description='Show user badges before usernames in chat'

@@ -15,11 +15,18 @@ export const THEME_OPTIONS: Theme[] = [
 
 export type ChatSelectionMode = typeof CHAT_SELECTION_OPTIONS[number]
 
+export interface AutoSelectConfig {
+    minMatchThreshold: number
+    matchMarginThreshold: number
+    autoSelectNotificationDuration: number
+}
+
 export interface AppSettings {
     chatSelection: ChatSelectionMode
     chatDelay: number
     theme: Theme
     badges: BadgeSettings
+    autoSelectConfig: AutoSelectConfig
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -32,6 +39,11 @@ const DEFAULT_SETTINGS: AppSettings = {
         showSubTiers: true,
         showPredictions: true,
         showEvents: true
+    },
+    autoSelectConfig: {
+        minMatchThreshold: 40,
+        matchMarginThreshold: 15,
+        autoSelectNotificationDuration: 5
     }
 }
 
@@ -107,4 +119,13 @@ export const getBadgeSettings = (): BadgeSettings => {
 
 export const setBadgeSettings = (badges: BadgeSettings): void => {
     setSetting('badges', badges)
+}
+
+export const getAutoSelectConfig = (): AutoSelectConfig => {
+    const settings = getSettings()
+    return settings.autoSelectConfig
+}
+
+export const setAutoSelectConfig = (config: AutoSelectConfig): void => {
+    setSetting('autoSelectConfig', config)
 }

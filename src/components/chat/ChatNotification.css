@@ -1,0 +1,32 @@
+.chat-notification {
+    width: 100%;
+    padding: 40px 30px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    z-index: 100;
+}
+
+.chat-notification.visible {
+    opacity: 1;
+}
+
+.chat-notification.exiting {
+    opacity: 0;
+}
+
+.chat-notification-message {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.chat-notification-message.chat-notification-error {
+    color: var(--text-error);
+}
+
+.chat-notification-details {
+    font-size: 14px;
+    color: var(--text-dark);
+}

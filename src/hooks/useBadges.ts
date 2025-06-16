@@ -54,7 +54,6 @@ export const useBadges = (broadcaster: string | null) => {
 
     return {
         badgeMap: activeBadgeMap,
-        badgeSettings,
         updateBadgeSettings
     };
 };

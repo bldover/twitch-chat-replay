@@ -12,14 +12,15 @@ import { Theme } from '../types'
 
 function App() {
     const { videoState, selectVideo, videoHandlers, setFunnyMoments, resetVideo } = useVideoPlayer()
-    const { state: vodState, selectChat, onUploadCustomVod, resetSelectedChat } = useVodData(setFunnyMoments)
+    const { state: vodState, selectChat, onUploadCustomVod, resetSelectedChat, evaluateAutoSelect } = useVodData(setFunnyMoments)
     const { messagesToRender, chatEnabled, resetChat, updateChatDelay } = useChatSync(vodState.messages, videoState)
-    const { badgeMap, badgeSettings, updateBadgeSettings } = useBadges(vodState.broadcaster)
+    const { badgeMap, updateBadgeSettings } = useBadges(vodState.broadcaster)
     const [currentTheme, setCurrentTheme] = useState<Theme>(getTheme())
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', currentTheme)
     }, [currentTheme])
+
 
     const handleThemeUpdate = (theme: Theme) => {
         setCurrentTheme(theme)
@@ -68,9 +69,9 @@ function App() {
                     isVideoPlaying={chatEnabled}
                     updateChatDelay={updateChatDelay}
                     updateTheme={handleThemeUpdate}
-                    badgeSettings={badgeSettings}
                     updateBadgeSettings={updateBadgeSettings}
                     badgeMap={badgeMap}
+                    evaluateAutoSelect={evaluateAutoSelect}
                 />
             </div>
         </div>
