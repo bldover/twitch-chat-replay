@@ -21,6 +21,9 @@
         "jsx": "react-jsx"
     },
     "include": [
-        "src"
+        "src",
+        "../../.emacs.d/backups/!home!bldover!workspace!twitch-chat-replay!src!hooks!useVodSelector.ts~",
+        "../../.emacs.d/backups/!home!bldover!workspace!twitch-chat-replay!src!hooks!useVodSelection.ts~",
+        "../../.emacs.d/backups/!home!bldover!workspace!twitch-chat-replay!src!hooks!useVodSelection.ts~"
     ]
 }
