@@ -5,7 +5,7 @@ import ChatSelector from './ChatSelector'
 import Settings from '../settings/Settings'
 import ChatHeader from './ChatHeader'
 import ChatNotification from './ChatNotification'
-import { ChatMessage, VodSummary, VideoMetadata, ChatData, Theme, VodState, BadgeMap, NotificationState } from '../../types'
+import { ChatMessage, VodSummary, VideoMetadata, ChatData, Theme, VodState, BadgeMap, NotificationState, ChatPosition } from '../../types'
 import { BadgeSettings } from '../../utils/badges'
 import { getChatSelectionMode, getAutoSelectConfig } from '../../utils/settings'
 import { filterAndRankChatOptions } from '../../utils/chatMatcher'
@@ -20,6 +20,7 @@ interface ChatSidebarProps {
     isVideoPlaying?: boolean
     updateChatDelay: (delay: number) => void
     updateTheme: (theme: Theme) => void
+    updateChatPosition: (position: ChatPosition) => void
     updateBadgeSettings: (badges: BadgeSettings) => void
     badgeMap: BadgeMap | null
     evaluateAutoSelect: (videoMetadata: VideoMetadata | null) => VodSummary | null
@@ -35,6 +36,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     isVideoPlaying = false,
     updateChatDelay,
     updateTheme,
+    updateChatPosition,
     updateBadgeSettings,
     badgeMap,
     evaluateAutoSelect
@@ -108,7 +110,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
             const autoSelectedVod = evaluateAutoSelect(videoMetadata);
             if (autoSelectedVod) {
                 const autoSelectConfig = getAutoSelectConfig();
-                if (autoSelectConfig.showAutoSelectNotification) {
+                if (autoSelectConfig.autoSelectNotificationDuration > 0) {
                     setAutoSelectNotification({
                         vod: autoSelectedVod,
                         matchPercent: autoSelectedVod.matchScore || 0
@@ -122,11 +124,13 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     useEffect(() => {
         if (autoSelectNotification) {
             const autoSelectConfig = getAutoSelectConfig();
-            const timeoutId = setTimeout(() => {
-                setAutoSelectNotification(null);
-            }, autoSelectConfig.autoSelectNotificationDuration * 1000);
+            if (autoSelectConfig.autoSelectNotificationDuration > 0) {
+                const timeoutId = setTimeout(() => {
+                    setAutoSelectNotification(null);
+                }, autoSelectConfig.autoSelectNotificationDuration * 1000);
 
-            return () => clearTimeout(timeoutId);
+                return () => clearTimeout(timeoutId);
+            }
         }
     }, [autoSelectNotification])
 
@@ -224,6 +228,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                 onClose={handleCloseSettings}
                 updateChatDelay={updateChatDelay}
                 updateTheme={updateTheme}
+                updateChatPosition={updateChatPosition}
                 updateBadgeSettings={updateBadgeSettings}
             />
         </div>

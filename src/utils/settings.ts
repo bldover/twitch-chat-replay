@@ -12,17 +12,25 @@ export const THEME_OPTIONS: Theme[] = [
     'midnight'
 ]
 
+export const CHAT_POSITION_OPTIONS = [
+    'right',
+    'left',
+    'top',
+    'bottom'
+] as const
+
 export type ChatSelectionMode = typeof CHAT_SELECTION_OPTIONS[number]
+export type ChatPosition = typeof CHAT_POSITION_OPTIONS[number]
 
 export interface AutoSelectConfig {
     minMatchThreshold: number
     matchMarginThreshold: number
     autoSelectNotificationDuration: number
-    showAutoSelectNotification: boolean
 }
 
 export interface AppSettings {
     chatSelection: ChatSelectionMode
+    chatPosition: ChatPosition
     chatDelay: number
     theme: Theme
     badges: BadgeSettings
@@ -31,6 +39,7 @@ export interface AppSettings {
 
 const DEFAULT_SETTINGS: AppSettings = {
     chatSelection: 'manual',
+    chatPosition: 'right',
     chatDelay: 0,
     theme: 'ttv',
     badges: {
@@ -43,8 +52,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     autoSelectConfig: {
         minMatchThreshold: 40,
         matchMarginThreshold: 15,
-        autoSelectNotificationDuration: 5,
-        showAutoSelectNotification: true
+        autoSelectNotificationDuration: 5
     }
 }
 
@@ -127,4 +135,28 @@ export const getAutoSelectConfig = (): AutoSelectConfig => {
 
 export const setAutoSelectConfig = (config: AutoSelectConfig): void => {
     setSetting('autoSelectConfig', config)
+}
+
+export const getChatPosition = (): ChatPosition => {
+    const settings = getSettings()
+    return settings.chatPosition
+}
+
+export const setChatPosition = (position: ChatPosition): void => {
+    setSetting('chatPosition', position)
+}
+
+export const getChatPositionDisplayName = (position: ChatPosition): string => {
+    switch (position) {
+        case 'right':
+            return 'Right'
+        case 'left':
+            return 'Left'
+        case 'top':
+            return 'Top'
+        case 'bottom':
+            return 'Bottom'
+        default:
+            return 'Right'
+    }
 }

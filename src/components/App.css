@@ -1,14 +1,27 @@
 .App {
     min-height: 100vh;
     display: flex;
-    flex-direction: row;
     align-items: center;
     overflow: hidden;
 }
 
+.App.layout-row {
+    flex-direction: row;
+}
+
+.App.layout-row-reverse {
+    flex-direction: row-reverse;
+}
+
+.App.layout-column {
+    flex-direction: column;
+}
+
+.App.layout-column-reverse {
+    flex-direction: column-reverse;
+}
+
 .chat-container {
-    height: 100vh;
-    width: 350px;
     flex-shrink: 0;
     background-color: var(--bg-primary-alt);
     display: flex;
@@ -17,14 +30,36 @@
     font-weight: 400;
 }
 
-.player-container {
+.App.layout-row .chat-container,
+.App.layout-row-reverse .chat-container {
     height: 100vh;
+    width: 350px;
+}
+
+.App.layout-column .chat-container,
+.App.layout-column-reverse .chat-container {
+    width: 100vw;
+    height: 300px;
+}
+
+.player-container {
     overflow: hidden;
     flex-grow: 100;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.App.layout-row .player-container,
+.App.layout-row-reverse .player-container {
+    height: 100vh;
+}
+
+.App.layout-column .player-container,
+.App.layout-column-reverse .player-container {
+    width: 100vw;
+    height: calc(100vh - 300px);
 }
 
 .player-container iframe {

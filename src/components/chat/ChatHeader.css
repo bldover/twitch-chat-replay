@@ -68,8 +68,8 @@
 
 .expand-header-btn {
     position: absolute;
-    top: 5px;
-    right: 12px;
     background-color: var(--bg-primary);
     z-index: 10;
+    top: 5px;
+    right: 12px;    
 }

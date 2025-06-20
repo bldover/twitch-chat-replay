@@ -87,6 +87,8 @@ export type VideoPlayState = 'initializing' | 'idle' | 'playing' | 'paused' | 'e
 
 export type Theme = 'ttv' | 'midnight';
 
+export type ChatPosition = 'right' | 'left' | 'top' | 'bottom';
+
 export interface BadgeVersion {
     id: string;
     image_url_1x: string;

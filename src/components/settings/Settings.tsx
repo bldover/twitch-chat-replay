@@ -1,7 +1,7 @@
 import './Settings.css';
 import { FC, useState, useEffect } from 'react';
 import { CloseIcon, SettingsIcon } from '../common/Icons';
-import { getChatSelectionMode, setChatSelectionMode, getChatDelay, setChatDelay, getTheme, setTheme, getBadgeSettings, setBadgeSettings, getAutoSelectConfig, setAutoSelectConfig, ChatSelectionMode, CHAT_SELECTION_OPTIONS, THEME_OPTIONS, getThemeDisplayName, AutoSelectConfig } from '../../utils/settings';
+import { getChatSelectionMode, setChatSelectionMode, getChatPosition, setChatPosition, getChatDelay, setChatDelay, getTheme, setTheme, getBadgeSettings, setBadgeSettings, getAutoSelectConfig, setAutoSelectConfig, ChatSelectionMode, ChatPosition, CHAT_SELECTION_OPTIONS, CHAT_POSITION_OPTIONS, THEME_OPTIONS, getThemeDisplayName, getChatPositionDisplayName, AutoSelectConfig } from '../../utils/settings';
 import { Theme } from '../../types';
 import { BadgeSettings as BadgeSettingsType } from '../../utils/badges';
 import BadgeSettings from './BadgeSettings';
@@ -15,11 +15,14 @@ interface SettingsModalProps {
     updateChatDelay: (delay: number) => void
     updateTheme: (theme: Theme) => void
     updateBadgeSettings?: (badges: BadgeSettingsType) => void
+    updateChatPosition: (position: ChatPosition) => void
 }
 
-const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, updateTheme, updateBadgeSettings }) => {
+const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, updateTheme, updateBadgeSettings, updateChatPosition }) => {
     const [tempChatSelectionMode, setTempChatSelectionMode] = useState(getChatSelectionMode())
     const [originalChatSelectionMode, setOriginalChatSelectionMode] = useState(getChatSelectionMode())
+    const [tempChatPosition, setTempChatPosition] = useState(getChatPosition())
+    const [originalChatPosition, setOriginalChatPosition] = useState(getChatPosition())
     const [tempChatDelay, setTempChatDelay] = useState(getChatDelay())
     const [originalChatDelay, setOriginalChatDelay] = useState(getChatDelay())
     const [tempTheme, setTempTheme] = useState(getTheme())
@@ -32,12 +35,15 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
     useEffect(() => {
         if (isOpen) {
             const currentMode = getChatSelectionMode()
+            const currentPosition = getChatPosition()
             const currentDelay = getChatDelay()
             const currentTheme = getTheme()
             const currentBadgeSettings = getBadgeSettings()
             const currentAutoSelectConfig = getAutoSelectConfig()
             setTempChatSelectionMode(currentMode)
             setOriginalChatSelectionMode(currentMode)
+            setTempChatPosition(currentPosition)
+            setOriginalChatPosition(currentPosition)
             setTempChatDelay(currentDelay)
             setOriginalChatDelay(currentDelay)
             setTempTheme(currentTheme)
@@ -58,6 +64,11 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
     const handleChatSelectionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const newMode = event.target.value as ChatSelectionMode
         setTempChatSelectionMode(newMode)
+    }
+
+    const handleChatPositionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const newPosition = event.target.value as ChatPosition
+        setTempChatPosition(newPosition)
     }
 
     const handleChatDelayChange = (value: number) => {
@@ -83,15 +94,10 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
         }))
     }
 
-    const handleAutoSelectNotificationToggle = () => {
-        setTempAutoSelectConfig(prev => ({
-            ...prev,
-            showAutoSelectNotification: !prev.showAutoSelectNotification
-        }))
-    }
 
     const handleSave = () => {
         setChatSelectionMode(tempChatSelectionMode)
+        setChatPosition(tempChatPosition)
         setChatDelay(tempChatDelay)
         setTheme(tempTheme)
         setBadgeSettings(tempBadgeSettings)
@@ -99,11 +105,13 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
         updateChatDelay(tempChatDelay)
         updateTheme(tempTheme)
         updateBadgeSettings?.(tempBadgeSettings)
+        updateChatPosition(tempChatPosition)
         onClose()
     }
 
     const handleDiscard = () => {
         setTempChatSelectionMode(originalChatSelectionMode)
+        setTempChatPosition(originalChatPosition)
         setTempChatDelay(originalChatDelay)
         setTempTheme(originalTheme)
         setTempBadgeSettings(originalBadgeSettings)
@@ -133,6 +141,20 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                             options={THEME_OPTIONS.map((theme) => ({
                                 value: theme,
                                 label: getThemeDisplayName(theme)
+                            }))}
+                        />
+                    </SettingItem>
+                    <SettingItem
+                        name='Chat Position'
+                        description='Position of the chat sidebar relative to the video'
+                    >
+                        <DropdownSelector
+                            value={tempChatPosition}
+                            onChange={handleChatPositionChange}
+                            name='chatPositionDropdown'
+                            options={CHAT_POSITION_OPTIONS.map((position) => ({
+                                value: position,
+                                label: getChatPositionDisplayName(position)
                             }))}
                         />
                     </SettingItem>
@@ -201,33 +223,18 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                                 />
                             </SettingItem>
                             <SettingItem
-                                name='Show Auto-select Notification'
-                                description='Display a notification when a chat is automatically selected'
+                                name='Auto-select Notification Duration'
+                                description='How long to show the auto-selected chat notification (0 = disabled, 1-60 seconds)'
                             >
-                                <label className='checkbox-container'>
-                                    <input
-                                        type='checkbox'
-                                        checked={tempAutoSelectConfig.showAutoSelectNotification}
-                                        onChange={handleAutoSelectNotificationToggle}
-                                    />
-                                    <span className='checkmark'></span>
-                                </label>
+                                <NumericStepper
+                                    value={tempAutoSelectConfig.autoSelectNotificationDuration}
+                                    onChange={(value) => handleAutoSelectConfigChange('autoSelectNotificationDuration', value)}
+                                    name='notificationDurationStepper'
+                                    step={1}
+                                    min={0}
+                                    max={60}
+                                />
                             </SettingItem>
-                            {tempAutoSelectConfig.showAutoSelectNotification && (
-                                <SettingItem
-                                    name='Notification Duration'
-                                    description='How long to show the auto-selected chat notification (1-60 seconds)'
-                                >
-                                    <NumericStepper
-                                        value={tempAutoSelectConfig.autoSelectNotificationDuration}
-                                        onChange={(value) => handleAutoSelectConfigChange('autoSelectNotificationDuration', value)}
-                                        name='notificationDurationStepper'
-                                        step={1}
-                                        min={1}
-                                        max={60}
-                                    />
-                                </SettingItem>
-                            )}
                         </>
                     )}
                 </div>
