@@ -85,7 +85,7 @@ export type VideoData = {
 
 export type VideoPlayState = 'initializing' | 'idle' | 'playing' | 'paused' | 'ended';
 
-export type Theme = 'ttv' | 'midnight' | 'light';
+export type Theme = 'ttv' | 'midnight';
 
 export interface BadgeVersion {
     id: string;

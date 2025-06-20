@@ -23,8 +23,8 @@ const ChatSelector: FC<ChatSelectorProps> = ({ vodSummaries, onSelectKnownJson, 
         if (!vodSummaries) return []
 
         const chatMode = getChatSelectionMode()
-        const isAutoSearchMode = chatMode === 'automatic-search'
-        const isAutoSelectMode = chatMode === 'automatic-selection'
+        const isAutoSearchMode = chatMode === 'auto-search'
+        const isAutoSelectMode = chatMode === 'auto-select'
 
         if (searchFilter.length === 0 && (isAutoSearchMode || isAutoSelectMode) && videoMetadata) {
             return filterAndRankChatOptions(videoMetadata, vodSummaries)
@@ -35,7 +35,7 @@ const ChatSelector: FC<ChatSelectorProps> = ({ vodSummaries, onSelectKnownJson, 
 
     const getButtonText = function (summary: VodSummary) {
         const chatMode = getChatSelectionMode()
-        const isAutoMode = chatMode === 'automatic-search' || chatMode === 'automatic-selection'
+        const isAutoMode = chatMode === 'auto-search' || chatMode === 'auto-select'
         const hasMatchScore = typeof summary.matchScore === 'number'
 
         return <>

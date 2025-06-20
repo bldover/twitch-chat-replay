@@ -117,7 +117,7 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
     const evaluateAutoSelect = useCallback((videoMetadata: VideoMetadata | null): VodSummary | null => {
         console.debug('evaluateAutoSelect', videoMetadata);
         
-        if (!videoMetadata || getChatSelectionMode() !== 'automatic-selection') {
+        if (!videoMetadata || getChatSelectionMode() !== 'auto-select') {
             return null;
         }
 

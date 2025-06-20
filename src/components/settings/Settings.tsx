@@ -52,7 +52,7 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
     if (!isOpen) return null
 
     const getAllChatSelectionDescriptions = (): string => {
-        return 'Manual: Manually browse and select chat files\nAutomatic Search: Automatically filter chats matching the selected video title\nAutomatic Selection: Automatically select the best matching chat based on configurable thresholds';
+        return 'Manual: Manually browse and select chat files\nAuto-search: Automatically filter chats matching the selected video title\nAuto-select: Automatically select the best matching chat based on configurable thresholds';
     };
 
     const handleChatSelectionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -76,10 +76,17 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
         }))
     }
 
-    const handleAutoSelectConfigChange = (key: keyof AutoSelectConfig, value: number) => {
+    const handleAutoSelectConfigChange = (key: keyof AutoSelectConfig, value: number | boolean) => {
         setTempAutoSelectConfig(prev => ({
             ...prev,
             [key]: value
+        }))
+    }
+
+    const handleAutoSelectNotificationToggle = () => {
+        setTempAutoSelectConfig(prev => ({
+            ...prev,
+            showAutoSelectNotification: !prev.showAutoSelectNotification
         }))
     }
 
@@ -130,22 +137,6 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                         />
                     </SettingItem>
                     <SettingItem
-                        name='Chat Selection'
-                        description={getAllChatSelectionDescriptions()}
-                    >
-                        <DropdownSelector
-                            value={tempChatSelectionMode}
-                            onChange={handleChatSelectionChange}
-                            name='chatSelectionDropdown'
-                            options={CHAT_SELECTION_OPTIONS.map((option) => ({
-                                value: option,
-                                label: option === 'manual' ? 'Manual' :
-                                    option === 'automatic-search' ? 'Automatic Search' :
-                                        'Automatic Selection'
-                            }))}
-                        />
-                    </SettingItem>
-                    <SettingItem
                         name='Chat Delay'
                         description='Offset the chat file from the video timestamp (in seconds)'
                     >
@@ -156,7 +147,32 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                             step={1}
                         />
                     </SettingItem>
-                    {tempChatSelectionMode === 'automatic-selection' && (
+                    <SettingItem
+                        name='Chat Badges'
+                        description='Show user badges before usernames in chat'
+                    >
+                        <BadgeSettings
+                            value={tempBadgeSettings}
+                            onChange={handleBadgeToggle}
+                        />
+                    </SettingItem>
+                    <SettingItem
+                        name='Chat Selection'
+                        description={getAllChatSelectionDescriptions()}
+                    >
+                        <DropdownSelector
+                            value={tempChatSelectionMode}
+                            onChange={handleChatSelectionChange}
+                            name='chatSelectionDropdown'
+                            options={CHAT_SELECTION_OPTIONS.map((option) => ({
+                                value: option,
+                                label: option === 'manual' ? 'Manual' :
+                                    option === 'auto-search' ? 'Auto-search' :
+                                        'Auto-select'
+                            }))}
+                        />
+                    </SettingItem>
+                    {tempChatSelectionMode === 'auto-select' && (
                         <>
                             <SettingItem
                                 name='Min Match Threshold'
@@ -185,29 +201,35 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                                 />
                             </SettingItem>
                             <SettingItem
-                                name='Notification Duration'
-                                description='How long to show the auto-selected chat notification (1-60 seconds)'
+                                name='Show Auto-select Notification'
+                                description='Display a notification when a chat is automatically selected'
                             >
-                                <NumericStepper
-                                    value={tempAutoSelectConfig.autoSelectNotificationDuration}
-                                    onChange={(value) => handleAutoSelectConfigChange('autoSelectNotificationDuration', value)}
-                                    name='notificationDurationStepper'
-                                    step={1}
-                                    min={1}
-                                    max={60}
-                                />
+                                <label className='checkbox-container'>
+                                    <input
+                                        type='checkbox'
+                                        checked={tempAutoSelectConfig.showAutoSelectNotification}
+                                        onChange={handleAutoSelectNotificationToggle}
+                                    />
+                                    <span className='checkmark'></span>
+                                </label>
                             </SettingItem>
+                            {tempAutoSelectConfig.showAutoSelectNotification && (
+                                <SettingItem
+                                    name='Notification Duration'
+                                    description='How long to show the auto-selected chat notification (1-60 seconds)'
+                                >
+                                    <NumericStepper
+                                        value={tempAutoSelectConfig.autoSelectNotificationDuration}
+                                        onChange={(value) => handleAutoSelectConfigChange('autoSelectNotificationDuration', value)}
+                                        name='notificationDurationStepper'
+                                        step={1}
+                                        min={1}
+                                        max={60}
+                                    />
+                                </SettingItem>
+                            )}
                         </>
                     )}
-                    <SettingItem
-                        name='Chat Badges'
-                        description='Show user badges before usernames in chat'
-                    >
-                        <BadgeSettings
-                            value={tempBadgeSettings}
-                            onChange={handleBadgeToggle}
-                        />
-                    </SettingItem>
                 </div>
                 <div className='settings-modal-footer'>
                     <button className='settings-btn settings-btn-discard' onClick={handleDiscard}>

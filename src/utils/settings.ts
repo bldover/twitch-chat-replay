@@ -3,14 +3,13 @@ import { BadgeSettings } from './badges'
 
 export const CHAT_SELECTION_OPTIONS = [
     'manual',
-    'automatic-search',
-    'automatic-selection'
+    'auto-search',
+    'auto-select'
 ] as const
 
 export const THEME_OPTIONS: Theme[] = [
     'ttv',
-    'midnight',
-    'light'
+    'midnight'
 ]
 
 export type ChatSelectionMode = typeof CHAT_SELECTION_OPTIONS[number]
@@ -19,6 +18,7 @@ export interface AutoSelectConfig {
     minMatchThreshold: number
     matchMarginThreshold: number
     autoSelectNotificationDuration: number
+    showAutoSelectNotification: boolean
 }
 
 export interface AppSettings {
@@ -43,7 +43,8 @@ const DEFAULT_SETTINGS: AppSettings = {
     autoSelectConfig: {
         minMatchThreshold: 40,
         matchMarginThreshold: 15,
-        autoSelectNotificationDuration: 5
+        autoSelectNotificationDuration: 5,
+        showAutoSelectNotification: true
     }
 }
 
@@ -105,10 +106,8 @@ export const getThemeDisplayName = (theme: Theme): string => {
             return 'Twitch'
         case 'midnight':
             return 'Midnight'
-        case 'light':
-            return 'Light'
         default:
-            return 'Dark'
+            return 'Twitch'
     }
 }
 

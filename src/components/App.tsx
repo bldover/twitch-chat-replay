@@ -62,7 +62,7 @@ function App() {
                 <ChatSidebar
                     vodState={vodState}
                     messagesToRender={messagesToRender}
-                    resetFunction={resetAll}
+                    onReset={resetAll}
                     onSelectKnownVod={handleSelectChat}
                     onUploadCustomVod={onUploadCustomVod}
                     videoMetadata={videoState.videoMetadata}

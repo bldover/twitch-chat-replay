@@ -13,7 +13,7 @@ import { filterAndRankChatOptions } from '../../utils/chatMatcher'
 interface ChatSidebarProps {
     vodState: VodState
     messagesToRender: ChatMessage[]
-    resetFunction: () => void
+    onReset: () => void
     onSelectKnownVod: (summary: VodSummary) => void
     onUploadCustomVod: (json: ChatData) => void
     videoMetadata: VideoMetadata | null
@@ -28,7 +28,7 @@ interface ChatSidebarProps {
 const ChatSidebar: FC<ChatSidebarProps> = ({
     vodState,
     messagesToRender,
-    resetFunction: onReset,
+    onReset,
     onSelectKnownVod,
     onUploadCustomVod,
     videoMetadata,
@@ -47,7 +47,6 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     const [autoSelectNotification, setAutoSelectNotification] = useState<{ vod: VodSummary; matchPercent: number } | null>(null)
     const hideScrollbarTimeoutRef = useRef<NodeJS.Timeout | null>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
-    const autoSelectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
     const hasMessages = vodState.messages !== null
 
@@ -99,38 +98,37 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     }, [hasMessages])
 
     useEffect(() => {
-        console.log('isVideoPlaying: ', isVideoPlaying, ' startedPlaying: ', startedPlaying)
         if (!startedPlaying && isVideoPlaying) {
             setStartedPlaying(true)
         }
-    }, [isVideoPlaying])
+    }, [isVideoPlaying, startedPlaying])
 
     useEffect(() => {
         if (videoMetadata && !vodState.selectedVod) {
             const autoSelectedVod = evaluateAutoSelect(videoMetadata);
-
             if (autoSelectedVod) {
-                setAutoSelectNotification({
-                    vod: autoSelectedVod,
-                    matchPercent: autoSelectedVod.matchScore || 0
-                });
-
                 const autoSelectConfig = getAutoSelectConfig();
-
-                autoSelectTimeoutRef.current = setTimeout(() => {
-                    setAutoSelectNotification(null);
-                    onSelectKnownVod(autoSelectedVod);
-                }, autoSelectConfig.autoSelectNotificationDuration * 1000);
+                if (autoSelectConfig.showAutoSelectNotification) {
+                    setAutoSelectNotification({
+                        vod: autoSelectedVod,
+                        matchPercent: autoSelectedVod.matchScore || 0
+                    });
+                }
+                onSelectKnownVod(autoSelectedVod);
             }
         }
-
-        return () => {
-            if (autoSelectTimeoutRef.current) {
-                clearTimeout(autoSelectTimeoutRef.current);
-                autoSelectTimeoutRef.current = null;
-            }
-        };
     }, [videoMetadata, vodState.selectedVod, evaluateAutoSelect, onSelectKnownVod])
+
+    useEffect(() => {
+        if (autoSelectNotification) {
+            const autoSelectConfig = getAutoSelectConfig();
+            const timeoutId = setTimeout(() => {
+                setAutoSelectNotification(null);
+            }, autoSelectConfig.autoSelectNotificationDuration * 1000);
+
+            return () => clearTimeout(timeoutId);
+        }
+    }, [autoSelectNotification])
 
     const getNotificationState = (): NotificationState | null => {
         if (autoSelectNotification) {
@@ -153,7 +151,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
         }
 
         const chatMode = getChatSelectionMode();
-        const isAutoMode = chatMode === 'automatic-search' || chatMode === 'automatic-selection';
+        const isAutoMode = chatMode === 'auto-search' || chatMode === 'auto-select';
         if (isAutoMode && videoMetadata && searchFilter.length === 0) {
             const filteredSummaries = filterAndRankChatOptions(videoMetadata, vodState.vodSummaries);
             if (filteredSummaries.length === 0) {
