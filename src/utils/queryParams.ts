@@ -18,6 +18,6 @@ export const setQueryParam = (key: string, value: string | null): void => {
         url.searchParams.set(key, value);
     }
 
-    console.log(`updated query params: ${url}`);
+    console.debug(`updated query params: ${url}`);
     window.history.replaceState({}, '', url.search.toString());
 }

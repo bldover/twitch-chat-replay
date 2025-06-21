@@ -22,7 +22,6 @@ interface ChatSidebarProps {
     updateChatPosition: (position: ChatPosition) => void
     updateBadgeSettings: (badges: BadgeSettings) => void
     badgeMap: BadgeMap | null
-    evaluateAutoSelect: (videoMetadata: VideoMetadata | null) => VodSummary | null
 }
 
 const ChatSidebar: FC<ChatSidebarProps> = ({
@@ -37,8 +36,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     updateTheme,
     updateChatPosition,
     updateBadgeSettings,
-    badgeMap,
-    evaluateAutoSelect
+    badgeMap
 }) => {
     const [isHeaderMinimized, setIsHeaderMinimized] = useState(false)
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -49,14 +47,13 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
 
     const hasMessages = vodState.messages !== null
 
-    const vodSelection = useVodSelector({
+    const vodSelector = useVodSelector({
         vodSummaries: vodState.vodSummaries,
         selectedVod: vodState.selectedVod,
         hasMessages,
         isVideoPlaying,
         videoMetadata,
         searchFilter,
-        evaluateAutoSelect,
         onSelectVod: onSelectKnownVod,
         onResetVod: onReset
     })
@@ -79,7 +76,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
 
     const handleSelectKnownVod = (summary: VodSummary) => {
         setSearchFilter('')
-        vodSelection.selectVod(summary)
+        vodSelector.selectVod(summary)
     }
 
     const handleMouseEnter = () => {
@@ -98,7 +95,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
 
     const handleReset = () => {
         setSearchFilter('')
-        vodSelection.resetVod()
+        vodSelector.resetVod()
     }
 
     useEffect(() => {
@@ -106,8 +103,6 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
             scrollContainerRef.current.scrollTop = 0
         }
     }, [hasMessages])
-
-
 
     return (
         <div
@@ -128,15 +123,15 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
             />
 
             <div ref={scrollContainerRef} className={`chat-sidebar-content ${hasMessages ? 'chat-mode' : ''} ${showScrollbar ? 'scrollbar-visible' : ''}`}>
-                {vodSelection.shouldShowNotification && vodSelection.notificationData && (
+                {vodSelector.shouldShowNotification && vodSelector.notificationData && (
                     <ChatNotification
-                        message={vodSelection.notificationData.message}
-                        details={vodSelection.notificationData.details}
-                        type={vodSelection.notificationData.type}
+                        message={vodSelector.notificationData.message}
+                        details={vodSelector.notificationData.details}
+                        type={vodSelector.notificationData.type}
                     />
                 )}
 
-                {vodSelection.shouldShowChat && (
+                {vodSelector.shouldShowChat && (
                     <Chat
                         chatMessages={messagesToRender}
                         bttvEmotes={vodState.currentVodBttvEmotes}
@@ -144,11 +139,11 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                     />
                 )}
 
-                {vodSelection.shouldShowVodSelector && vodSelection.vodSelectorData && (
+                {vodSelector.shouldShowVodSelector && vodSelector.vodSelectorData && (
                     <ChatSelector
-                        vodSummaries={vodSelection.vodSelectorData.summaries}
+                        vodSummaries={vodSelector.vodSelectorData.summaries}
                         onSelectKnownJson={handleSelectKnownVod}
-                        showMatchScores={vodSelection.vodSelectorData.showMatchScores}
+                        showMatchScores={vodSelector.vodSelectorData.showMatchScores}
                     />
                 )}
             </div>

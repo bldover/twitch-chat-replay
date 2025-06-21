@@ -1,12 +1,10 @@
 import allBttvEmotes from '../data/bttv/emotes.json';
 import { useState, useCallback, useEffect } from 'react';
-import { ChatMessage, BttvEmoteMap, VodSummary, ChatData, AllBttvEmotes, VodState, VideoMetadata } from '../types';
+import { ChatMessage, BttvEmoteMap, VodSummary, ChatData, AllBttvEmotes, VodState } from '../types';
 import { fetchVodSummaries } from '../api/vodApi';
 import { fetchChatMessages } from '../api/chatApi';
 import { fetchFunnyMoments } from '../api/funnyMomentApi';
 import { setQueryParam, getQueryParam } from '../utils/queryParams';
-import { getChatSelectionMode, getAutoSelectConfig } from '../utils/settings';
-import { filterAndRankChatOptions, evaluateAutoSelection } from '../utils/chatMatcher';
 
 interface VodDataState {
     vodSummaries: VodSummary[];
@@ -16,13 +14,11 @@ interface VodDataState {
     broadcaster: string | null;
 }
 
-
 interface VodDataControls {
     state: VodState;
     selectChat: (summary: VodSummary) => void;
     onUploadCustomVod: (json: ChatData) => void;
     resetSelectedChat: () => void;
-    evaluateAutoSelect: (videoMetadata: VideoMetadata | null) => VodSummary | null;
 }
 
 export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDataControls => {
@@ -58,7 +54,6 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
         resultMap['LUL'] = resultMap['LuL'];
         return resultMap;
     };
-
 
     const loadChatMessages = useCallback((twitchId: string): void => {
         console.debug('loadChatMessages');
@@ -114,24 +109,6 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
         }));
     }, []);
 
-    const evaluateAutoSelect = useCallback((videoMetadata: VideoMetadata | null): VodSummary | null => {
-        console.debug('evaluateAutoSelect', videoMetadata);
-        
-        if (!videoMetadata || getChatSelectionMode() !== 'auto-select') {
-            return null;
-        }
-
-        const rankedMatches = filterAndRankChatOptions(videoMetadata, state.vodSummaries);
-        const autoSelectConfig = getAutoSelectConfig();
-        const autoSelectResult = evaluateAutoSelection(rankedMatches, autoSelectConfig);
-
-        if (autoSelectResult.shouldAutoSelect && autoSelectResult.selectedVod) {
-            return autoSelectResult.selectedVod;
-        }
-
-        return null;
-    }, [state.vodSummaries]);
-
     useEffect(() => {
         loadVodSummaries()
     }, [loadVodSummaries]);
@@ -152,7 +129,6 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
         state,
         selectChat,
         onUploadCustomVod,
-        resetSelectedChat,
-        evaluateAutoSelect
+        resetSelectedChat
     };
 };

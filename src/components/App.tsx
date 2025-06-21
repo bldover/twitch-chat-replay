@@ -12,7 +12,7 @@ import { Theme, ChatPosition } from '../types'
 
 function App() {
     const { videoState, selectVideo, videoHandlers, setFunnyMoments, resetVideo } = useVideoPlayer()
-    const { state: vodState, selectChat, onUploadCustomVod, resetSelectedChat, evaluateAutoSelect } = useVodData(setFunnyMoments)
+    const { state: vodState, selectChat, onUploadCustomVod, resetSelectedChat } = useVodData(setFunnyMoments)
     const { messagesToRender, chatEnabled, resetChat, updateChatDelay } = useChatSync(vodState.messages, videoState)
     const { badgeMap, updateBadgeSettings } = useBadges(vodState.broadcaster)
     const [currentTheme, setCurrentTheme] = useState<Theme>(getTheme())
@@ -79,7 +79,6 @@ function App() {
                 updateChatPosition={handleChatPositionUpdate}
                 updateBadgeSettings={updateBadgeSettings}
                 badgeMap={badgeMap}
-                evaluateAutoSelect={evaluateAutoSelect}
             />
         </div>
     )

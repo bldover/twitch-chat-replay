@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { VodSummary, VideoMetadata } from '../types';
 import { getChatSelectionMode, getAutoSelectConfig } from '../utils/settings';
-import { filterAndRankChatOptions } from '../utils/chatMatcher';
+import { filterAndRankChatOptions, evaluateAutoSelection } from '../utils/chatMatcher';
 
 export type VodSelectionState =
     | 'vod-search'
@@ -34,7 +34,6 @@ interface UseVodSelectionProps {
     isVideoPlaying: boolean;
     videoMetadata: VideoMetadata | null;
     searchFilter: string;
-    evaluateAutoSelect: (videoMetadata: VideoMetadata | null) => VodSummary | null;
     onSelectVod: (vod: VodSummary) => void;
     onResetVod: () => void;
 }
@@ -58,7 +57,6 @@ export const useVodSelector = ({
     isVideoPlaying,
     videoMetadata,
     searchFilter,
-    evaluateAutoSelect,
     onSelectVod,
     onResetVod
 }: UseVodSelectionProps): UseVodSelectionReturn => {
@@ -100,28 +98,30 @@ export const useVodSelector = ({
             searchFilter === '';
     }, [videoMetadata, searchFilter]);
 
-    const attemptAutoSelect = useCallback((): boolean => {
+    const getAutoSelectResult = useCallback((): VodSummary | null => {
         const chatMode = getChatSelectionMode();
-        if (chatMode !== 'auto-select' || !videoMetadata) return false;
+        if (chatMode !== 'auto-select' || !videoMetadata) return null;
 
-        const autoSelectedVod = evaluateAutoSelect(videoMetadata);
-        if (autoSelectedVod) {
-            const autoSelectConfig = getAutoSelectConfig();
-            setHasVideoEverPlayed(false);
-            if (autoSelectConfig.autoSelectNotificationDuration > 0) {
-                setAutoSelectNotification({
-                    vod: autoSelectedVod,
-                    matchPercent: autoSelectedVod.matchScore || 0
-                });
-                setStateWithLog('vod-selected-notify');
-            } else {
-                setStateWithLog('vod-selected-playing');
-            }
-            onSelectVod(autoSelectedVod);
-            return true;
+        console.debug('evaluateAutoSelect', videoMetadata);
+        const rankedMatches = filterAndRankChatOptions(videoMetadata, vodSummaries);
+        const autoSelectConfig = getAutoSelectConfig();
+        const autoSelectResult = evaluateAutoSelection(rankedMatches, autoSelectConfig);
+
+        if (autoSelectResult.shouldAutoSelect && autoSelectResult.selectedVod) {
+            return autoSelectResult.selectedVod;
         }
-        return false;
-    }, [videoMetadata, evaluateAutoSelect, onSelectVod, setStateWithLog]);
+
+        return null;
+    }, [videoMetadata, vodSummaries]);
+
+    const performAutoSelect = useCallback((vod: VodSummary) => {
+        setHasVideoEverPlayed(false);
+        setAutoSelectNotification({
+            vod: vod,
+            matchPercent: vod.matchScore || 0
+        });
+        onSelectVod(vod);
+    }, [onSelectVod]);
 
     const clearNotificationTimeout = useCallback(() => {
         if (notificationTimeoutRef.current) {
@@ -141,120 +141,195 @@ export const useVodSelector = ({
         }
     }, [clearNotificationTimeout, setStateWithLog]);
 
-    const updateState = useCallback(() => {
+    useEffect(() => {
         const chatMode = getChatSelectionMode();
 
-        if (!selectedVod && !videoMetadata) {
-            setStateWithLog('vod-search');
-            return;
-        }
-
-        if (selectedVod && hasMessages) {
-            if (state === 'vod-selected-notify') {
-                // don't change until configured timeout
-                return;
-            }
-
-            if (isVideoPlaying) {
-                if (!hasVideoEverPlayed) {
-                    setHasVideoEverPlayed(true);
+        switch (state) {
+            case 'vod-search':
+                // when actively searching for a vod or a video hasn't been selected, do nothing
+                if (searchFilter !== '') {
+                    return;
                 }
-                setStateWithLog('vod-selected-playing');
-            } else {
-                if (!hasVideoEverPlayed) {
-                    setStateWithLog('vod-selected-waiting');
-                } else {
-                    setStateWithLog('vod-selected-playing');
+                if (!videoMetadata) {
+                    return;
                 }
-            }
-            return;
-        }
 
-        if (!selectedVod) {
-            if (shouldUseAutoMode()) {
-                if (chatMode === 'auto-select') {
-                    if (attemptAutoSelect()) {
-                        return;
+                // when video has been started, then use the chat auto select config to decide
+                if (shouldUseAutoMode()) {
+                    if (chatMode === 'auto-select') {
+                        const autoSelectedVod = getAutoSelectResult();
+                        if (autoSelectedVod) {
+                            performAutoSelect(autoSelectedVod);
+                            const autoSelectConfig = getAutoSelectConfig();
+                            if (autoSelectConfig.autoSelectNotificationDuration > 0) {
+                                setStateWithLog('vod-selected-notify');
+                            } else {
+                                setStateWithLog('vod-selected-playing');
+                            }
+                            return;
+                        }
+                    }
+
+                    const autoFiltered = getAutoFilteredSummaries();
+                    if (autoFiltered.length === 0) {
+                        setStateWithLog('vod-auto-search-error');
+                    } else {
+                        setStateWithLog('vod-auto-search');
                     }
                 }
+                break;
 
+            case 'vod-auto-search':
+                if (searchFilter !== '') {
+                    // change back to regular search to enable searching through all vods
+                    setStateWithLog('vod-search');
+                    setAutoSelectNotification(null);
+                    clearNotificationTimeout();
+                    return;
+                }
+
+                if (!shouldUseAutoMode()) {
+                    // auto search mode was disabled
+                    setStateWithLog('vod-search');
+                    return;
+                }
+
+                if (selectedVod && hasMessages) {
+                    // with YT autoplay enabled, the waiting state is not expected to be used here
+                    if (isVideoPlaying || hasVideoEverPlayed) {
+                        if (isVideoPlaying && !hasVideoEverPlayed) {
+                            setHasVideoEverPlayed(true);
+                        }
+                        setStateWithLog('vod-selected-playing');
+                    } else {
+                        setStateWithLog('vod-selected-waiting');
+                    }
+                }
+                break;
+
+            case 'vod-auto-search-error':
+                if (searchFilter !== '') {
+                    // auto search didn't find anything so let the user search
+                    setStateWithLog('vod-search');
+                    setAutoSelectNotification(null);
+                    clearNotificationTimeout();
+                    return;
+                }
+
+                if (!shouldUseAutoMode()) {
+                    // auto search mode was disabled
+                    setStateWithLog('vod-search');
+                    return;
+                }
+
+                // TODO: remove? don't think this does anything
                 const autoFiltered = getAutoFilteredSummaries();
-                if (autoFiltered.length === 0) {
-                    setStateWithLog('vod-auto-search-error');
-                } else {
+                if (autoFiltered.length > 0) {
                     setStateWithLog('vod-auto-search');
                 }
-            } else {
+                break;
+
+            case 'vod-selected-waiting':
+                if (searchFilter !== '') {
+                    // TODO: remove? search bar disappears so prob not valid
+                    setStateWithLog('vod-search');
+                    setAutoSelectNotification(null);
+                    clearNotificationTimeout();
+                    return;
+                }
+
+                if (!selectedVod || !hasMessages) {
+                    // TODO: remove? selectedvod should always be set?
+                    if (shouldUseAutoMode()) {
+                        setStateWithLog('vod-auto-search');
+                    } else {
+                        setStateWithLog('vod-search');
+                    }
+                    return;
+                }
+
+                if (isVideoPlaying || hasVideoEverPlayed) {
+                    // video started so start displaying the chat
+                    if (isVideoPlaying && !hasVideoEverPlayed) {
+                        setHasVideoEverPlayed(true);
+                    }
+                    setStateWithLog('vod-selected-playing');
+                }
+                break;
+
+            case 'vod-selected-notify':
+                if (searchFilter !== '') {
+                    // TODO: remove? should not be possible as search bar is hidden
+                    setStateWithLog('vod-search');
+                    setAutoSelectNotification(null);
+                    clearNotificationTimeout();
+                    return;
+                }
+                if (!selectedVod || !hasMessages) {
+                    if (shouldUseAutoMode()) {
+                        setStateWithLog('vod-auto-search');
+                    } else {
+                        setStateWithLog('vod-search');
+                    }
+                    setAutoSelectNotification(null);
+                    clearNotificationTimeout();
+                }
+                break;
+
+            case 'vod-selected-playing':
+                if (searchFilter !== '') {
+                    setStateWithLog('vod-search');
+                    setAutoSelectNotification(null);
+                    clearNotificationTimeout();
+                    return;
+                }
+                if (!selectedVod || !hasMessages) {
+                    if (shouldUseAutoMode()) {
+                        setStateWithLog('vod-auto-search');
+                    } else {
+                        setStateWithLog('vod-search');
+                    }
+                    return;
+                }
+                if (!isVideoPlaying && !hasVideoEverPlayed) {
+                    setStateWithLog('vod-selected-waiting');
+                } else if (isVideoPlaying && !hasVideoEverPlayed) {
+                    setHasVideoEverPlayed(true);
+                }
+                break;
+
+            default:
                 setStateWithLog('vod-search');
-            }
+                break;
         }
     }, [
+        state,
+        searchFilter,
         selectedVod,
+        videoMetadata,
         hasMessages,
         isVideoPlaying,
-        state,
+        hasVideoEverPlayed,
         shouldUseAutoMode,
-        attemptAutoSelect,
+        getAutoSelectResult,
+        performAutoSelect,
         getAutoFilteredSummaries,
-        videoMetadata,
         setStateWithLog,
-        hasVideoEverPlayed
+        clearNotificationTimeout
     ]);
 
-    useEffect(() => {
-        if (searchFilter !== '') {
-            setStateWithLog('vod-search');
-            setAutoSelectNotification(null);
-            clearNotificationTimeout();
-        } else {
-            updateState();
-        }
-    }, [searchFilter, updateState, clearNotificationTimeout, setStateWithLog]);
-
-    useEffect(() => {
-        updateState();
-    }, [updateState]);
-
-    useEffect(() => {
+    const handleNotificationTimeout = useCallback(() => {
         if (state === 'vod-selected-notify' && autoSelectNotification) {
             setNotificationTimeout();
         } else {
             clearNotificationTimeout();
         }
-
-        return clearNotificationTimeout;
     }, [state, autoSelectNotification, setNotificationTimeout, clearNotificationTimeout]);
 
     useEffect(() => {
-        if (selectedVod && videoMetadata) {
-            if (state === 'vod-selected-notify') {
-                // don't change until configured timeout
-                return;
-            }
-
-            const chatMode = getChatSelectionMode();
-
-            if (chatMode === 'manual') {
-                if (isVideoPlaying) {
-                    if (!hasVideoEverPlayed) {
-                        setHasVideoEverPlayed(true);
-                    }
-                    setStateWithLog('vod-selected-playing');
-                } else {
-                    setStateWithLog('vod-selected-playing');
-                }
-            } else {
-                if (isVideoPlaying) {
-                    if (!hasVideoEverPlayed) {
-                        setHasVideoEverPlayed(true);
-                    }
-                    setStateWithLog('vod-selected-playing');
-                } else {
-                    setStateWithLog('vod-selected-playing');
-                }
-            }
-        }
-    }, [videoMetadata, selectedVod, isVideoPlaying, setStateWithLog, hasVideoEverPlayed, state]);
+        handleNotificationTimeout();
+        return clearNotificationTimeout;
+    }, [handleNotificationTimeout, clearNotificationTimeout]);
 
     const selectVod = useCallback((vod: VodSummary) => {
         onSelectVod(vod);
