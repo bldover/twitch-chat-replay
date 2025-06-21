@@ -1,7 +1,7 @@
 import './Settings.css';
 import { FC, useState, useEffect } from 'react';
 import { CloseIcon, SettingsIcon } from '../common/Icons';
-import { getChatSelectionMode, setChatSelectionMode, getChatPosition, setChatPosition, getChatDelay, setChatDelay, getTheme, setTheme, getBadgeSettings, setBadgeSettings, getAutoSelectConfig, setAutoSelectConfig, ChatSelectionMode, ChatPosition, CHAT_SELECTION_OPTIONS, CHAT_POSITION_OPTIONS, THEME_OPTIONS, getThemeDisplayName, getChatPositionDisplayName, AutoSelectConfig } from '../../utils/settings';
+import { getChatSelectionMode, setChatSelectionMode, getChatPosition, setChatPosition, getChatDelay, setChatDelay, getChatWidth, setChatWidth, getChatHeight, setChatHeight, getTheme, setTheme, getBadgeSettings, setBadgeSettings, getAutoSelectConfig, setAutoSelectConfig, ChatSelectionMode, ChatPosition, CHAT_SELECTION_OPTIONS, CHAT_POSITION_OPTIONS, THEME_OPTIONS, getThemeDisplayName, getChatPositionDisplayName, AutoSelectConfig } from '../../utils/settings';
 import { Theme } from '../../types';
 import { BadgeSettings as BadgeSettingsType } from '../../utils/badges';
 import BadgeSettings from './BadgeSettings';
@@ -16,15 +16,21 @@ interface SettingsModalProps {
     updateTheme: (theme: Theme) => void
     updateBadgeSettings?: (badges: BadgeSettingsType) => void
     updateChatPosition: (position: ChatPosition) => void
+    updateChatWidth: (width: number) => void
+    updateChatHeight: (height: number) => void
 }
 
-const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, updateTheme, updateBadgeSettings, updateChatPosition }) => {
+const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, updateTheme, updateBadgeSettings, updateChatPosition, updateChatWidth, updateChatHeight }) => {
     const [tempChatSelectionMode, setTempChatSelectionMode] = useState(getChatSelectionMode())
     const [originalChatSelectionMode, setOriginalChatSelectionMode] = useState(getChatSelectionMode())
     const [tempChatPosition, setTempChatPosition] = useState(getChatPosition())
     const [originalChatPosition, setOriginalChatPosition] = useState(getChatPosition())
     const [tempChatDelay, setTempChatDelay] = useState(getChatDelay())
     const [originalChatDelay, setOriginalChatDelay] = useState(getChatDelay())
+    const [tempChatWidth, setTempChatWidth] = useState(getChatWidth())
+    const [originalChatWidth, setOriginalChatWidth] = useState(getChatWidth())
+    const [tempChatHeight, setTempChatHeight] = useState(getChatHeight())
+    const [originalChatHeight, setOriginalChatHeight] = useState(getChatHeight())
     const [tempTheme, setTempTheme] = useState(getTheme())
     const [originalTheme, setOriginalTheme] = useState(getTheme())
     const [tempBadgeSettings, setTempBadgeSettings] = useState(getBadgeSettings())
@@ -37,6 +43,8 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
             const currentMode = getChatSelectionMode()
             const currentPosition = getChatPosition()
             const currentDelay = getChatDelay()
+            const currentWidth = getChatWidth()
+            const currentHeight = getChatHeight()
             const currentTheme = getTheme()
             const currentBadgeSettings = getBadgeSettings()
             const currentAutoSelectConfig = getAutoSelectConfig()
@@ -46,6 +54,10 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
             setOriginalChatPosition(currentPosition)
             setTempChatDelay(currentDelay)
             setOriginalChatDelay(currentDelay)
+            setTempChatWidth(currentWidth)
+            setOriginalChatWidth(currentWidth)
+            setTempChatHeight(currentHeight)
+            setOriginalChatHeight(currentHeight)
             setTempTheme(currentTheme)
             setOriginalTheme(currentTheme)
             setTempBadgeSettings(currentBadgeSettings)
@@ -75,6 +87,14 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
         setTempChatDelay(value)
     }
 
+    const handleChatWidthChange = (value: number) => {
+        setTempChatWidth(value)
+    }
+
+    const handleChatHeightChange = (value: number) => {
+        setTempChatHeight(value)
+    }
+
     const handleThemeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const newTheme = event.target.value as Theme
         setTempTheme(newTheme)
@@ -99,6 +119,8 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
         setChatSelectionMode(tempChatSelectionMode)
         setChatPosition(tempChatPosition)
         setChatDelay(tempChatDelay)
+        setChatWidth(tempChatWidth)
+        setChatHeight(tempChatHeight)
         setTheme(tempTheme)
         setBadgeSettings(tempBadgeSettings)
         setAutoSelectConfig(tempAutoSelectConfig)
@@ -106,6 +128,8 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
         updateTheme(tempTheme)
         updateBadgeSettings?.(tempBadgeSettings)
         updateChatPosition(tempChatPosition)
+        updateChatWidth(tempChatWidth)
+        updateChatHeight(tempChatHeight)
         onClose()
     }
 
@@ -113,6 +137,8 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
         setTempChatSelectionMode(originalChatSelectionMode)
         setTempChatPosition(originalChatPosition)
         setTempChatDelay(originalChatDelay)
+        setTempChatWidth(originalChatWidth)
+        setTempChatHeight(originalChatHeight)
         setTempTheme(originalTheme)
         setTempBadgeSettings(originalBadgeSettings)
         setTempAutoSelectConfig(originalAutoSelectConfig)
@@ -156,6 +182,32 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                                 value: position,
                                 label: getChatPositionDisplayName(position)
                             }))}
+                        />
+                    </SettingItem>
+                    <SettingItem
+                        name='Chat Width'
+                        description='Width of the chat sidebar when positioned left/right (in pixels)'
+                    >
+                        <NumericStepper
+                            value={tempChatWidth}
+                            onChange={handleChatWidthChange}
+                            name='chatWidthStepper'
+                            step={50}
+                            min={350}
+                            max={Math.floor(window.innerWidth * 0.8)}
+                        />
+                    </SettingItem>
+                    <SettingItem
+                        name='Chat Height'
+                        description='Height of the chat sidebar when positioned top/bottom (in pixels)'
+                    >
+                        <NumericStepper
+                            value={tempChatHeight}
+                            onChange={handleChatHeightChange}
+                            name='chatHeightStepper'
+                            step={50}
+                            min={350}
+                            max={Math.floor(window.innerHeight * 0.8)}
                         />
                     </SettingItem>
                     <SettingItem

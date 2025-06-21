@@ -32,6 +32,8 @@ export interface AppSettings {
     chatSelection: ChatSelectionMode
     chatPosition: ChatPosition
     chatDelay: number
+    chatWidth: number
+    chatHeight: number
     theme: Theme
     badges: BadgeSettings
     autoSelectConfig: AutoSelectConfig
@@ -41,6 +43,8 @@ const DEFAULT_SETTINGS: AppSettings = {
     chatSelection: 'manual',
     chatPosition: 'right',
     chatDelay: 0,
+    chatWidth: 350,
+    chatHeight: 350,
     theme: 'ttv',
     badges: {
         showUserStates: true,
@@ -159,4 +163,22 @@ export const getChatPositionDisplayName = (position: ChatPosition): string => {
         default:
             return 'Right'
     }
+}
+
+export const getChatWidth = (): number => {
+    const settings = getSettings()
+    return settings.chatWidth
+}
+
+export const setChatWidth = (width: number): void => {
+    setSetting('chatWidth', width)
+}
+
+export const getChatHeight = (): number => {
+    const settings = getSettings()
+    return settings.chatHeight
+}
+
+export const setChatHeight = (height: number): void => {
+    setSetting('chatHeight', height)
 }

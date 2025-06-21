@@ -7,7 +7,7 @@ import { useVodData } from '../hooks/useVodData'
 import { useBadges } from '../hooks/useBadges'
 import { YouTubeEvent } from 'react-youtube'
 import { useState, useEffect } from 'react'
-import { getTheme, getChatPosition } from '../utils/settings'
+import { getTheme, getChatPosition, getChatWidth, getChatHeight } from '../utils/settings'
 import { Theme, ChatPosition } from '../types'
 
 function App() {
@@ -17,10 +17,17 @@ function App() {
     const { badgeMap, updateBadgeSettings } = useBadges(vodState.broadcaster)
     const [currentTheme, setCurrentTheme] = useState<Theme>(getTheme())
     const [currentChatPosition, setCurrentChatPosition] = useState<ChatPosition>(getChatPosition())
+    const [currentChatWidth, setCurrentChatWidth] = useState<number>(getChatWidth())
+    const [currentChatHeight, setCurrentChatHeight] = useState<number>(getChatHeight())
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', currentTheme)
     }, [currentTheme])
+
+    useEffect(() => {
+        document.documentElement.style.setProperty('--chat-width', `${currentChatWidth}px`)
+        document.documentElement.style.setProperty('--chat-height', `${currentChatHeight}px`)
+    }, [currentChatWidth, currentChatHeight])
 
 
     const handleThemeUpdate = (theme: Theme) => {
@@ -29,6 +36,14 @@ function App() {
 
     const handleChatPositionUpdate = (position: ChatPosition) => {
         setCurrentChatPosition(position)
+    }
+
+    const handleChatWidthUpdate = (width: number) => {
+        setCurrentChatWidth(width)
+    }
+
+    const handleChatHeightUpdate = (height: number) => {
+        setCurrentChatHeight(height)
     }
 
     const handleSelectChat = (summary: any) => selectChat(summary)
@@ -77,6 +92,8 @@ function App() {
                 updateChatDelay={updateChatDelay}
                 updateTheme={handleThemeUpdate}
                 updateChatPosition={handleChatPositionUpdate}
+                updateChatWidth={handleChatWidthUpdate}
+                updateChatHeight={handleChatHeightUpdate}
                 updateBadgeSettings={updateBadgeSettings}
                 badgeMap={badgeMap}
             />

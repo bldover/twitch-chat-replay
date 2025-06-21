@@ -20,6 +20,8 @@ interface ChatSidebarProps {
     updateChatDelay: (delay: number) => void
     updateTheme: (theme: Theme) => void
     updateChatPosition: (position: ChatPosition) => void
+    updateChatWidth: (width: number) => void
+    updateChatHeight: (height: number) => void
     updateBadgeSettings: (badges: BadgeSettings) => void
     badgeMap: BadgeMap | null
 }
@@ -35,6 +37,8 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     updateChatDelay,
     updateTheme,
     updateChatPosition,
+    updateChatWidth,
+    updateChatHeight,
     updateBadgeSettings,
     badgeMap
 }) => {
@@ -154,6 +158,8 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                 updateChatDelay={updateChatDelay}
                 updateTheme={updateTheme}
                 updateChatPosition={updateChatPosition}
+                updateChatWidth={updateChatWidth}
+                updateChatHeight={updateChatHeight}
                 updateBadgeSettings={updateBadgeSettings}
             />
         </div>

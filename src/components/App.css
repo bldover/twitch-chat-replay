@@ -33,13 +33,13 @@
 .App.layout-row .chat-container,
 .App.layout-row-reverse .chat-container {
     height: 100vh;
-    width: 350px;
+    width: var(--chat-width, 350px);
 }
 
 .App.layout-column .chat-container,
 .App.layout-column-reverse .chat-container {
     width: 100vw;
-    height: 300px;
+    height: var(--chat-height, 300px);
 }
 
 .player-container {
@@ -60,7 +60,7 @@
 .App.layout-column .player-container,
 .App.layout-column-reverse .player-container {
     width: 100vw;
-    height: calc(100vh - 300px);
+    height: calc(100vh - var(--chat-height, 300px));
 }
 
 .player-container iframe {
