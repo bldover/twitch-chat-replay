@@ -6,38 +6,32 @@ import Settings from '../settings/Settings'
 import ChatHeader from './ChatHeader'
 import ChatNotification from './ChatNotification'
 import ResizeHandle from './ResizeHandle'
-import { ChatMessage, VodSummary, VideoMetadata, ChatData, Theme, VodState, BadgeMap } from '../../types'
-import { BadgeSettings } from '../../utils/badges'
+import { VodSummary, VideoMetadata, ChatData, Theme, VodState } from '../../types'
+import { VideoPlayerState } from '../../hooks/useVideoPlayer'
 import { useVodSelector } from '../../hooks/useVodSelector'
+import { useChatSync } from '../../hooks/useChatSync'
+import { useBadges } from '../../hooks/useBadges'
 import { UseChatPositionReturn } from '../../hooks/useChatPosition'
 
 interface ChatSidebarProps {
     vodState: VodState
-    messagesToRender: ChatMessage[]
     onReset: () => void
     onSelectKnownVod: (summary: VodSummary) => void
     onUploadCustomVod: (json: ChatData) => void
     videoMetadata: VideoMetadata | null
-    isVideoPlaying?: boolean
-    updateChatDelay: (delay: number) => void
+    videoState: VideoPlayerState
     updateTheme: (theme: Theme) => void
-    updateBadgeSettings: (badges: BadgeSettings) => void
-    badgeMap: BadgeMap | null
     chatPosition: UseChatPositionReturn
 }
 
 const ChatSidebar: FC<ChatSidebarProps> = ({
     vodState,
-    messagesToRender,
     onReset,
     onSelectKnownVod,
     onUploadCustomVod,
     videoMetadata,
-    isVideoPlaying,
-    updateChatDelay,
+    videoState,
     updateTheme,
-    updateBadgeSettings,
-    badgeMap,
     chatPosition
 }) => {
     const [isHeaderMinimized, setIsHeaderMinimized] = useState(false)
@@ -48,12 +42,14 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     const scrollContainerRef = useRef<HTMLDivElement>(null)
     
     const hasMessages = vodState.messages !== null
+    const { messagesToRender, chatEnabled, updateChatDelay } = useChatSync(vodState.messages, videoState)
+    const { badgeMap, updateBadgeSettings } = useBadges(vodState.broadcaster)
     
     const vodSelector = useVodSelector({
         vodSummaries: vodState.vodSummaries,
         selectedVod: vodState.selectedVod,
         hasMessages,
-        isVideoPlaying: isVideoPlaying === true,
+        isVideoPlaying: chatEnabled,
         videoMetadata,
         searchFilter,
         onSelectVod: onSelectKnownVod

@@ -1,10 +1,8 @@
 import './App.css'
 import { Video } from './video/Video'
 import ChatSidebar from './chat/ChatSidebar'
-import { useChatSync } from '../hooks/useChatSync'
 import { useVideoPlayer } from '../hooks/useVideoPlayer'
 import { useVodData } from '../hooks/useVodData'
-import { useBadges } from '../hooks/useBadges'
 import { useChatPosition } from '../hooks/useChatPosition'
 import { YouTubeEvent } from 'react-youtube'
 import { useState, useEffect } from 'react'
@@ -15,8 +13,6 @@ import { ResetProvider, useResetContext } from '../contexts/ResetContext'
 function AppContent() {
     const { videoState, selectVideo, videoHandlers, setFunnyMoments } = useVideoPlayer()
     const { vodState: vodData, selectVod, onUploadCustomVod } = useVodData(setFunnyMoments)
-    const { messagesToRender, chatEnabled, updateChatDelay } = useChatSync(vodData.messages, videoState)
-    const { badgeMap, updateBadgeSettings } = useBadges(vodData.broadcaster)
     const chatPosition = useChatPosition()
     const [currentTheme, setCurrentTheme] = useState<Theme>(getTheme())
     const { triggerReset } = useResetContext()
@@ -59,16 +55,12 @@ function AppContent() {
             <div className='chat-container'>
                 <ChatSidebar
                     vodState={vodData}
-                    messagesToRender={messagesToRender}
                     onReset={resetAll}
                     onSelectKnownVod={selectVod}
                     onUploadCustomVod={onUploadCustomVod}
                     videoMetadata={videoState.videoMetadata}
-                    isVideoPlaying={chatEnabled}
-                    updateChatDelay={updateChatDelay}
+                    videoState={videoState}
                     updateTheme={setCurrentTheme}
-                    updateBadgeSettings={updateBadgeSettings}
-                    badgeMap={badgeMap}
                     chatPosition={chatPosition}
                 />
             </div>
