@@ -6,10 +6,10 @@ import Settings from '../settings/Settings'
 import ChatHeader from './ChatHeader'
 import ChatNotification from './ChatNotification'
 import ResizeHandle from './ResizeHandle'
-import { ChatMessage, VodSummary, VideoMetadata, ChatData, Theme, VodState, BadgeMap, ChatPosition } from '../../types'
+import { ChatMessage, VodSummary, VideoMetadata, ChatData, Theme, VodState, BadgeMap } from '../../types'
 import { BadgeSettings } from '../../utils/badges'
-import { setChatWidth, setChatHeight } from '../../utils/settings'
 import { UseVodSelectionReturn } from '../../hooks/useVodSelector'
+import { UseChatPositionReturn } from '../../hooks/useChatPosition'
 
 interface ChatSidebarProps {
     vodState: VodState
@@ -21,19 +21,12 @@ interface ChatSidebarProps {
     isVideoPlaying?: boolean
     updateChatDelay: (delay: number) => void
     updateTheme: (theme: Theme) => void
-    updateChatPosition: (position: ChatPosition) => void
-    updateChatWidth: (width: number) => void
-    updateChatHeight: (height: number) => void
     updateBadgeSettings: (badges: BadgeSettings) => void
     badgeMap: BadgeMap | null
-    currentChatPosition: ChatPosition
-    currentChatWidth: number
-    currentChatHeight: number
-    onResizeStart: () => void
-    onResizeEnd: () => void
     searchFilter: string
     onSearchFilterChange: (filter: string) => void
     vodSelector: UseVodSelectionReturn
+    chatPosition: UseChatPositionReturn
 }
 
 const ChatSidebar: FC<ChatSidebarProps> = ({
@@ -43,19 +36,12 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     onUploadCustomVod,
     updateChatDelay,
     updateTheme,
-    updateChatPosition,
-    updateChatWidth,
-    updateChatHeight,
     updateBadgeSettings,
     badgeMap,
-    currentChatPosition,
-    currentChatWidth,
-    currentChatHeight,
-    onResizeStart,
-    onResizeEnd,
     searchFilter,
     onSearchFilterChange,
-    vodSelector
+    vodSelector,
+    chatPosition
 }) => {
     const [isHeaderMinimized, setIsHeaderMinimized] = useState(false)
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -64,22 +50,6 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     const scrollContainerRef = useRef<HTMLDivElement>(null)
 
     const hasMessages = vodState.messages !== null
-
-    const handleMinimizeHeader = () => {
-        setIsHeaderMinimized(true)
-    }
-
-    const handleExpandHeader = () => {
-        setIsHeaderMinimized(false)
-    }
-
-    const handleSettingsClick = () => {
-        setIsSettingsOpen(true)
-    }
-
-    const handleCloseSettings = () => {
-        setIsSettingsOpen(false)
-    }
 
     const handleSelectKnownVod = (summary: VodSummary) => {
         onSearchFilterChange('')
@@ -100,19 +70,12 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
         }, 2000)
     }
 
-    const handleReset = () => {
-        onSearchFilterChange('');
-        onReset();
-    }
-
     const handleResizeWidth = (width: number) => {
-        setChatWidth(width)
-        updateChatWidth(width)
+        chatPosition.updateWidth(width)
     }
 
     const handleResizeHeight = (height: number) => {
-        setChatHeight(height)
-        updateChatHeight(height)
+        chatPosition.updateHeight(height)
     }
 
     useEffect(() => {
@@ -131,12 +94,12 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                 hasMessages={hasMessages}
                 isHeaderMinimized={isHeaderMinimized}
                 searchFilter={searchFilter}
-                onMinimizeHeader={handleMinimizeHeader}
-                onExpandHeader={handleExpandHeader}
-                onSettingsClick={handleSettingsClick}
+                onMinimizeHeader={() => setIsHeaderMinimized(true)}
+                onExpandHeader={() => setIsHeaderMinimized(false)}
+                onSettingsClick={() => setIsSettingsOpen(true)}
                 onSearchFilterChange={onSearchFilterChange}
                 onUploadCustomVod={onUploadCustomVod}
-                onReset={handleReset}
+                onReset={onReset}
             />
 
             <div ref={scrollContainerRef} className={`chat-sidebar-content ${hasMessages ? 'chat-mode' : ''} ${showScrollbar ? 'scrollbar-visible' : ''}`}>
@@ -167,23 +130,23 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
 
             <Settings
                 isOpen={isSettingsOpen}
-                onClose={handleCloseSettings}
+                onClose={() => setIsSettingsOpen(false)}
                 updateChatDelay={updateChatDelay}
                 updateTheme={updateTheme}
-                updateChatPosition={updateChatPosition}
-                updateChatWidth={updateChatWidth}
-                updateChatHeight={updateChatHeight}
+                updateChatPosition={chatPosition.updatePosition}
+                updateChatWidth={chatPosition.updateWidth}
+                updateChatHeight={chatPosition.updateHeight}
                 updateBadgeSettings={updateBadgeSettings}
             />
 
             <ResizeHandle
-                chatPosition={currentChatPosition}
-                currentWidth={currentChatWidth}
-                currentHeight={currentChatHeight}
+                chatPosition={chatPosition.position}
+                currentWidth={chatPosition.width}
+                currentHeight={chatPosition.height}
                 onWidthChange={handleResizeWidth}
                 onHeightChange={handleResizeHeight}
-                onDragStart={onResizeStart}
-                onDragEnd={onResizeEnd}
+                onDragStart={chatPosition.startResize}
+                onDragEnd={chatPosition.endResize}
             />
         </div>
     )

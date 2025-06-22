@@ -141,12 +141,12 @@ export const setAutoSelectConfig = (config: AutoSelectConfig): void => {
     setSetting('autoSelectConfig', config)
 }
 
-export const getChatPosition = (): ChatPosition => {
+export const getChatPositionSetting = (): ChatPosition => {
     const settings = getSettings()
     return settings.chatPosition
 }
 
-export const setChatPosition = (position: ChatPosition): void => {
+export const setChatPositionSetting = (position: ChatPosition): void => {
     setSetting('chatPosition', position)
 }
 
@@ -165,20 +165,20 @@ export const getChatPositionDisplayName = (position: ChatPosition): string => {
     }
 }
 
-export const getChatWidth = (): number => {
+export const getChatWidthSetting = (): number => {
     const settings = getSettings()
     return settings.chatWidth
 }
 
-export const setChatWidth = (width: number): void => {
+export const setChatWidthSetting = (width: number): void => {
     setSetting('chatWidth', width)
 }
 
-export const getChatHeight = (): number => {
+export const getChatHeightSetting = (): number => {
     const settings = getSettings()
     return settings.chatHeight
 }
 
-export const setChatHeight = (height: number): void => {
+export const setChatHeightSetting = (height: number): void => {
     setSetting('chatHeight', height)
 }

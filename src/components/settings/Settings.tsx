@@ -1,7 +1,7 @@
 import './Settings.css';
 import { FC, useState, useEffect } from 'react';
 import { CloseIcon, SettingsIcon } from '../common/Icons';
-import { getChatSelectionMode, setChatSelectionMode, getChatPosition, setChatPosition, getChatDelay, setChatDelay, getChatWidth, setChatWidth, getChatHeight, setChatHeight, getTheme, setTheme, getBadgeSettings, setBadgeSettings, getAutoSelectConfig, setAutoSelectConfig, ChatSelectionMode, ChatPosition, CHAT_SELECTION_OPTIONS, CHAT_POSITION_OPTIONS, THEME_OPTIONS, getThemeDisplayName, getChatPositionDisplayName, AutoSelectConfig } from '../../utils/settings';
+import { getChatSelectionMode, setChatSelectionMode, getChatPositionSetting, setChatPositionSetting, getChatDelay, setChatDelay, getChatWidthSetting, setChatWidthSetting, getChatHeightSetting, setChatHeightSetting, getTheme, setTheme, getBadgeSettings, setBadgeSettings, getAutoSelectConfig, setAutoSelectConfig, ChatSelectionMode, ChatPosition, CHAT_SELECTION_OPTIONS, CHAT_POSITION_OPTIONS, THEME_OPTIONS, getThemeDisplayName, getChatPositionDisplayName, AutoSelectConfig } from '../../utils/settings';
 import { Theme } from '../../types';
 import { BadgeSettings as BadgeSettingsType } from '../../utils/badges';
 import BadgeSettings from './BadgeSettings';
@@ -23,14 +23,14 @@ interface SettingsModalProps {
 const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, updateTheme, updateBadgeSettings, updateChatPosition, updateChatWidth, updateChatHeight }) => {
     const [tempChatSelectionMode, setTempChatSelectionMode] = useState(getChatSelectionMode())
     const [originalChatSelectionMode, setOriginalChatSelectionMode] = useState(getChatSelectionMode())
-    const [tempChatPosition, setTempChatPosition] = useState(getChatPosition())
-    const [originalChatPosition, setOriginalChatPosition] = useState(getChatPosition())
+    const [tempChatPosition, setTempChatPosition] = useState(getChatPositionSetting())
+    const [originalChatPosition, setOriginalChatPosition] = useState(getChatPositionSetting())
     const [tempChatDelay, setTempChatDelay] = useState(getChatDelay())
     const [originalChatDelay, setOriginalChatDelay] = useState(getChatDelay())
-    const [tempChatWidth, setTempChatWidth] = useState(getChatWidth())
-    const [originalChatWidth, setOriginalChatWidth] = useState(getChatWidth())
-    const [tempChatHeight, setTempChatHeight] = useState(getChatHeight())
-    const [originalChatHeight, setOriginalChatHeight] = useState(getChatHeight())
+    const [tempChatWidth, setTempChatWidth] = useState(getChatWidthSetting())
+    const [originalChatWidth, setOriginalChatWidth] = useState(getChatWidthSetting())
+    const [tempChatHeight, setTempChatHeight] = useState(getChatHeightSetting())
+    const [originalChatHeight, setOriginalChatHeight] = useState(getChatHeightSetting())
     const [tempTheme, setTempTheme] = useState(getTheme())
     const [originalTheme, setOriginalTheme] = useState(getTheme())
     const [tempBadgeSettings, setTempBadgeSettings] = useState(getBadgeSettings())
@@ -41,10 +41,10 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
     useEffect(() => {
         if (isOpen) {
             const currentMode = getChatSelectionMode()
-            const currentPosition = getChatPosition()
+            const currentPosition = getChatPositionSetting()
             const currentDelay = getChatDelay()
-            const currentWidth = getChatWidth()
-            const currentHeight = getChatHeight()
+            const currentWidth = getChatWidthSetting()
+            const currentHeight = getChatHeightSetting()
             const currentTheme = getTheme()
             const currentBadgeSettings = getBadgeSettings()
             const currentAutoSelectConfig = getAutoSelectConfig()
@@ -117,10 +117,10 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
 
     const handleSave = () => {
         setChatSelectionMode(tempChatSelectionMode)
-        setChatPosition(tempChatPosition)
+        setChatPositionSetting(tempChatPosition)
         setChatDelay(tempChatDelay)
-        setChatWidth(tempChatWidth)
-        setChatHeight(tempChatHeight)
+        setChatWidthSetting(tempChatWidth)
+        setChatHeightSetting(tempChatHeight)
         setTheme(tempTheme)
         setBadgeSettings(tempBadgeSettings)
         setAutoSelectConfig(tempAutoSelectConfig)
