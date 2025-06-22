@@ -1,6 +1,7 @@
-import { NotificationType } from '../../types';
 import './ChatNotification.css';
 import { FC, useEffect, useState } from 'react';
+
+export type NotificationType = 'info' | 'error';
 
 interface ChatNotificationProps {
     message: string;

@@ -1,5 +1,13 @@
-import { MatchingConfig, VideoMetadata, VodSummary } from '../types';
+import { VideoMetadata, VodSummary } from '../types';
 import { AutoSelectConfig } from './settings';
+
+export interface MatchingConfig {
+    DURATION_TOLERANCE_PERCENT: number;
+    WEIGHTS: {
+        DURATION: number;
+        TITLE: number;
+    };
+}
 
 export interface AutoSelectResult {
     shouldAutoSelect: boolean;

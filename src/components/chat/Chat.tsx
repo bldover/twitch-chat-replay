@@ -1,7 +1,8 @@
 import './Chat.css'
 import { FC, useEffect, useRef } from 'react'
-import { ChatMessage as ChatMessageType, BttvEmoteMap, BadgeMap } from '../../types'
+import { ChatMessage as ChatMessageType, BttvEmoteMap } from '../../types'
 import ChatMessage from './ChatMessage'
+import { BadgeMap } from '../../utils/badges'
 
 type ChatProps = {
     chatMessages: ChatMessageType[],

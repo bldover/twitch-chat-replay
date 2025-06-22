@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import { ChatMessage } from '../types';
 import { VideoPlayerState } from './useVideoPlayer';
-import { getChatDelay } from '../utils/settings';
 import { useResetSubscription } from './useResetSubscription';
+import { useSettings } from '../contexts/SettingsContext';
 
 interface ChatSyncState {
     messagesToRender: ChatMessage[];
@@ -19,13 +19,13 @@ interface ChatSyncControls {
     messagesToRender: ChatMessage[];
     chatEnabled: boolean;
     syncToVideo: () => void;
-    updateChatDelay: (delay: number) => void;
 }
 
 export const useChatSync = (
     messages: ChatMessage[] | null,
     playerState: VideoPlayerState
 ): ChatSyncControls => {
+    const { settings } = useSettings();
 
     const [state, setState] = useState<ChatSyncState>({
         messagesToRender: [],
@@ -35,11 +35,10 @@ export const useChatSync = (
         playbackRate: playerState.playbackRate,
         chatEnabled: playerState.playState === 'playing',
         dirtyChat: false,
-        chatDelay: getChatDelay()
+        chatDelay: settings.chatDelay
     });
 
     const findCommentIndexForOffset = (messages: ChatMessage[], offset: number): number => {
-        console.debug('findCommentIndexForOffset');
         if (!messages) return 0;
         let left = 0;
         let right = messages.length;
@@ -116,18 +115,12 @@ export const useChatSync = (
             playbackRate: 1,
             chatEnabled: false,
             dirtyChat: false,
-            chatDelay: getChatDelay()
+            chatDelay: settings.chatDelay
         });
-    }, []);
-    
+    }, [settings.chatDelay]);
+
     useResetSubscription('useChatSync', resetChat, ['full-reset']);
 
-    const updateChatDelay = useCallback((delay: number): void => {
-        setState(prev => ({
-            ...prev,
-            chatDelay: delay
-        }));
-    }, []);
 
     useEffect(() => {
         if (messages) {
@@ -137,12 +130,11 @@ export const useChatSync = (
     }, [updateChatMessages, messages]);
 
     useEffect(() => {
-        const delay = getChatDelay();
         setState(prev => ({
             ...prev,
             chatEnabled: playerState.playState === 'playing',
             playbackRate: playerState.playbackRate,
-            chatDelay: delay
+            chatDelay: settings.chatDelay
         }));
 
         if (playerState.playState === 'ended') {
@@ -153,29 +145,15 @@ export const useChatSync = (
                 dirtyChat: false
             }));
         }
-    }, [playerState.playState, playerState.playbackRate]);
+    }, [playerState.playState, playerState.playbackRate, settings.chatDelay]);
 
     useEffect(() => {
         syncToVideo();
     }, [messages, playerState.videoPlayer, state.playbackRate, state.chatEnabled, state.chatDelay, syncToVideo]);
 
-    useEffect(() => {
-        const handleStorageChange = () => {
-            const newDelay = getChatDelay();
-            setState(prev => ({
-                ...prev,
-                chatDelay: newDelay
-            }));
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
-    }, []);
-
     return {
         messagesToRender: state.messagesToRender,
         chatEnabled: state.chatEnabled,
-        syncToVideo,
-        updateChatDelay
+        syncToVideo
     };
 };

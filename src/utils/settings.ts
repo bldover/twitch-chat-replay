@@ -1,5 +1,6 @@
-import { Theme } from '../types'
-import { BadgeSettings } from './badges'
+import { BadgeOptions } from './badges'
+
+export type Theme = 'ttv' | 'midnight';
 
 export const CHAT_SELECTION_OPTIONS = [
     'manual',
@@ -35,7 +36,7 @@ export interface AppSettings {
     chatWidth: number
     chatHeight: number
     theme: Theme
-    badges: BadgeSettings
+    badges: BadgeOptions
     autoSelectConfig: AutoSelectConfig
 }
 
@@ -123,12 +124,12 @@ export const getThemeDisplayName = (theme: Theme): string => {
     }
 }
 
-export const getBadgeSettings = (): BadgeSettings => {
+export const getBadgeOptions = (): BadgeOptions => {
     const settings = getSettings()
     return settings.badges
 }
 
-export const setBadgeSettings = (badges: BadgeSettings): void => {
+export const setBadgeOptions = (badges: BadgeOptions): void => {
     setSetting('badges', badges)
 }
 
@@ -141,16 +142,16 @@ export const setAutoSelectConfig = (config: AutoSelectConfig): void => {
     setSetting('autoSelectConfig', config)
 }
 
-export const getChatPositionSetting = (): ChatPosition => {
+export const getChatPosition = (): ChatPosition => {
     const settings = getSettings()
     return settings.chatPosition
 }
 
-export const setChatPositionSetting = (position: ChatPosition): void => {
+export const setChatPosition = (position: ChatPosition): void => {
     setSetting('chatPosition', position)
 }
 
-export const getChatPositionDisplayName = (position: ChatPosition): string => {
+export const getChatPositionName = (position: ChatPosition): string => {
     switch (position) {
         case 'right':
             return 'Right'
@@ -165,20 +166,20 @@ export const getChatPositionDisplayName = (position: ChatPosition): string => {
     }
 }
 
-export const getChatWidthSetting = (): number => {
+export const getChatWidth = (): number => {
     const settings = getSettings()
     return settings.chatWidth
 }
 
-export const setChatWidthSetting = (width: number): void => {
+export const setChatWidth = (width: number): void => {
     setSetting('chatWidth', width)
 }
 
-export const getChatHeightSetting = (): number => {
+export const getChatHeight = (): number => {
     const settings = getSettings()
     return settings.chatHeight
 }
 
-export const setChatHeightSetting = (height: number): void => {
+export const setChatHeight = (height: number): void => {
     setSetting('chatHeight', height)
 }

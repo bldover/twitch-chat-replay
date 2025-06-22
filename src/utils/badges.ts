@@ -1,14 +1,47 @@
-import { BadgeMap, BadgeSet, BadgeMaps, BadgeCategory } from '../types';
 import globalBadges from '../data/badges/global.json';
 import nlBadges from '../data/badges/northernlion.json';
 
-export type BadgeSettings = {
+export type BadgeOptions = {
     showUserStates: boolean;
     showDonations: boolean;
     showSubTiers: boolean;
     showPredictions: boolean;
     showEvents: boolean;
 };
+
+export interface BadgeVersion {
+    id: string;
+    image_url_1x: string;
+    image_url_2x: string;
+    image_url_4x: string;
+    title: string;
+}
+
+export interface BadgeSet {
+    set_id: string;
+    versions: BadgeVersion[];
+}
+
+export interface BadgeConfig {
+    id: string;
+    version?: string;
+    title: string;
+    src: string;
+    category: BadgeCategory;
+}
+
+export type BadgeCategory = 'user_states' | 'donations' | 'sub_tiers' | 'predictions' | 'events';
+
+export interface BadgeMaps {
+    global: BadgeMap;
+    nl: BadgeMap;
+}
+
+export interface BadgeMap {
+    [key: string]: BadgeConfig;
+}
+
+
 
 const createBadgeMapFromSets = (badgeSets: BadgeSet[]): BadgeMap => {
     const badgeMap: BadgeMap = {};

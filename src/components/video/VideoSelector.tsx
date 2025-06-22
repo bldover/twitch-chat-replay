@@ -1,10 +1,10 @@
+import './VideoSelector.css'
 import { FC, useState } from 'react'
-import { VideoData } from '../../types'
 import { validateYouTubeUrl } from '../../utils/urls'
 import { VideoInputField } from './VideoInputField'
 import { PlaylistIndexInput } from './PlaylistIndexInput'
 import { ShuffleToggle } from './ShuffleToggle'
-import './VideoSelector.css'
+import { VideoData } from '../../types'
 
 type VideoSelectorProps = {
     onSubmit: (data: VideoData) => void

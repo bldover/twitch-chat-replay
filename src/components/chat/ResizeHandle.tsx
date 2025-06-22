@@ -1,6 +1,6 @@
 import './ResizeHandle.css';
 import { FC, useRef, useCallback } from 'react';
-import { ChatPosition } from '../../types';
+import { ChatPosition } from '../../utils/settings';
 
 interface ResizeHandleProps {
     chatPosition: ChatPosition;

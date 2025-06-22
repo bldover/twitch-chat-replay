@@ -6,7 +6,7 @@ import Settings from '../settings/Settings'
 import ChatHeader from './ChatHeader'
 import ChatNotification from './ChatNotification'
 import ResizeHandle from './ResizeHandle'
-import { VodSummary, VideoMetadata, ChatData, Theme, VodState } from '../../types'
+import { VodSummary, VideoMetadata, ChatData, VodState } from '../../types'
 import { VideoPlayerState } from '../../hooks/useVideoPlayer'
 import { useVodSelector } from '../../hooks/useVodSelector'
 import { useChatSync } from '../../hooks/useChatSync'
@@ -20,7 +20,6 @@ interface ChatSidebarProps {
     onUploadCustomVod: (json: ChatData) => void
     videoMetadata: VideoMetadata | null
     videoState: VideoPlayerState
-    updateTheme: (theme: Theme) => void
     chatPosition: UseChatPositionReturn
 }
 
@@ -31,7 +30,6 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     onUploadCustomVod,
     videoMetadata,
     videoState,
-    updateTheme,
     chatPosition
 }) => {
     const [isHeaderMinimized, setIsHeaderMinimized] = useState(false)
@@ -42,8 +40,8 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     const scrollContainerRef = useRef<HTMLDivElement>(null)
     
     const hasMessages = vodState.messages !== null
-    const { messagesToRender, chatEnabled, updateChatDelay } = useChatSync(vodState.messages, videoState)
-    const { badgeMap, updateBadgeSettings } = useBadges(vodState.broadcaster)
+    const { messagesToRender, chatEnabled } = useChatSync(vodState.messages, videoState)
+    const { badgeMap } = useBadges(vodState.broadcaster)
     
     const vodSelector = useVodSelector({
         vodSummaries: vodState.vodSummaries,
@@ -135,12 +133,6 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
             <Settings
                 isOpen={isSettingsOpen}
                 onClose={() => setIsSettingsOpen(false)}
-                updateChatDelay={updateChatDelay}
-                updateTheme={updateTheme}
-                updateChatPosition={chatPosition.updatePosition}
-                updateChatWidth={chatPosition.updateWidth}
-                updateChatHeight={chatPosition.updateHeight}
-                updateBadgeSettings={updateBadgeSettings}
             />
 
             <ResizeHandle

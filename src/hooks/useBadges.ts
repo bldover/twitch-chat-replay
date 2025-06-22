@@ -1,11 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
-import { BadgeMaps, BadgeMap, BadgeConfig } from '../types';
-import { BadgeSettings, populateBadgeData } from '../utils/badges';
-import { getBadgeSettings, setBadgeSettings as saveSettings } from '../utils/settings';
+import { populateBadgeData, BadgeMaps, BadgeMap, BadgeConfig } from '../utils/badges';
+import { useSettings } from '../contexts/SettingsContext';
 
 export const useBadges = (broadcaster: string | null) => {
     const [badgeMaps, setBadgeMaps] = useState<BadgeMaps | null>(null);
-    const [badgeSettings, setBadgeSettingsState] = useState<BadgeSettings>(getBadgeSettings());
+    const { settings, updateBadgeSettings } = useSettings();
 
     useEffect(() => {
         populateBadgeData().then(maps => {
@@ -25,15 +24,15 @@ export const useBadges = (broadcaster: string | null) => {
             const shouldInclude = (() => {
                 switch (badgeConfig.category) {
                     case 'user_states':
-                        return badgeSettings.showUserStates;
+                        return settings.badges.showUserStates;
                     case 'donations':
-                        return badgeSettings.showDonations;
+                        return settings.badges.showDonations;
                     case 'sub_tiers':
-                        return badgeSettings.showSubTiers;
+                        return settings.badges.showSubTiers;
                     case 'predictions':
-                        return badgeSettings.showPredictions;
+                        return settings.badges.showPredictions;
                     case 'events':
-                        return badgeSettings.showEvents;
+                        return settings.badges.showEvents;
                     default:
                         return true;
                 }
@@ -45,12 +44,7 @@ export const useBadges = (broadcaster: string | null) => {
         });
 
         return filteredMap;
-    }, [badgeMaps, broadcaster, badgeSettings]);
-
-    const updateBadgeSettings = (newSettings: BadgeSettings) => {
-        setBadgeSettingsState(newSettings);
-        saveSettings(newSettings);
-    };
+    }, [badgeMaps, broadcaster, settings.badges]);
 
     return {
         badgeMap: activeBadgeMap,

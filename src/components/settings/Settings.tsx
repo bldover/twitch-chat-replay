@@ -1,9 +1,9 @@
 import './Settings.css';
 import { FC, useState, useEffect } from 'react';
 import { CloseIcon, SettingsIcon } from '../common/Icons';
-import { getChatSelectionMode, setChatSelectionMode, getChatPositionSetting, setChatPositionSetting, getChatDelay, setChatDelay, getChatWidthSetting, setChatWidthSetting, getChatHeightSetting, setChatHeightSetting, getTheme, setTheme, getBadgeSettings, setBadgeSettings, getAutoSelectConfig, setAutoSelectConfig, ChatSelectionMode, ChatPosition, CHAT_SELECTION_OPTIONS, CHAT_POSITION_OPTIONS, THEME_OPTIONS, getThemeDisplayName, getChatPositionDisplayName, AutoSelectConfig } from '../../utils/settings';
-import { Theme } from '../../types';
-import { BadgeSettings as BadgeSettingsType } from '../../utils/badges';
+import { ChatSelectionMode, ChatPosition, Theme, CHAT_SELECTION_OPTIONS, CHAT_POSITION_OPTIONS, THEME_OPTIONS, getThemeDisplayName, getChatPositionName, AutoSelectConfig, AppSettings } from '../../utils/settings';
+import { BadgeOptions as BadgeSettingsType } from '../../utils/badges';
+import { useSettings } from '../../contexts/SettingsContext';
 import BadgeSettings from './BadgeSettings';
 import SettingItem from './SettingItem';
 import NumericStepper from './NumericStepper';
@@ -12,60 +12,19 @@ import DropdownSelector from './DropdownSelector';
 interface SettingsModalProps {
     isOpen: boolean
     onClose: () => void
-    updateChatDelay: (delay: number) => void
-    updateTheme: (theme: Theme) => void
-    updateBadgeSettings?: (badges: BadgeSettingsType) => void
-    updateChatPosition: (position: ChatPosition) => void
-    updateChatWidth: (width: number) => void
-    updateChatHeight: (height: number) => void
 }
 
-const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, updateTheme, updateBadgeSettings, updateChatPosition, updateChatWidth, updateChatHeight }) => {
-    const [tempChatSelectionMode, setTempChatSelectionMode] = useState(getChatSelectionMode())
-    const [originalChatSelectionMode, setOriginalChatSelectionMode] = useState(getChatSelectionMode())
-    const [tempChatPosition, setTempChatPosition] = useState(getChatPositionSetting())
-    const [originalChatPosition, setOriginalChatPosition] = useState(getChatPositionSetting())
-    const [tempChatDelay, setTempChatDelay] = useState(getChatDelay())
-    const [originalChatDelay, setOriginalChatDelay] = useState(getChatDelay())
-    const [tempChatWidth, setTempChatWidth] = useState(getChatWidthSetting())
-    const [originalChatWidth, setOriginalChatWidth] = useState(getChatWidthSetting())
-    const [tempChatHeight, setTempChatHeight] = useState(getChatHeightSetting())
-    const [originalChatHeight, setOriginalChatHeight] = useState(getChatHeightSetting())
-    const [tempTheme, setTempTheme] = useState(getTheme())
-    const [originalTheme, setOriginalTheme] = useState(getTheme())
-    const [tempBadgeSettings, setTempBadgeSettings] = useState(getBadgeSettings())
-    const [originalBadgeSettings, setOriginalBadgeSettings] = useState(getBadgeSettings())
-    const [tempAutoSelectConfig, setTempAutoSelectConfig] = useState(getAutoSelectConfig())
-    const [originalAutoSelectConfig, setOriginalAutoSelectConfig] = useState(getAutoSelectConfig())
+const Settings: FC<SettingsModalProps> = ({ isOpen, onClose }) => {
+    const { settings, updateSettings } = useSettings();
+    const [tempSettings, setTempSettings] = useState<AppSettings>(settings);
+    const [originalSettings, setOriginalSettings] = useState<AppSettings>(settings);
 
     useEffect(() => {
         if (isOpen) {
-            const currentMode = getChatSelectionMode()
-            const currentPosition = getChatPositionSetting()
-            const currentDelay = getChatDelay()
-            const currentWidth = getChatWidthSetting()
-            const currentHeight = getChatHeightSetting()
-            const currentTheme = getTheme()
-            const currentBadgeSettings = getBadgeSettings()
-            const currentAutoSelectConfig = getAutoSelectConfig()
-            setTempChatSelectionMode(currentMode)
-            setOriginalChatSelectionMode(currentMode)
-            setTempChatPosition(currentPosition)
-            setOriginalChatPosition(currentPosition)
-            setTempChatDelay(currentDelay)
-            setOriginalChatDelay(currentDelay)
-            setTempChatWidth(currentWidth)
-            setOriginalChatWidth(currentWidth)
-            setTempChatHeight(currentHeight)
-            setOriginalChatHeight(currentHeight)
-            setTempTheme(currentTheme)
-            setOriginalTheme(currentTheme)
-            setTempBadgeSettings(currentBadgeSettings)
-            setOriginalBadgeSettings(currentBadgeSettings)
-            setTempAutoSelectConfig(currentAutoSelectConfig)
-            setOriginalAutoSelectConfig(currentAutoSelectConfig)
+            setTempSettings(settings);
+            setOriginalSettings(settings);
         }
-    }, [isOpen])
+    }, [isOpen, settings])
 
     if (!isOpen) return null
 
@@ -75,73 +34,58 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
 
     const handleChatSelectionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const newMode = event.target.value as ChatSelectionMode
-        setTempChatSelectionMode(newMode)
+        setTempSettings(prev => ({ ...prev, chatSelection: newMode }))
     }
 
     const handleChatPositionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const newPosition = event.target.value as ChatPosition
-        setTempChatPosition(newPosition)
+        setTempSettings(prev => ({ ...prev, chatPosition: newPosition }))
     }
 
     const handleChatDelayChange = (value: number) => {
-        setTempChatDelay(value)
+        setTempSettings(prev => ({ ...prev, chatDelay: value }))
     }
 
     const handleChatWidthChange = (value: number) => {
-        setTempChatWidth(value)
+        setTempSettings(prev => ({ ...prev, chatWidth: value }))
     }
 
     const handleChatHeightChange = (value: number) => {
-        setTempChatHeight(value)
+        setTempSettings(prev => ({ ...prev, chatHeight: value }))
     }
 
     const handleThemeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const newTheme = event.target.value as Theme
-        setTempTheme(newTheme)
+        setTempSettings(prev => ({ ...prev, theme: newTheme }))
     }
 
     const handleBadgeToggle = (key: keyof BadgeSettingsType) => {
-        setTempBadgeSettings(prev => ({
+        setTempSettings(prev => ({
             ...prev,
-            [key]: !prev[key]
+            badges: {
+                ...prev.badges,
+                [key]: !prev.badges[key]
+            }
         }))
     }
 
     const handleAutoSelectConfigChange = (key: keyof AutoSelectConfig, value: number | boolean) => {
-        setTempAutoSelectConfig(prev => ({
+        setTempSettings(prev => ({
             ...prev,
-            [key]: value
+            autoSelectConfig: {
+                ...prev.autoSelectConfig,
+                [key]: value
+            }
         }))
     }
 
-
     const handleSave = () => {
-        setChatSelectionMode(tempChatSelectionMode)
-        setChatPositionSetting(tempChatPosition)
-        setChatDelay(tempChatDelay)
-        setChatWidthSetting(tempChatWidth)
-        setChatHeightSetting(tempChatHeight)
-        setTheme(tempTheme)
-        setBadgeSettings(tempBadgeSettings)
-        setAutoSelectConfig(tempAutoSelectConfig)
-        updateChatDelay(tempChatDelay)
-        updateTheme(tempTheme)
-        updateBadgeSettings?.(tempBadgeSettings)
-        updateChatPosition(tempChatPosition)
-        updateChatWidth(tempChatWidth)
-        updateChatHeight(tempChatHeight)
+        updateSettings(tempSettings)
         onClose()
     }
 
     const handleDiscard = () => {
-        setTempChatSelectionMode(originalChatSelectionMode)
-        setTempChatPosition(originalChatPosition)
-        setTempChatDelay(originalChatDelay)
-        setTempChatWidth(originalChatWidth)
-        setTempChatHeight(originalChatHeight)
-        setTempTheme(originalTheme)
-        setTempBadgeSettings(originalBadgeSettings)
-        setTempAutoSelectConfig(originalAutoSelectConfig)
+        setTempSettings(originalSettings)
         onClose()
     }
 
@@ -161,7 +105,7 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                         description='Color theme for the application'
                     >
                         <DropdownSelector
-                            value={tempTheme}
+                            value={tempSettings.theme}
                             onChange={handleThemeChange}
                             name='themeDropdown'
                             options={THEME_OPTIONS.map((theme) => ({
@@ -175,12 +119,12 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                         description='Position of the chat sidebar relative to the video'
                     >
                         <DropdownSelector
-                            value={tempChatPosition}
+                            value={tempSettings.chatPosition}
                             onChange={handleChatPositionChange}
                             name='chatPositionDropdown'
                             options={CHAT_POSITION_OPTIONS.map((position) => ({
                                 value: position,
-                                label: getChatPositionDisplayName(position)
+                                label: getChatPositionName(position)
                             }))}
                         />
                     </SettingItem>
@@ -189,7 +133,7 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                         description='Width of the chat sidebar when positioned left/right (in pixels)'
                     >
                         <NumericStepper
-                            value={tempChatWidth}
+                            value={tempSettings.chatWidth}
                             onChange={handleChatWidthChange}
                             name='chatWidthStepper'
                             step={50}
@@ -202,7 +146,7 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                         description='Height of the chat sidebar when positioned top/bottom (in pixels)'
                     >
                         <NumericStepper
-                            value={tempChatHeight}
+                            value={tempSettings.chatHeight}
                             onChange={handleChatHeightChange}
                             name='chatHeightStepper'
                             step={50}
@@ -215,7 +159,7 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                         description='Offset the chat file from the video timestamp (in seconds)'
                     >
                         <NumericStepper
-                            value={tempChatDelay}
+                            value={tempSettings.chatDelay}
                             onChange={handleChatDelayChange}
                             name='chatDelayStepper'
                             step={1}
@@ -226,7 +170,7 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                         description='Show user badges before usernames in chat'
                     >
                         <BadgeSettings
-                            value={tempBadgeSettings}
+                            value={tempSettings.badges}
                             onChange={handleBadgeToggle}
                         />
                     </SettingItem>
@@ -235,7 +179,7 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                         description={getAllChatSelectionDescriptions()}
                     >
                         <DropdownSelector
-                            value={tempChatSelectionMode}
+                            value={tempSettings.chatSelection}
                             onChange={handleChatSelectionChange}
                             name='chatSelectionDropdown'
                             options={CHAT_SELECTION_OPTIONS.map((option) => ({
@@ -246,14 +190,14 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                             }))}
                         />
                     </SettingItem>
-                    {tempChatSelectionMode === 'auto-select' && (
+                    {tempSettings.chatSelection === 'auto-select' && (
                         <>
                             <SettingItem
                                 name='Min Match Threshold'
                                 description='Minimum match percentage required for automatic selection (0-100%)'
                             >
                                 <NumericStepper
-                                    value={tempAutoSelectConfig.minMatchThreshold}
+                                    value={tempSettings.autoSelectConfig.minMatchThreshold}
                                     onChange={(value) => handleAutoSelectConfigChange('minMatchThreshold', value)}
                                     name='minMatchThresholdStepper'
                                     step={5}
@@ -266,7 +210,7 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                                 description='Required percentage gap between best and second best match (0-100%)'
                             >
                                 <NumericStepper
-                                    value={tempAutoSelectConfig.matchMarginThreshold}
+                                    value={tempSettings.autoSelectConfig.matchMarginThreshold}
                                     onChange={(value) => handleAutoSelectConfigChange('matchMarginThreshold', value)}
                                     name='matchMarginThresholdStepper'
                                     step={5}
@@ -279,7 +223,7 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose, updateChatDelay, up
                                 description='How long to show the auto-selected chat notification (0 = disabled, 1-60 seconds)'
                             >
                                 <NumericStepper
-                                    value={tempAutoSelectConfig.autoSelectNotificationDuration}
+                                    value={tempSettings.autoSelectConfig.autoSelectNotificationDuration}
                                     onChange={(value) => handleAutoSelectConfigChange('autoSelectNotificationDuration', value)}
                                     name='notificationDurationStepper'
                                     step={1}

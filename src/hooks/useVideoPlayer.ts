@@ -1,8 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
 import { YouTubeEvent, YouTubePlayer } from 'react-youtube';
-import { VideoData, VideoMetadata, VideoPlayState } from '../types';
+import { VideoMetadata, VideoData } from '../types';
 import { setQueryParam, getQueryParam } from '../utils/queryParams';
 import { useResetSubscription } from './useResetSubscription';
+
+export type VideoPlayState = 'initializing' | 'idle' | 'playing' | 'paused' | 'ended';
 
 export interface VideoPlayerState {
     videoData: VideoData | null;
@@ -128,7 +130,7 @@ export const useVideoPlayer = (): VideoPlayerControls => {
             playbackRate: 1
         });
     }, []);
-    
+
     useResetSubscription('useVideoPlayer', resetVideo, ['full-reset']);
 
     useEffect(() => {

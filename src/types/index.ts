@@ -25,24 +25,30 @@ export interface ChatMessage {
     };
 }
 
+export interface BttvEmoteMap {
+    [code: string]: string;
+}
+
 export interface BttvEmote {
     code: string;
     id: string;
 }
 
-export interface BttvEmoteMap {
-    [code: string]: string;
-}
-
-export interface BttvEmoteData {
-    global: BttvEmote[];
-    northernlion: {
-        sharedEmotes: BttvEmote[];
+export interface AllBttvEmotes {
+    [date: string]: {
+        global: BttvEmote[];
+        northernlion: {
+            sharedEmotes: BttvEmote[];
+        };
     };
 }
 
-export interface AllBttvEmotes {
-    [date: string]: BttvEmoteData;
+export type VideoData = {
+    playlistId?: string
+    initialVideoId?: string
+    currentVideoId?: string
+    initialVideoIndex?: number
+    shuffleEnabled?: boolean
 }
 
 export interface VideoMetadata {
@@ -65,74 +71,6 @@ export interface ChatData {
 
 export interface FunnyMoment {
     timestamp: number;
-}
-
-export interface MatchingConfig {
-    DURATION_TOLERANCE_PERCENT: number;
-    WEIGHTS: {
-        DURATION: number;
-        TITLE: number;
-    };
-}
-
-export type VideoData = {
-    playlistId?: string
-    initialVideoId?: string
-    currentVideoId?: string
-    initialVideoIndex?: number
-    shuffleEnabled?: boolean
-}
-
-export type VideoPlayState = 'initializing' | 'idle' | 'playing' | 'paused' | 'ended';
-
-export type Theme = 'ttv' | 'midnight';
-
-export type ChatPosition = 'right' | 'left' | 'top' | 'bottom';
-
-export interface BadgeVersion {
-    id: string;
-    image_url_1x: string;
-    image_url_2x: string;
-    image_url_4x: string;
-    title: string;
-}
-
-export interface BadgeSet {
-    set_id: string;
-    versions: BadgeVersion[];
-}
-
-export interface BadgeConfig {
-    id: string;
-    version?: string;
-    title: string;
-    src: string;
-    category: BadgeCategory;
-}
-
-export type BadgeCategory = 'user_states' | 'donations' | 'sub_tiers' | 'predictions' | 'events';
-
-export interface BadgeMap {
-    [key: string]: BadgeConfig;
-}
-
-export interface BadgeMaps {
-    global: BadgeMap;
-    nl: BadgeMap;
-}
-
-export interface AutoSelectNotification {
-    vod: VodSummary;
-    matchPercent: number;
-}
-
-export type NotificationType = 'info' | 'error';
-
-export interface NotificationState {
-    type: 'auto-select' | 'waiting' | 'no-match' | null;
-    message: string;
-    details?: string;
-    notificationType: NotificationType;
 }
 
 export interface VodState {

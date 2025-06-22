@@ -1,10 +1,11 @@
 import './ChatMessage.css';
 import { FC } from 'react';
-import { ChatMessage as ChatMessageType, BttvEmoteMap, BadgeMap } from '../../types';
+import { ChatMessage as ChatMessageType, BttvEmoteMap } from '../../types';
 import { getColor } from '../../utils/colors';
 import UserBadges from './UserBadges';
 import TwitchEmote from './TwitchEmote';
 import BttvEmote from './BttvEmote';
+import { BadgeMap } from '../../utils/badges';
 
 type ChatMessageProps = {
     message: ChatMessageType;

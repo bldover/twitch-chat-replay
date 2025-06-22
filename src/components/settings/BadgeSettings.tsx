@@ -1,6 +1,6 @@
 import { FC, useMemo } from 'react';
 import ExpandableChecklist, { ChecklistOption } from './ExpandableChecklist';
-import { BadgeSettings as BadgeSettingsType } from '../../utils/badges';
+import { BadgeOptions as BadgeSettingsType } from '../../utils/badges';
 
 interface BadgeSettingsProps {
     value: BadgeSettingsType;

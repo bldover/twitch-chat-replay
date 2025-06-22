@@ -5,21 +5,20 @@ import { useVideoPlayer } from '../hooks/useVideoPlayer'
 import { useVodData } from '../hooks/useVodData'
 import { useChatPosition } from '../hooks/useChatPosition'
 import { YouTubeEvent } from 'react-youtube'
-import { useState, useEffect } from 'react'
-import { getTheme } from '../utils/settings'
-import { Theme } from '../types'
+import { useEffect } from 'react'
 import { ResetProvider, useResetContext } from '../contexts/ResetContext'
+import { SettingsProvider, useSettings } from '../contexts/SettingsContext'
 
 function AppContent() {
     const { videoState, selectVideo, videoHandlers, setFunnyMoments } = useVideoPlayer()
     const { vodState: vodData, selectVod, onUploadCustomVod } = useVodData(setFunnyMoments)
     const chatPosition = useChatPosition()
-    const [currentTheme, setCurrentTheme] = useState<Theme>(getTheme())
+    const { settings } = useSettings()
     const { triggerReset } = useResetContext()
 
     useEffect(() => {
-        document.documentElement.setAttribute('data-theme', currentTheme)
-    }, [currentTheme])
+        document.documentElement.setAttribute('data-theme', settings.theme)
+    }, [settings.theme])
 
     const resetAll = (): void => {
         console.debug('resetAll')
@@ -60,7 +59,6 @@ function AppContent() {
                     onUploadCustomVod={onUploadCustomVod}
                     videoMetadata={videoState.videoMetadata}
                     videoState={videoState}
-                    updateTheme={setCurrentTheme}
                     chatPosition={chatPosition}
                 />
             </div>
@@ -70,9 +68,11 @@ function AppContent() {
 
 function App() {
     return (
-        <ResetProvider>
-            <AppContent />
-        </ResetProvider>
+        <SettingsProvider>
+            <ResetProvider>
+                <AppContent />
+            </ResetProvider>
+        </SettingsProvider>
     );
 }
 

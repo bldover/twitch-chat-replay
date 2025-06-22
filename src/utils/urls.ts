@@ -1,4 +1,4 @@
-import { VideoData } from '../types'
+import { VideoData } from "../types"
 
 export type ValidationResult = {
     isValid: boolean

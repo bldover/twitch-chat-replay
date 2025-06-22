@@ -196,7 +196,7 @@ export const useVodSelector = ({
                     return;
                 }
 
-                if (!shouldUseAutoMode()) {
+                if (chatMode !== 'auto-search') {
                     // auto search mode was just disabled
                     setStateWithLog('vod-search');
                     return;
@@ -301,7 +301,7 @@ export const useVodSelector = ({
         setHasVideoEverPlayed(false);
         setStateWithLog('vod-search');
     }, [clearNotificationTimeout, setStateWithLog]);
-    
+
     useResetSubscription('useVodSelector', resetAll, ['video-change', 'full-reset']);
 
     const getUiState = () => {

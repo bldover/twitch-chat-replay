@@ -1,13 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ChatPosition } from '../types';
-import { 
-    getChatPositionSetting, 
-    getChatWidthSetting, 
-    getChatHeightSetting,
-    setChatPositionSetting,
-    setChatWidthSetting,
-    setChatHeightSetting 
-} from '../utils/settings';
+import { ChatPosition } from '../utils/settings';
+import { useSettings } from '../contexts/SettingsContext';
 
 export interface UseChatPositionReturn {
     position: ChatPosition;
@@ -23,30 +16,14 @@ export interface UseChatPositionReturn {
 }
 
 export const useChatPosition = (): UseChatPositionReturn => {
-    const [position, setPosition] = useState<ChatPosition>(getChatPositionSetting());
-    const [width, setWidth] = useState<number>(getChatWidthSetting());
-    const [height, setHeight] = useState<number>(getChatHeightSetting());
+    const { settings, updateChatPosition, updateChatWidth, updateChatHeight } = useSettings();
     const [isResizing, setIsResizing] = useState<boolean>(false);
 
     useEffect(() => {
-        document.documentElement.style.setProperty('--chat-width', `${width}px`);
-        document.documentElement.style.setProperty('--chat-height', `${height}px`);
-    }, [width, height]);
+        document.documentElement.style.setProperty('--chat-width', `${settings.chatWidth}px`);
+        document.documentElement.style.setProperty('--chat-height', `${settings.chatHeight}px`);
+    }, [settings.chatWidth, settings.chatHeight]);
 
-    const updatePosition = useCallback((newPosition: ChatPosition) => {
-        setPosition(newPosition);
-        setChatPositionSetting(newPosition);
-    }, []);
-
-    const updateWidth = useCallback((newWidth: number) => {
-        setWidth(newWidth);
-        setChatWidthSetting(newWidth);
-    }, []);
-
-    const updateHeight = useCallback((newHeight: number) => {
-        setHeight(newHeight);
-        setChatHeightSetting(newHeight);
-    }, []);
 
     const startResize = useCallback(() => {
         setIsResizing(true);
@@ -57,7 +34,7 @@ export const useChatPosition = (): UseChatPositionReturn => {
     }, []);
 
     const getLayoutClass = useCallback((): string => {
-        switch (position) {
+        switch (settings.chatPosition) {
             case 'right':
                 return 'layout-row';
             case 'left':
@@ -69,16 +46,16 @@ export const useChatPosition = (): UseChatPositionReturn => {
             default:
                 return 'layout-row';
         }
-    }, [position]);
+    }, [settings.chatPosition]);
 
     return {
-        position,
-        width,
-        height,
+        position: settings.chatPosition,
+        width: settings.chatWidth,
+        height: settings.chatHeight,
         isResizing,
-        updatePosition,
-        updateWidth,
-        updateHeight,
+        updatePosition: updateChatPosition,
+        updateWidth: updateChatWidth,
+        updateHeight: updateChatHeight,
         startResize,
         endResize,
         getLayoutClass

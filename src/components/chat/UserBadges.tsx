@@ -1,6 +1,7 @@
 import './UserBadges.css';
 import { FC } from 'react';
-import { ChatMessage, BadgeMap } from '../../types';
+import { ChatMessage } from '../../types';
+import { BadgeMap } from '../../utils/badges';
 
 type UserBadgesProps = {
     message: ChatMessage;
