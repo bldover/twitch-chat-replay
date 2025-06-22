@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { ChatMessage } from '../types';
 import { VideoPlayerState } from './useVideoPlayer';
 import { getChatDelay } from '../utils/settings';
+import { useResetSubscription } from './useResetSubscription';
 
 interface ChatSyncState {
     messagesToRender: ChatMessage[];
@@ -18,7 +19,6 @@ interface ChatSyncControls {
     messagesToRender: ChatMessage[];
     chatEnabled: boolean;
     syncToVideo: () => void;
-    resetChat: () => void;
     updateChatDelay: (delay: number) => void;
 }
 
@@ -119,6 +119,8 @@ export const useChatSync = (
             chatDelay: getChatDelay()
         });
     }, []);
+    
+    useResetSubscription('useChatSync', resetChat, ['full-reset']);
 
     const updateChatDelay = useCallback((delay: number): void => {
         setState(prev => ({
@@ -174,7 +176,6 @@ export const useChatSync = (
         messagesToRender: state.messagesToRender,
         chatEnabled: state.chatEnabled,
         syncToVideo,
-        resetChat,
         updateChatDelay
     };
 };

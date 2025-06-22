@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { VodSummary, VideoMetadata } from '../types';
 import { getChatSelectionMode, getAutoSelectConfig } from '../utils/settings';
 import { filterAndRankChatOptions, evaluateAutoSelection } from '../utils/chatMatcher';
+import { useResetSubscription } from './useResetSubscription';
 
 export type VodSelectionState =
     | 'vod-search'
@@ -47,7 +48,6 @@ export interface UseVodSelectionReturn {
     vodSelectorData: VodSelectorData | null;
     selectVod: (vod: VodSummary) => void;
     unselectVod: () => void;
-    resetVodSelector: () => void;
 }
 
 export const useVodSelector = ({
@@ -301,6 +301,8 @@ export const useVodSelector = ({
         setHasVideoEverPlayed(false);
         setStateWithLog('vod-search');
     }, [clearNotificationTimeout, setStateWithLog]);
+    
+    useResetSubscription('useVodSelector', resetAll, ['video-change', 'full-reset']);
 
     const getUiState = () => {
         switch (state) {
@@ -372,7 +374,6 @@ export const useVodSelector = ({
         notificationData: uiState.notificationData || null,
         vodSelectorData: uiState.vodSelectorData || null,
         selectVod,
-        unselectVod: unselectVod,
-        resetVodSelector: resetAll
+        unselectVod: unselectVod
     };
 };

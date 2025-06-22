@@ -5,6 +5,7 @@ import { fetchVodSummaries } from '../api/vodApi';
 import { fetchChatMessages } from '../api/chatApi';
 import { fetchFunnyMoments } from '../api/funnyMomentApi';
 import { setQueryParam, getQueryParam } from '../utils/queryParams';
+import { useResetSubscription } from './useResetSubscription';
 
 interface VodDataState {
     vodSummaries: VodSummary[];
@@ -18,7 +19,6 @@ interface VodDataControls {
     vodState: VodState;
     selectVod: (summary: VodSummary) => void;
     onUploadCustomVod: (json: ChatData) => void;
-    resetSelectedChat: () => void;
 }
 
 export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDataControls => {
@@ -108,6 +108,8 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
             currentVodBttvEmotes: null
         }));
     }, []);
+    
+    useResetSubscription('useVodData', resetSelectedChat, ['video-change', 'full-reset']);
 
     useEffect(() => {
         loadVodSummaries()
@@ -128,7 +130,6 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
     return {
         vodState,
         selectVod,
-        onUploadCustomVod,
-        resetSelectedChat
+        onUploadCustomVod
     };
 };

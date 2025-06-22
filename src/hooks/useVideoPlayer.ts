@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { YouTubeEvent, YouTubePlayer } from 'react-youtube';
 import { VideoData, VideoMetadata, VideoPlayState } from '../types';
 import { setQueryParam, getQueryParam } from '../utils/queryParams';
+import { useResetSubscription } from './useResetSubscription';
 
 export interface VideoPlayerState {
     videoData: VideoData | null;
@@ -24,7 +25,6 @@ interface VideoPlayerControls {
         onPlaybackRateChange: (event: YouTubeEvent) => void;
     };
     setFunnyMoments: (moments: number[]) => void;
-    resetVideo: () => void;
 }
 
 export const useVideoPlayer = (): VideoPlayerControls => {
@@ -128,6 +128,8 @@ export const useVideoPlayer = (): VideoPlayerControls => {
             playbackRate: 1
         });
     }, []);
+    
+    useResetSubscription('useVideoPlayer', resetVideo, ['full-reset']);
 
     useEffect(() => {
         const seekToFunnyMoment = (direction: string): void => {
@@ -177,7 +179,6 @@ export const useVideoPlayer = (): VideoPlayerControls => {
             onEnd,
             onPlaybackRateChange
         },
-        setFunnyMoments,
-        resetVideo
+        setFunnyMoments
     };
 };
