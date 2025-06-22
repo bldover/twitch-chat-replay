@@ -1,6 +1,7 @@
 @import './themes.css';
 
 body {
+    background-color: black;
     margin: 0;
     font-family: 'Arial', 'sans-serif';
     -webkit-font-smoothing: antialiased;

@@ -5,8 +5,10 @@ import ChatSelector from './ChatSelector'
 import Settings from '../settings/Settings'
 import ChatHeader from './ChatHeader'
 import ChatNotification from './ChatNotification'
+import ResizeHandle from './ResizeHandle'
 import { ChatMessage, VodSummary, VideoMetadata, ChatData, Theme, VodState, BadgeMap, ChatPosition } from '../../types'
 import { BadgeSettings } from '../../utils/badges'
+import { setChatWidth, setChatHeight } from '../../utils/settings'
 import { useVodSelector } from '../../hooks/useVodSelector'
 
 interface ChatSidebarProps {
@@ -24,6 +26,11 @@ interface ChatSidebarProps {
     updateChatHeight: (height: number) => void
     updateBadgeSettings: (badges: BadgeSettings) => void
     badgeMap: BadgeMap | null
+    currentChatPosition: ChatPosition
+    currentChatWidth: number
+    currentChatHeight: number
+    onResizeStart: () => void
+    onResizeEnd: () => void
 }
 
 const ChatSidebar: FC<ChatSidebarProps> = ({
@@ -40,7 +47,12 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     updateChatWidth,
     updateChatHeight,
     updateBadgeSettings,
-    badgeMap
+    badgeMap,
+    currentChatPosition,
+    currentChatWidth,
+    currentChatHeight,
+    onResizeStart,
+    onResizeEnd
 }) => {
     const [isHeaderMinimized, setIsHeaderMinimized] = useState(false)
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -102,6 +114,16 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
         vodSelector.resetVod()
     }
 
+    const handleResizeWidth = (width: number) => {
+        setChatWidth(width)
+        updateChatWidth(width)
+    }
+
+    const handleResizeHeight = (height: number) => {
+        setChatHeight(height)
+        updateChatHeight(height)
+    }
+
     useEffect(() => {
         if (!hasMessages && scrollContainerRef.current) {
             scrollContainerRef.current.scrollTop = 0
@@ -161,6 +183,16 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                 updateChatWidth={updateChatWidth}
                 updateChatHeight={updateChatHeight}
                 updateBadgeSettings={updateBadgeSettings}
+            />
+
+            <ResizeHandle
+                chatPosition={currentChatPosition}
+                currentWidth={currentChatWidth}
+                currentHeight={currentChatHeight}
+                onWidthChange={handleResizeWidth}
+                onHeightChange={handleResizeHeight}
+                onDragStart={onResizeStart}
+                onDragEnd={onResizeEnd}
             />
         </div>
     )

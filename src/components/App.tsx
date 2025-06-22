@@ -1,5 +1,6 @@
 import './App.css'
 import { Video } from './video/Video'
+import VideoOverlay from './video/VideoOverlay'
 import ChatSidebar from './chat/ChatSidebar'
 import { useChatSync } from '../hooks/useChatSync'
 import { useVideoPlayer } from '../hooks/useVideoPlayer'
@@ -19,6 +20,7 @@ function App() {
     const [currentChatPosition, setCurrentChatPosition] = useState<ChatPosition>(getChatPosition())
     const [currentChatWidth, setCurrentChatWidth] = useState<number>(getChatWidth())
     const [currentChatHeight, setCurrentChatHeight] = useState<number>(getChatHeight())
+    const [isResizing, setIsResizing] = useState<boolean>(false)
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', currentTheme)
@@ -44,6 +46,14 @@ function App() {
 
     const handleChatHeightUpdate = (height: number) => {
         setCurrentChatHeight(height)
+    }
+
+    const handleResizeStart = () => {
+        setIsResizing(true)
+    }
+
+    const handleResizeEnd = () => {
+        setIsResizing(false)
     }
 
     const handleSelectChat = (summary: any) => selectChat(summary)
@@ -76,6 +86,7 @@ function App() {
                 onVideoChange={handleVideoChange}
                 onEnd={videoHandlers.onEnd}
             />
+            <VideoOverlay isVisible={isResizing} />
         </div>
     )
 
@@ -96,6 +107,11 @@ function App() {
                 updateChatHeight={handleChatHeightUpdate}
                 updateBadgeSettings={updateBadgeSettings}
                 badgeMap={badgeMap}
+                currentChatPosition={currentChatPosition}
+                currentChatWidth={currentChatWidth}
+                currentChatHeight={currentChatHeight}
+                onResizeStart={handleResizeStart}
+                onResizeEnd={handleResizeEnd}
             />
         </div>
     )

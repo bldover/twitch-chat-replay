@@ -146,16 +146,25 @@ export const useVodSelector = ({
 
         switch (state) {
             case 'vod-search':
-                // when actively searching for a vod or a video hasn't been selected, do nothing
-                if (searchFilter !== '') {
-                    return;
+                if (selectedVod && hasMessages) {
+                    // vod selected before video played
+                    if (isVideoPlaying || hasVideoEverPlayed) {
+                        if (isVideoPlaying && !hasVideoEverPlayed) {
+                            setHasVideoEverPlayed(true);
+                        }
+                        setStateWithLog('vod-selected-playing');
+                    } else {
+                        setStateWithLog('vod-selected-waiting');
+                    }
                 }
-                if (!videoMetadata) {
+
+                if (searchFilter !== '') {
+                    // actively searching
                     return;
                 }
 
-                // when video has been started, then use the chat auto select config to decide
-                if (shouldUseAutoMode()) {
+                if (videoMetadata && shouldUseAutoMode()) {
+                    // video selected so try to auto select
                     if (chatMode === 'auto-select') {
                         const autoSelectedVod = getAutoSelectResult();
                         if (autoSelectedVod) {
@@ -189,13 +198,13 @@ export const useVodSelector = ({
                 }
 
                 if (!shouldUseAutoMode()) {
-                    // auto search mode was disabled
+                    // auto search mode was just disabled
                     setStateWithLog('vod-search');
                     return;
                 }
 
                 if (selectedVod && hasMessages) {
-                    // with YT autoplay enabled, the waiting state is not expected to be used here
+                    // YT autoplay is enabled so waiting is typically not used but keep it just in case
                     if (isVideoPlaying || hasVideoEverPlayed) {
                         if (isVideoPlaying && !hasVideoEverPlayed) {
                             setHasVideoEverPlayed(true);
@@ -221,33 +230,9 @@ export const useVodSelector = ({
                     setStateWithLog('vod-search');
                     return;
                 }
-
-                // TODO: remove? don't think this does anything
-                const autoFiltered = getAutoFilteredSummaries();
-                if (autoFiltered.length > 0) {
-                    setStateWithLog('vod-auto-search');
-                }
                 break;
 
             case 'vod-selected-waiting':
-                if (searchFilter !== '') {
-                    // TODO: remove? search bar disappears so prob not valid
-                    setStateWithLog('vod-search');
-                    setAutoSelectNotification(null);
-                    clearNotificationTimeout();
-                    return;
-                }
-
-                if (!selectedVod || !hasMessages) {
-                    // TODO: remove? selectedvod should always be set?
-                    if (shouldUseAutoMode()) {
-                        setStateWithLog('vod-auto-search');
-                    } else {
-                        setStateWithLog('vod-search');
-                    }
-                    return;
-                }
-
                 if (isVideoPlaying || hasVideoEverPlayed) {
                     // video started so start displaying the chat
                     if (isVideoPlaying && !hasVideoEverPlayed) {
@@ -258,44 +243,11 @@ export const useVodSelector = ({
                 break;
 
             case 'vod-selected-notify':
-                if (searchFilter !== '') {
-                    // TODO: remove? should not be possible as search bar is hidden
-                    setStateWithLog('vod-search');
-                    setAutoSelectNotification(null);
-                    clearNotificationTimeout();
-                    return;
-                }
-                if (!selectedVod || !hasMessages) {
-                    if (shouldUseAutoMode()) {
-                        setStateWithLog('vod-auto-search');
-                    } else {
-                        setStateWithLog('vod-search');
-                    }
-                    setAutoSelectNotification(null);
-                    clearNotificationTimeout();
-                }
+                // timeout will handle state transition
                 break;
 
             case 'vod-selected-playing':
-                if (searchFilter !== '') {
-                    setStateWithLog('vod-search');
-                    setAutoSelectNotification(null);
-                    clearNotificationTimeout();
-                    return;
-                }
-                if (!selectedVod || !hasMessages) {
-                    if (shouldUseAutoMode()) {
-                        setStateWithLog('vod-auto-search');
-                    } else {
-                        setStateWithLog('vod-search');
-                    }
-                    return;
-                }
-                if (!isVideoPlaying && !hasVideoEverPlayed) {
-                    setStateWithLog('vod-selected-waiting');
-                } else if (isVideoPlaying && !hasVideoEverPlayed) {
-                    setHasVideoEverPlayed(true);
-                }
+                // terminal state, only reset will move out
                 break;
 
             default:
