@@ -6,6 +6,7 @@ import { useChatSync } from '../hooks/useChatSync'
 import { useVideoPlayer } from '../hooks/useVideoPlayer'
 import { useVodData } from '../hooks/useVodData'
 import { useBadges } from '../hooks/useBadges'
+import { useVodSelector } from '../hooks/useVodSelector'
 import { YouTubeEvent } from 'react-youtube'
 import { useState, useEffect } from 'react'
 import { getTheme, getChatPosition, getChatWidth, getChatHeight } from '../utils/settings'
@@ -13,7 +14,7 @@ import { Theme, ChatPosition } from '../types'
 
 function App() {
     const { videoState, selectVideo, videoHandlers, setFunnyMoments, resetVideo } = useVideoPlayer()
-    const { state: vodState, selectChat, onUploadCustomVod, resetSelectedChat } = useVodData(setFunnyMoments)
+    const { vodState, selectVod, onUploadCustomVod, resetSelectedChat } = useVodData(setFunnyMoments)
     const { messagesToRender, chatEnabled, resetChat, updateChatDelay } = useChatSync(vodState.messages, videoState)
     const { badgeMap, updateBadgeSettings } = useBadges(vodState.broadcaster)
     const [currentTheme, setCurrentTheme] = useState<Theme>(getTheme())
@@ -21,6 +22,19 @@ function App() {
     const [currentChatWidth, setCurrentChatWidth] = useState<number>(getChatWidth())
     const [currentChatHeight, setCurrentChatHeight] = useState<number>(getChatHeight())
     const [isResizing, setIsResizing] = useState<boolean>(false)
+    const [searchFilter, setSearchFilter] = useState<string>('')
+
+    const hasMessages = vodState.messages !== null
+
+    const vodSelector = useVodSelector({
+        vodSummaries: vodState.vodSummaries,
+        selectedVod: vodState.selectedVod,
+        hasMessages,
+        isVideoPlaying: videoState.playState === 'playing',
+        videoMetadata: videoState.videoMetadata,
+        searchFilter,
+        onSelectVod: selectVod
+    })
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', currentTheme)
@@ -31,37 +45,17 @@ function App() {
         document.documentElement.style.setProperty('--chat-height', `${currentChatHeight}px`)
     }, [currentChatWidth, currentChatHeight])
 
+    const handleResizeStart = () => setIsResizing(true);
+    const handleResizeEnd = () => setIsResizing(false);
 
-    const handleThemeUpdate = (theme: Theme) => {
-        setCurrentTheme(theme)
-    }
-
-    const handleChatPositionUpdate = (position: ChatPosition) => {
-        setCurrentChatPosition(position)
-    }
-
-    const handleChatWidthUpdate = (width: number) => {
-        setCurrentChatWidth(width)
-    }
-
-    const handleChatHeightUpdate = (height: number) => {
-        setCurrentChatHeight(height)
-    }
-
-    const handleResizeStart = () => {
-        setIsResizing(true)
-    }
-
-    const handleResizeEnd = () => {
-        setIsResizing(false)
-    }
-
-    const handleSelectChat = (summary: any) => selectChat(summary)
+    const handleSelectChat = (summary: any) => selectVod(summary);
 
     const resetAll = (): void => {
         console.debug('resetAll')
         resetChat();
         resetVideo();
+        setSearchFilter('');
+        vodSelector.resetVodSelector();
         resetSelectedChat();
 
         window.history.pushState('home', 'Twitch Chat Replay', '/')
@@ -70,6 +64,7 @@ function App() {
     const handleVideoChange = (event: YouTubeEvent) => {
         videoHandlers.onVideoChange(event);
         if (videoState.videoData?.currentVideoId) {
+            vodSelector.unselectVod();
             resetSelectedChat();
         }
     }
@@ -101,10 +96,10 @@ function App() {
                 videoMetadata={videoState.videoMetadata}
                 isVideoPlaying={chatEnabled}
                 updateChatDelay={updateChatDelay}
-                updateTheme={handleThemeUpdate}
-                updateChatPosition={handleChatPositionUpdate}
-                updateChatWidth={handleChatWidthUpdate}
-                updateChatHeight={handleChatHeightUpdate}
+                updateTheme={setCurrentTheme}
+                updateChatPosition={setCurrentChatPosition}
+                updateChatWidth={setCurrentChatWidth}
+                updateChatHeight={setCurrentChatHeight}
                 updateBadgeSettings={updateBadgeSettings}
                 badgeMap={badgeMap}
                 currentChatPosition={currentChatPosition}
@@ -112,6 +107,9 @@ function App() {
                 currentChatHeight={currentChatHeight}
                 onResizeStart={handleResizeStart}
                 onResizeEnd={handleResizeEnd}
+                searchFilter={searchFilter}
+                onSearchFilterChange={setSearchFilter}
+                vodSelector={vodSelector}
             />
         </div>
     )

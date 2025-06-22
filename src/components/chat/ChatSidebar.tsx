@@ -9,7 +9,7 @@ import ResizeHandle from './ResizeHandle'
 import { ChatMessage, VodSummary, VideoMetadata, ChatData, Theme, VodState, BadgeMap, ChatPosition } from '../../types'
 import { BadgeSettings } from '../../utils/badges'
 import { setChatWidth, setChatHeight } from '../../utils/settings'
-import { useVodSelector } from '../../hooks/useVodSelector'
+import { UseVodSelectionReturn } from '../../hooks/useVodSelector'
 
 interface ChatSidebarProps {
     vodState: VodState
@@ -31,16 +31,16 @@ interface ChatSidebarProps {
     currentChatHeight: number
     onResizeStart: () => void
     onResizeEnd: () => void
+    searchFilter: string
+    onSearchFilterChange: (filter: string) => void
+    vodSelector: UseVodSelectionReturn
 }
 
 const ChatSidebar: FC<ChatSidebarProps> = ({
     vodState,
     messagesToRender,
     onReset,
-    onSelectKnownVod,
     onUploadCustomVod,
-    videoMetadata,
-    isVideoPlaying = false,
     updateChatDelay,
     updateTheme,
     updateChatPosition,
@@ -52,27 +52,18 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     currentChatWidth,
     currentChatHeight,
     onResizeStart,
-    onResizeEnd
+    onResizeEnd,
+    searchFilter,
+    onSearchFilterChange,
+    vodSelector
 }) => {
     const [isHeaderMinimized, setIsHeaderMinimized] = useState(false)
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
     const [showScrollbar, setShowScrollbar] = useState(false)
-    const [searchFilter, setSearchFilter] = useState<string>('')
     const hideScrollbarTimeoutRef = useRef<NodeJS.Timeout | null>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
 
     const hasMessages = vodState.messages !== null
-
-    const vodSelector = useVodSelector({
-        vodSummaries: vodState.vodSummaries,
-        selectedVod: vodState.selectedVod,
-        hasMessages,
-        isVideoPlaying,
-        videoMetadata,
-        searchFilter,
-        onSelectVod: onSelectKnownVod,
-        onResetVod: onReset
-    })
 
     const handleMinimizeHeader = () => {
         setIsHeaderMinimized(true)
@@ -91,7 +82,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     }
 
     const handleSelectKnownVod = (summary: VodSummary) => {
-        setSearchFilter('')
+        onSearchFilterChange('')
         vodSelector.selectVod(summary)
     }
 
@@ -110,8 +101,8 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
     }
 
     const handleReset = () => {
-        setSearchFilter('')
-        vodSelector.resetVod()
+        onSearchFilterChange('');
+        onReset();
     }
 
     const handleResizeWidth = (width: number) => {
@@ -143,7 +134,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                 onMinimizeHeader={handleMinimizeHeader}
                 onExpandHeader={handleExpandHeader}
                 onSettingsClick={handleSettingsClick}
-                onSearchFilterChange={setSearchFilter}
+                onSearchFilterChange={onSearchFilterChange}
                 onUploadCustomVod={onUploadCustomVod}
                 onReset={handleReset}
             />

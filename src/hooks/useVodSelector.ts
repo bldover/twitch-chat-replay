@@ -35,10 +35,9 @@ interface UseVodSelectionProps {
     videoMetadata: VideoMetadata | null;
     searchFilter: string;
     onSelectVod: (vod: VodSummary) => void;
-    onResetVod: () => void;
 }
 
-interface UseVodSelectionReturn {
+export interface UseVodSelectionReturn {
     state: VodSelectionState;
     currentVod: VodSummary | null;
     shouldShowChat: boolean;
@@ -47,7 +46,8 @@ interface UseVodSelectionReturn {
     notificationData: NotificationData | null;
     vodSelectorData: VodSelectorData | null;
     selectVod: (vod: VodSummary) => void;
-    resetVod: () => void;
+    unselectVod: () => void;
+    resetVodSelector: () => void;
 }
 
 export const useVodSelector = ({
@@ -57,8 +57,7 @@ export const useVodSelector = ({
     isVideoPlaying,
     videoMetadata,
     searchFilter,
-    onSelectVod,
-    onResetVod
+    onSelectVod
 }: UseVodSelectionProps): UseVodSelectionReturn => {
     const [state, setState] = useState<VodSelectionState>('vod-search');
     const [autoSelectNotification, setAutoSelectNotification] = useState<AutoSelectNotification | null>(null);
@@ -290,15 +289,20 @@ export const useVodSelector = ({
         setHasVideoEverPlayed(false);
     }, [onSelectVod, clearNotificationTimeout]);
 
-    const resetVod = useCallback(() => {
-        onResetVod();
+    const unselectVod = useCallback(() => {
+        setAutoSelectNotification(null);
+        clearNotificationTimeout();
+        setStateWithLog('vod-search');
+    }, [clearNotificationTimeout, setStateWithLog]);
+
+    const resetAll = useCallback(() => {
         setAutoSelectNotification(null);
         clearNotificationTimeout();
         setHasVideoEverPlayed(false);
         setStateWithLog('vod-search');
-    }, [onResetVod, clearNotificationTimeout, setStateWithLog]);
+    }, [clearNotificationTimeout, setStateWithLog]);
 
-    const getUIState = () => {
+    const getUiState = () => {
         switch (state) {
             case 'vod-search':
                 return {
@@ -357,7 +361,7 @@ export const useVodSelector = ({
         }
     };
 
-    const uiState = getUIState();
+    const uiState = getUiState();
 
     return {
         state,
@@ -368,6 +372,7 @@ export const useVodSelector = ({
         notificationData: uiState.notificationData || null,
         vodSelectorData: uiState.vodSelectorData || null,
         selectVod,
-        resetVod
+        unselectVod: unselectVod,
+        resetVodSelector: resetAll
     };
 };

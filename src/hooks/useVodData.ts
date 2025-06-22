@@ -15,15 +15,15 @@ interface VodDataState {
 }
 
 interface VodDataControls {
-    state: VodState;
-    selectChat: (summary: VodSummary) => void;
+    vodState: VodState;
+    selectVod: (summary: VodSummary) => void;
     onUploadCustomVod: (json: ChatData) => void;
     resetSelectedChat: () => void;
 }
 
 export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDataControls => {
 
-    const [state, setState] = useState<VodDataState>({
+    const [vodState, setState] = useState<VodDataState>({
         vodSummaries: [],
         selectedVod: null,
         messages: null,
@@ -76,15 +76,15 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
             .catch((err) => console.log('Loading funny moments failed: ' + err));
     }, [setFunnyMoments]);
 
-    const selectChat = useCallback((summary: VodSummary): void => {
+    const selectVod = useCallback((summary: VodSummary): void => {
         console.debug('selectChat: ', summary);
         setState(prev => ({ ...prev, selectedVod: summary }));
         setQueryParam('twitchId', summary.id);
-        if (state.selectedVod?.id !== summary.id) {
+        if (vodState.selectedVod?.id !== summary.id) {
             loadChatMessages(summary.id);
             loadFunnyMoments(summary.id);
         }
-    }, [state.selectedVod?.id, loadChatMessages, loadFunnyMoments]);
+    }, [vodState.selectedVod?.id, loadChatMessages, loadFunnyMoments]);
 
     const onUploadCustomVod = useCallback((json: ChatData): void => {
         console.debug('onUploadCustomVod');
@@ -115,19 +115,19 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
 
     useEffect(() => {
         const twitchId = getQueryParam('twitchId');
-        if (twitchId && state.selectedVod?.id !== twitchId) {
-            const matchingVod = state.vodSummaries.find(vod => vod.id === twitchId);
+        if (twitchId && vodState.selectedVod?.id !== twitchId) {
+            const matchingVod = vodState.vodSummaries.find(vod => vod.id === twitchId);
             if (matchingVod) {
                 setState(prev => ({ ...prev, selectedVod: matchingVod }));
                 loadChatMessages(twitchId);
                 loadFunnyMoments(twitchId);
             }
         }
-    }, [state.vodSummaries, state.selectedVod?.id, loadChatMessages, loadFunnyMoments]);
+    }, [vodState.vodSummaries, vodState.selectedVod?.id, loadChatMessages, loadFunnyMoments]);
 
     return {
-        state,
-        selectChat,
+        vodState,
+        selectVod,
         onUploadCustomVod,
         resetSelectedChat
     };
