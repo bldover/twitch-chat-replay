@@ -23,7 +23,6 @@ interface SettingsProviderProps {
 export const SettingsProvider = ({ children }: SettingsProviderProps) => {
     const [settings, setSettings] = useState<AppSettings>(getSettings);
 
-    // Listen for localStorage changes from other tabs/windows
     useEffect(() => {
         const handleStorageChange = (event: StorageEvent) => {
             if (event.key === 'twitch-chat-replay-settings' && event.newValue) {
