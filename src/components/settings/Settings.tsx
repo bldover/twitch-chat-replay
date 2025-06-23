@@ -1,14 +1,11 @@
 import './Settings.css';
 import { FC, useState, useEffect } from 'react';
 import { CloseIcon, SettingsIcon } from '../common/Icons';
-import { ChatPosition, Theme, CHAT_POSITION_OPTIONS, THEME_OPTIONS, getThemeDisplayName, getChatPositionName, AutoSelectConfig, AppSettings } from '../../utils/settings';
+import { ChatPosition, Theme, AutoSelectConfig, AppSettings } from '../../utils/settings';
 import { BadgeOptions as BadgeSettingsType } from '../../utils/badges';
 import { useSettings } from '../../contexts/SettingsContext';
-import BadgeSettings from './BadgeSettings';
-import SettingItem from './SettingItem';
-import NumericStepper from './NumericStepper';
-import DropdownSelector from './DropdownSelector';
-import SimpleCheckbox from './SimpleCheckbox';
+import SettingsContent from './SettingsContent';
+import TabNavigation, { Tab } from './TabNavigation';
 
 interface SettingsModalProps {
     isOpen: boolean
@@ -19,6 +16,13 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     const { settings, updateSettings } = useSettings();
     const [tempSettings, setTempSettings] = useState<AppSettings>(settings);
     const [originalSettings, setOriginalSettings] = useState<AppSettings>(settings);
+    const [activeTab, setActiveTab] = useState<string>('display');
+
+    const tabs: Tab[] = [
+        { id: 'display', label: 'Display' },
+        { id: 'behavior', label: 'Chat Behavior' },
+        { id: 'selection', label: 'Chat Selection' }
+    ];
 
     useEffect(() => {
         if (isOpen) {
@@ -103,154 +107,25 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                     </div>
                     <button className='settings-modal-close' onClick={handleDiscard}><CloseIcon /></button>
                 </div>
+                <TabNavigation
+                    tabs={tabs}
+                    activeTab={activeTab}
+                    onTabChange={setActiveTab}
+                />
                 <div className='settings-modal-content'>
-                    <div className='settings-section'>
-                        <h4>Display</h4>
-                        <SettingItem
-                            name='Theme'
-                        >
-                            <DropdownSelector
-                                value={tempSettings.theme}
-                                onChange={handleThemeChange}
-                                name='themeDropdown'
-                                options={THEME_OPTIONS.map((theme) => ({
-                                    value: theme,
-                                    label: getThemeDisplayName(theme)
-                                }))}
-                            />
-                        </SettingItem>
-                        <SettingItem
-                            name='Chat Position'
-                        >
-                            <DropdownSelector
-                                value={tempSettings.chatPosition}
-                                onChange={handleChatPositionChange}
-                                name='chatPositionDropdown'
-                                options={CHAT_POSITION_OPTIONS.map((position) => ({
-                                    value: position,
-                                    label: getChatPositionName(position)
-                                }))}
-                            />
-                        </SettingItem>
-                        <SettingItem
-                            name='Chat Width'
-                        >
-                            <NumericStepper
-                                value={tempSettings.chatWidth}
-                                onChange={handleChatWidthChange}
-                                name='chatWidthStepper'
-                                step={50}
-                                min={350}
-                                max={Math.floor(window.innerWidth * 0.8)}
-                            />
-                        </SettingItem>
-                        <SettingItem
-                            name='Chat Height'
-                        >
-                            <NumericStepper
-                                value={tempSettings.chatHeight}
-                                onChange={handleChatHeightChange}
-                                name='chatHeightStepper'
-                                step={50}
-                                min={350}
-                                max={Math.floor(window.innerHeight * 0.8)}
-                            />
-                        </SettingItem>
-                    </div>
-
-                    <div className='settings-section'>
-                        <h4>Chat Behavior</h4>
-                        <SettingItem
-                            name='Chat Delay (s)'
-                        >
-                            <NumericStepper
-                                value={tempSettings.chatDelay}
-                                onChange={handleChatDelayChange}
-                                name='chatDelayStepper'
-                                step={1}
-                            />
-                        </SettingItem>
-                        <SettingItem
-                            name='Chat Badges'
-                            showGlow={false}
-                        >
-                            <BadgeSettings
-                                value={tempSettings.badges}
-                                onChange={handleBadgeToggle}
-                            />
-                        </SettingItem>
-                    </div>
-
-                    <div className='settings-section'>
-                        <h4>Chat Selection</h4>
-                        <p className='settings-section-description'>
-                            [Placeholder text for Chat Selection section description - to be filled in]
-                        </p>
-                        <SettingItem
-                            name='Auto Search'
-                            description='Identify and rank chats similar to the selected video title'
-                            showGlow={false}
-                        >
-                            <SimpleCheckbox
-                                checked={tempSettings.autoSearch}
-                                onChange={handleAutoSearchToggle}
-                                name='autoSearchToggle'
-                            />
-                        </SettingItem>
-                        <SettingItem
-                            name='Auto Select'
-                            description="Select the best matching chat if the below criteria are met. Works for most series"
-                            showGlow={false}
-                        >
-                            <SimpleCheckbox
-                                checked={tempSettings.autoSelect}
-                                onChange={handleAutoSelectToggle}
-                                name='autoSelectToggle'
-                            />
-                        </SettingItem>
-                        <SettingItem
-                            name='Min Match Threshold'
-                            description='Minimum match percentage required for automatic selection (0-100%)'
-                        >
-                            <NumericStepper
-                                value={tempSettings.autoSelectConfig.minMatchThreshold}
-                                onChange={(value) => handleAutoSelectConfigChange('minMatchThreshold', value)}
-                                name='minMatchThresholdStepper'
-                                step={5}
-                                min={0}
-                                max={100}
-                                disabled={!tempSettings.autoSelect}
-                            />
-                        </SettingItem>
-                        <SettingItem
-                            name='Match Margin Threshold'
-                            description='Required percentage gap between best and second best match (0-100%)'
-                        >
-                            <NumericStepper
-                                value={tempSettings.autoSelectConfig.matchMarginThreshold}
-                                onChange={(value) => handleAutoSelectConfigChange('matchMarginThreshold', value)}
-                                name='matchMarginThresholdStepper'
-                                step={5}
-                                min={0}
-                                max={100}
-                                disabled={!tempSettings.autoSelect}
-                            />
-                        </SettingItem>
-                        <SettingItem
-                            name='Auto-select Notification Duration'
-                            description='How long to show the auto-selected chat notification (0 = disabled, 1-60 seconds)'
-                        >
-                            <NumericStepper
-                                value={tempSettings.autoSelectConfig.autoSelectNotificationDuration}
-                                onChange={(value) => handleAutoSelectConfigChange('autoSelectNotificationDuration', value)}
-                                name='notificationDurationStepper'
-                                step={1}
-                                min={0}
-                                max={60}
-                                disabled={!tempSettings.autoSelect}
-                            />
-                        </SettingItem>
-                    </div>
+                    <SettingsContent
+                        activeTab={activeTab}
+                        tempSettings={tempSettings}
+                        onThemeChange={handleThemeChange}
+                        onChatPositionChange={handleChatPositionChange}
+                        onChatWidthChange={handleChatWidthChange}
+                        onChatHeightChange={handleChatHeightChange}
+                        onChatDelayChange={handleChatDelayChange}
+                        onBadgeToggle={handleBadgeToggle}
+                        onAutoSearchToggle={handleAutoSearchToggle}
+                        onAutoSelectToggle={handleAutoSelectToggle}
+                        onAutoSelectConfigChange={handleAutoSelectConfigChange}
+                    />
                 </div>
                 <div className='settings-modal-footer'>
                     <button className='settings-btn settings-btn-discard' onClick={handleDiscard}>
