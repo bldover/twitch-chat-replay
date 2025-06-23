@@ -70,6 +70,7 @@
     align-content: space-between;
     gap: 16px;
     overflow: visible;
+    min-height: 400px;
 }
 
 .settings-modal-footer {
@@ -121,29 +122,4 @@
 
 .settings-btn-save:active {
     background-color: var(--button-accent-active);
-}
-
-.settings-section {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.settings-section:not(:last-child) {
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-primary);
-}
-
-.settings-section h4 {
-    margin: 0 0 8px 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-.settings-section-description {
-    margin: 0 0 16px 0;
-    font-size: 13px;
-    color: var(--text-secondary);
-    line-height: 1.4;
 }

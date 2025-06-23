@@ -6,7 +6,6 @@ import SettingItem from './SettingItem';
 import NumericStepper from './NumericStepper';
 import DropdownSelector from './DropdownSelector';
 import SimpleCheckbox from './SimpleCheckbox';
-import SettingsSection from './SettingsSection';
 
 interface SettingsContentProps {
     activeTab: string;
@@ -39,7 +38,7 @@ const SettingsContent: FC<SettingsContentProps> = ({
         switch (activeTab) {
             case 'display':
                 return (
-                    <SettingsSection title="Display">
+                    <>
                         <SettingItem
                             name='Theme'
                         >
@@ -90,12 +89,12 @@ const SettingsContent: FC<SettingsContentProps> = ({
                                 max={Math.floor(window.innerHeight * 0.8)}
                             />
                         </SettingItem>
-                    </SettingsSection>
+                    </>
                 );
 
             case 'behavior':
                 return (
-                    <SettingsSection title="Chat Behavior">
+                    <>
                         <SettingItem
                             name='Chat Delay (s)'
                         >
@@ -115,15 +114,15 @@ const SettingsContent: FC<SettingsContentProps> = ({
                                 onChange={onBadgeToggle}
                             />
                         </SettingItem>
-                    </SettingsSection>
+                    </>
                 );
 
             case 'selection':
                 return (
-                    <SettingsSection
-                        title='Chat Selection'
-                        description='Chats are available for VODs since 2016. The YT titles are usually edited versions of the VOD title, so it is often possible to match the video title to the right VOD'
-                    >
+                    <>
+                        <p className='settings-section-description'>
+                            Chats are available for VODs since 2016. The YT titles are usually edited versions of the VOD title, so it is often possible to match the video title to the right VOD
+                        </p>
                         <SettingItem
                             name='Auto Search'
                             description='Identify and rank chats similar to the selected video title'
@@ -147,8 +146,8 @@ const SettingsContent: FC<SettingsContentProps> = ({
                             />
                         </SettingItem>
                         <SettingItem
-                            name='Min Match Threshold'
-                            description='Minimum match percentage required for automatic selection'
+                            name='Match Threshold'
+                            description='Minimum match percentage for automatic selection'
                         >
                             <NumericStepper
                                 value={tempSettings.autoSelectConfig.minMatchThreshold}
@@ -161,8 +160,8 @@ const SettingsContent: FC<SettingsContentProps> = ({
                             />
                         </SettingItem>
                         <SettingItem
-                            name='Min Match Margin'
-                            description='Minimum gap between first and second best match'
+                            name='Match Margin'
+                            description='Minimum gap percentage between first and second best match for automatic selection'
                         >
                             <NumericStepper
                                 value={tempSettings.autoSelectConfig.matchMarginThreshold}
@@ -187,7 +186,7 @@ const SettingsContent: FC<SettingsContentProps> = ({
                                 disabled={!tempSettings.autoSelect}
                             />
                         </SettingItem>
-                    </SettingsSection>
+                    </>
                 );
 
             default:
