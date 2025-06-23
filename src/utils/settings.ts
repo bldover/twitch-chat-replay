@@ -41,7 +41,7 @@ const DEFAULT_SETTINGS: AppSettings = {
     chatPosition: 'right',
     chatDelay: 0,
     chatWidth: 350,
-    chatHeight: 550,
+    chatHeight: 700,
     theme: 'ttv',
     badges: {
         showUserStates: true,
