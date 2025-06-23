@@ -1,18 +1,14 @@
 import './Emote.css';
 import { FC } from 'react';
-import { hashCode } from '../../utils/hash';
 
 type TwitchEmoteProps = {
     emoteId: string;
     text: string;
-    fragmentIndex: number;
 };
 
-const TwitchEmote: FC<TwitchEmoteProps> = ({ emoteId, text, fragmentIndex }) => {
-
+const TwitchEmote: FC<TwitchEmoteProps> = ({ emoteId, text }) => {
     return (
         <img
-            key={hashCode((fragmentIndex.toString() + text))}
             alt={text}
             title={text}
             className='emoticon'

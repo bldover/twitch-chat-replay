@@ -25,9 +25,9 @@ const ChatMessage: FC<ChatMessageProps> = ({ message, bttvEmotes, badgeMap }) =>
         if (fragment.emoticon) {
             const emoticonId = fragment.emoticon.emoticon_id;
             return <TwitchEmote
+                key={i}
                 emoteId={emoticonId}
                 text={fragment.text}
-                fragmentIndex={i}
             />;
         }
         const words = fragment.text.split(' ');
@@ -38,26 +38,24 @@ const ChatMessage: FC<ChatMessageProps> = ({ message, bttvEmotes, badgeMap }) =>
             'h!': ' modifier-horizontal',
             'z!': ' modifier-zero-space'
         };
-
-        return <span key={i + 'text'}>
+        return <span key={i}>
             {words.map((word: string, j: number) => {
                 const previousWord = words[j - 1] ?? null;
                 const nextWord = words[j + 1] ?? null;
 
                 if (modifiers[word] && bttvEmotes && nextWord && bttvEmotes[nextWord]) {
-                    return <></>;
+                    return <span key={`${i}-${j}`}></span>;
                 }
 
                 if (bttvEmotes && bttvEmotes[word]) {
                     return <BttvEmote
+                        key={`${i}-${j}`}
                         emoteId={bttvEmotes[word]}
                         text={word}
-                        fragmentIndex={i}
-                        wordIndex={j}
                         modifier={modifiers[previousWord]}
                     />;
                 }
-                return <span key={`${i}-${j}-${word}-normal`}>
+                return <span key={`${i}-${j}`}>
                     {word + ' '}
                 </span>;
             })}

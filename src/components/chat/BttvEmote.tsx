@@ -4,16 +4,14 @@ import { FC } from 'react';
 type BttvEmoteProps = {
     emoteId: string;
     text: string;
-    fragmentIndex: number;
-    wordIndex: number;
     modifier?: string;
 };
 
-const BttvEmote: FC<BttvEmoteProps> = ({ emoteId, text, fragmentIndex, wordIndex, modifier }) => {
+const BttvEmote: FC<BttvEmoteProps> = ({ emoteId, text, modifier }) => {
     const className = 'emoticon' + (modifier ?? '');
 
     return (
-        <span key={`${fragmentIndex}-${wordIndex}-${text}-bttv`}>
+        <span>
             <img
                 alt={text}
                 title={text}
