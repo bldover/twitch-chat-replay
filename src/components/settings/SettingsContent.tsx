@@ -1,3 +1,4 @@
+import './SettingsContent.css';
 import { FC } from 'react';
 import { CHAT_POSITION_OPTIONS, THEME_OPTIONS, getThemeDisplayName, getChatPositionName, AutoSelectConfig, AppSettings } from '../../utils/settings';
 import { BadgeOptions as BadgeSettingsType } from '../../utils/badges';
@@ -107,7 +108,6 @@ const SettingsContent: FC<SettingsContentProps> = ({
                         </SettingItem>
                         <SettingItem
                             name='Chat Badges'
-                            showGlow={false}
                         >
                             <BadgeSettings
                                 value={tempSettings.badges}
@@ -121,11 +121,10 @@ const SettingsContent: FC<SettingsContentProps> = ({
                 return (
                     <>
                         <p className='settings-section-description'>
-                            Chats are available for VODs since 2016. The YT titles are usually edited versions of the VOD title, so it is often possible to match the video title to the right VOD
+                            Chats are archived for Northernlion VODs since March 4, 2016. The YT and VOD titles are often similar enough that they can be matched up automatically.
                         </p>
                         <SettingItem
-                            name='Auto Search'
-                            description='Identify and rank chats similar to the selected video title'
+                            name='Automatic Search'
                             showGlow={false}
                         >
                             <SimpleCheckbox
@@ -135,8 +134,7 @@ const SettingsContent: FC<SettingsContentProps> = ({
                             />
                         </SettingItem>
                         <SettingItem
-                            name='Auto Select'
-                            description='Select the best matching chat if the below criteria are met. Works for most series'
+                            name='Automatic Selection'
                             showGlow={false}
                         >
                             <SimpleCheckbox
@@ -146,8 +144,8 @@ const SettingsContent: FC<SettingsContentProps> = ({
                             />
                         </SettingItem>
                         <SettingItem
-                            name='Match Threshold'
-                            description='Minimum match percentage for automatic selection'
+                            name='Autoselect Match Threshold'
+                            description='Only autoselect if the best match has at least this match %'
                         >
                             <NumericStepper
                                 value={tempSettings.autoSelectConfig.minMatchThreshold}
@@ -160,8 +158,8 @@ const SettingsContent: FC<SettingsContentProps> = ({
                             />
                         </SettingItem>
                         <SettingItem
-                            name='Match Margin'
-                            description='Minimum gap percentage between first and second best match for automatic selection'
+                            name='Autoselect Match Margin'
+                            description='Only autoselect if the best match has at least this match % more than the second best match'
                         >
                             <NumericStepper
                                 value={tempSettings.autoSelectConfig.matchMarginThreshold}
@@ -174,7 +172,7 @@ const SettingsContent: FC<SettingsContentProps> = ({
                             />
                         </SettingItem>
                         <SettingItem
-                            name='Notification Time (s)'
+                            name='Autoselect Notification Time (s)'
                         >
                             <NumericStepper
                                 value={tempSettings.autoSelectConfig.autoSelectNotificationDuration}

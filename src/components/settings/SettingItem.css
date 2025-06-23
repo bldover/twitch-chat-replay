@@ -6,17 +6,17 @@
 
 .setting-label {
     display: flex;
-    min-width: 50%;
+    align-items: center;
+    gap: 8px;
+    min-width: 60%;
 }
 
 .setting-name {
     color: var(--text-primary);
     font-size: 14px;
     font-weight: 500;
-    cursor: help;
     height: 32px;
     align-content: center;
-    padding-right: 20px;
 }
 
 .setting-selector {

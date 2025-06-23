@@ -1,5 +1,6 @@
 import './SettingItem.css';
 import { FC, ReactNode } from 'react';
+import { InfoTooltip } from '../common/InfoTooltip';
 
 interface SettingItemProps {
     name: string;
@@ -12,12 +13,14 @@ const SettingItem: FC<SettingItemProps> = ({ name, description, children, showGl
     return (
         <div className='setting-item'>
             <div className='setting-label'>
-                <span
-                    className='setting-name'
-                    title={description}
-                >
+                <span className='setting-name'>
                     {name}
                 </span>
+                {description && (
+                    <InfoTooltip>
+                        {description}
+                    </InfoTooltip>
+                )}
             </div>
             <div className={`setting-selector ${showGlow ? 'setting-selector-glow' : ''}`}>
                 {children}
