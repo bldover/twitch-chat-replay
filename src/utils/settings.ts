@@ -35,7 +35,7 @@ export interface AppSettings {
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
-    autoSearch: false,
+    autoSearch: true,
     autoSelect: false,
     chatPosition: 'right',
     chatDelay: 0,
@@ -58,7 +58,7 @@ const DEFAULT_SETTINGS: AppSettings = {
 
 const SETTINGS_KEY = 'twitch-chat-replay-settings'
 
-export const getSettings = (): AppSettings => {
+export const getStoredSettings = (): AppSettings => {
     try {
         const stored = localStorage.getItem(SETTINGS_KEY)
         if (stored) {
@@ -71,61 +71,14 @@ export const getSettings = (): AppSettings => {
     return DEFAULT_SETTINGS
 }
 
-export const setSetting = <K extends keyof AppSettings>(key: K, value: AppSettings[K]): void => {
+export const storeSetting = <K extends keyof AppSettings>(key: K, value: AppSettings[K]): void => {
     try {
-        const currentSettings = getSettings()
+        const currentSettings = getStoredSettings()
         const newSettings = { ...currentSettings, [key]: value }
         localStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings))
     } catch (error) {
         console.warn('Failed to save settings to localStorage:', error)
     }
-}
-
-export const getChatSelectionMode = (): 'manual' | 'auto-search' | 'auto-select' => {
-    const settings = getSettings()
-    if (settings.autoSelect) {
-        return 'auto-select'
-    } else if (settings.autoSearch) {
-        return 'auto-search'
-    } else {
-        return 'manual'
-    }
-}
-
-export const getAutoSearch = (): boolean => {
-    const settings = getSettings()
-    return settings.autoSearch
-}
-
-export const setAutoSearch = (enabled: boolean): void => {
-    setSetting('autoSearch', enabled)
-}
-
-export const getAutoSelect = (): boolean => {
-    const settings = getSettings()
-    return settings.autoSelect
-}
-
-export const setAutoSelect = (enabled: boolean): void => {
-    setSetting('autoSelect', enabled)
-}
-
-export const getChatDelay = (): number => {
-    const settings = getSettings()
-    return settings.chatDelay
-}
-
-export const setChatDelay = (delay: number): void => {
-    setSetting('chatDelay', delay)
-}
-
-export const getTheme = (): Theme => {
-    const settings = getSettings()
-    return settings.theme
-}
-
-export const setTheme = (theme: Theme): void => {
-    setSetting('theme', theme)
 }
 
 export const getThemeDisplayName = (theme: Theme): string => {
@@ -137,33 +90,6 @@ export const getThemeDisplayName = (theme: Theme): string => {
         default:
             return 'Twitch'
     }
-}
-
-export const getBadgeOptions = (): BadgeOptions => {
-    const settings = getSettings()
-    return settings.badges
-}
-
-export const setBadgeOptions = (badges: BadgeOptions): void => {
-    setSetting('badges', badges)
-}
-
-export const getAutoSelectConfig = (): AutoSelectConfig => {
-    const settings = getSettings()
-    return settings.autoSelectConfig
-}
-
-export const setAutoSelectConfig = (config: AutoSelectConfig): void => {
-    setSetting('autoSelectConfig', config)
-}
-
-export const getChatPosition = (): ChatPosition => {
-    const settings = getSettings()
-    return settings.chatPosition
-}
-
-export const setChatPosition = (position: ChatPosition): void => {
-    setSetting('chatPosition', position)
 }
 
 export const getChatPositionName = (position: ChatPosition): string => {
@@ -179,22 +105,4 @@ export const getChatPositionName = (position: ChatPosition): string => {
         default:
             return 'Right'
     }
-}
-
-export const getChatWidth = (): number => {
-    const settings = getSettings()
-    return settings.chatWidth
-}
-
-export const setChatWidth = (width: number): void => {
-    setSetting('chatWidth', width)
-}
-
-export const getChatHeight = (): number => {
-    const settings = getSettings()
-    return settings.chatHeight
-}
-
-export const setChatHeight = (height: number): void => {
-    setSetting('chatHeight', height)
 }

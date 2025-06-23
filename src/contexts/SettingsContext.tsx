@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode, useCallback, useState, useEffect } from 'react';
-import { AppSettings, getSettings, setSetting, ChatPosition, Theme, AutoSelectConfig } from '../utils/settings';
+import { AppSettings, getStoredSettings, storeSetting, ChatPosition, Theme, AutoSelectConfig } from '../utils/settings';
 import { BadgeOptions } from '../utils/badges';
 
 interface SettingsContextType {
@@ -21,7 +21,7 @@ interface SettingsProviderProps {
 }
 
 export const SettingsProvider = ({ children }: SettingsProviderProps) => {
-    const [settings, setSettings] = useState<AppSettings>(getSettings);
+    const [settings, setSettings] = useState<AppSettings>(getStoredSettings);
 
     useEffect(() => {
         const handleStorageChange = (event: StorageEvent) => {
@@ -39,7 +39,7 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
     }, []);
 
     const updateSetting = useCallback(<K extends keyof AppSettings>(key: K, value: AppSettings[K]) => {
-        setSetting(key, value);
+        storeSetting(key, value);
         setSettings(prev => ({ ...prev, [key]: value }));
     }, []);
 
@@ -75,7 +75,7 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
     const updateSettings = useCallback((partial: Partial<AppSettings>) => {
         const newSettings = { ...settings, ...partial };
         Object.entries(partial).forEach(([key, value]) => {
-            setSetting(key as keyof AppSettings, value);
+            storeSetting(key as keyof AppSettings, value);
         });
         setSettings(newSettings);
     }, [settings]);

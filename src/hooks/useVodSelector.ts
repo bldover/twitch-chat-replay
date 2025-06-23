@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { VodSummary, VideoMetadata } from '../types';
-import { getChatSelectionMode, getAutoSelectConfig } from '../utils/settings';
 import { filterAndRankChatOptions, evaluateAutoSelection } from '../utils/chatMatcher';
 import { useResetSubscription } from './useResetSubscription';
+import { useSettings } from '../contexts/SettingsContext';
 
 export type VodSelectionState =
     | 'vod-search'
@@ -59,6 +59,7 @@ export const useVodSelector = ({
     searchFilter,
     onSelectVod
 }: UseVodSelectionProps): UseVodSelectionReturn => {
+    const { settings } = useSettings();
     const [state, setState] = useState<VodSelectionState>('vod-search');
     const [autoSelectNotification, setAutoSelectNotification] = useState<AutoSelectNotification | null>(null);
     const [hasVideoEverPlayed, setHasVideoEverPlayed] = useState<boolean>(false);
@@ -90,12 +91,22 @@ export const useVodSelector = ({
         return filterAndRankChatOptions(videoMetadata, vodSummaries);
     }, [videoMetadata, vodSummaries]);
 
+    const getChatSelectionMode = useCallback(() => {
+        if (settings.autoSelect) {
+            return 'auto-select';
+        } else if (settings.autoSearch) {
+            return 'auto-search';
+        } else {
+            return 'manual';
+        }
+    }, [settings.autoSelect, settings.autoSearch]);
+
     const shouldUseAutoMode = useCallback((): boolean => {
         const chatMode = getChatSelectionMode();
         return (chatMode === 'auto-search' || chatMode === 'auto-select') &&
             videoMetadata !== null &&
             searchFilter === '';
-    }, [videoMetadata, searchFilter]);
+    }, [getChatSelectionMode, videoMetadata, searchFilter]);
 
     const getAutoSelectResult = useCallback((): VodSummary | null => {
         const chatMode = getChatSelectionMode();
@@ -103,15 +114,14 @@ export const useVodSelector = ({
 
         console.debug('evaluateAutoSelect', videoMetadata);
         const rankedMatches = filterAndRankChatOptions(videoMetadata, vodSummaries);
-        const autoSelectConfig = getAutoSelectConfig();
-        const autoSelectResult = evaluateAutoSelection(rankedMatches, autoSelectConfig);
+        const autoSelectResult = evaluateAutoSelection(rankedMatches, settings.autoSelectConfig);
 
         if (autoSelectResult.shouldAutoSelect && autoSelectResult.selectedVod) {
             return autoSelectResult.selectedVod;
         }
 
         return null;
-    }, [videoMetadata, vodSummaries]);
+    }, [getChatSelectionMode, videoMetadata, vodSummaries, settings.autoSelectConfig]);
 
     const performAutoSelect = useCallback((vod: VodSummary) => {
         setHasVideoEverPlayed(false);
@@ -131,14 +141,13 @@ export const useVodSelector = ({
 
     const setNotificationTimeout = useCallback(() => {
         clearNotificationTimeout();
-        const autoSelectConfig = getAutoSelectConfig();
-        if (autoSelectConfig.autoSelectNotificationDuration > 0) {
+        if (settings.autoSelectConfig.autoSelectNotificationDuration > 0) {
             notificationTimeoutRef.current = setTimeout(() => {
                 setAutoSelectNotification(null);
                 setStateWithLog('vod-selected-playing');
-            }, autoSelectConfig.autoSelectNotificationDuration * 1000);
+            }, settings.autoSelectConfig.autoSelectNotificationDuration * 1000);
         }
-    }, [clearNotificationTimeout, setStateWithLog]);
+    }, [clearNotificationTimeout, setStateWithLog, settings.autoSelectConfig.autoSelectNotificationDuration]);
 
     useEffect(() => {
         const chatMode = getChatSelectionMode();
@@ -168,8 +177,7 @@ export const useVodSelector = ({
                         const autoSelectedVod = getAutoSelectResult();
                         if (autoSelectedVod) {
                             performAutoSelect(autoSelectedVod);
-                            const autoSelectConfig = getAutoSelectConfig();
-                            if (autoSelectConfig.autoSelectNotificationDuration > 0) {
+                            if (settings.autoSelectConfig.autoSelectNotificationDuration > 0) {
                                 setStateWithLog('vod-selected-notify');
                             } else {
                                 setStateWithLog('vod-selected-playing');
@@ -196,7 +204,7 @@ export const useVodSelector = ({
                     return;
                 }
 
-                if (chatMode !== 'auto-search') {
+                if (!shouldUseAutoMode()) {
                     // auto search mode was just disabled
                     setStateWithLog('vod-search');
                     return;
@@ -266,7 +274,9 @@ export const useVodSelector = ({
         performAutoSelect,
         getAutoFilteredSummaries,
         setStateWithLog,
-        clearNotificationTimeout
+        clearNotificationTimeout,
+        getChatSelectionMode,
+        settings.autoSelectConfig
     ]);
 
     const handleNotificationTimeout = useCallback(() => {
