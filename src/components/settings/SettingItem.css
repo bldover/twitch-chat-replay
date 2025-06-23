@@ -22,9 +22,10 @@
     width: 100%;
     height: 100%;
     border: 1px solid var(--transparent);
+    align-content: center;
 }
 
-.setting-selector:focus-within {
+.setting-selector-glow:focus-within {
     background-color: var(--bg-primary-input-focus);
     box-shadow: 0 0 0 2px var(--shadow-accent-medium);    
     border: 1px solid var(--border-accent);

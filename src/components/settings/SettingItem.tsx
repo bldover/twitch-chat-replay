@@ -5,9 +5,10 @@ interface SettingItemProps {
     name: string;
     description?: string;
     children: ReactNode;
+    showGlow?: boolean;
 }
 
-const SettingItem: FC<SettingItemProps> = ({ name, description, children }) => {
+const SettingItem: FC<SettingItemProps> = ({ name, description, children, showGlow = true }) => {
     return (
         <div className='setting-item'>
             <div className='setting-label'>
@@ -18,10 +19,10 @@ const SettingItem: FC<SettingItemProps> = ({ name, description, children }) => {
                     {name}
                 </span>
             </div>
-            <div className='setting-selector'>
+            <div className={`setting-selector ${showGlow ? 'setting-selector-glow' : ''}`}>
                 {children}
             </div>
-        </div>
+        </div >
     );
 };
 

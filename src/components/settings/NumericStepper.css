@@ -70,3 +70,20 @@
     height: 16px;
     width: 16px;
 }
+
+.numeric-stepper-disabled {
+    opacity: 0.5;
+}
+
+.numeric-stepper-disabled .numeric-stepper {
+    cursor: not-allowed;
+}
+
+.numeric-stepper-disabled .numeric-stepper-button {
+    cursor: not-allowed;
+}
+
+.numeric-stepper-disabled .numeric-stepper-button:hover {
+    background-color: var(--button-primary);
+    color: var(--icon-alt);
+}

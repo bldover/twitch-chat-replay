@@ -2,12 +2,6 @@ import { BadgeOptions } from './badges'
 
 export type Theme = 'ttv' | 'midnight';
 
-export const CHAT_SELECTION_OPTIONS = [
-    'manual',
-    'auto-search',
-    'auto-select'
-] as const
-
 export const THEME_OPTIONS: Theme[] = [
     'ttv',
     'midnight'
@@ -20,7 +14,6 @@ export const CHAT_POSITION_OPTIONS = [
     'bottom'
 ] as const
 
-export type ChatSelectionMode = typeof CHAT_SELECTION_OPTIONS[number]
 export type ChatPosition = typeof CHAT_POSITION_OPTIONS[number]
 
 export interface AutoSelectConfig {
@@ -30,7 +23,8 @@ export interface AutoSelectConfig {
 }
 
 export interface AppSettings {
-    chatSelection: ChatSelectionMode
+    autoSearch: boolean
+    autoSelect: boolean
     chatPosition: ChatPosition
     chatDelay: number
     chatWidth: number
@@ -41,7 +35,8 @@ export interface AppSettings {
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
-    chatSelection: 'manual',
+    autoSearch: false,
+    autoSelect: false,
     chatPosition: 'right',
     chatDelay: 0,
     chatWidth: 350,
@@ -86,13 +81,33 @@ export const setSetting = <K extends keyof AppSettings>(key: K, value: AppSettin
     }
 }
 
-export const getChatSelectionMode = (): ChatSelectionMode => {
+export const getChatSelectionMode = (): 'manual' | 'auto-search' | 'auto-select' => {
     const settings = getSettings()
-    return settings.chatSelection
+    if (settings.autoSelect) {
+        return 'auto-select'
+    } else if (settings.autoSearch) {
+        return 'auto-search'
+    } else {
+        return 'manual'
+    }
 }
 
-export const setChatSelectionMode = (mode: ChatSelectionMode): void => {
-    setSetting('chatSelection', mode)
+export const getAutoSearch = (): boolean => {
+    const settings = getSettings()
+    return settings.autoSearch
+}
+
+export const setAutoSearch = (enabled: boolean): void => {
+    setSetting('autoSearch', enabled)
+}
+
+export const getAutoSelect = (): boolean => {
+    const settings = getSettings()
+    return settings.autoSelect
+}
+
+export const setAutoSelect = (enabled: boolean): void => {
+    setSetting('autoSelect', enabled)
 }
 
 export const getChatDelay = (): number => {

@@ -1,0 +1,4 @@
+.checkbox-container input[type='checkbox'] {
+    accent-color: var(--icon-accent);
+    cursor: pointer;
+}

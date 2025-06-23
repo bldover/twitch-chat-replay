@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode, useCallback, useState, useEffect } from 'react';
-import { AppSettings, getSettings, setSetting, ChatSelectionMode, ChatPosition, Theme, AutoSelectConfig } from '../utils/settings';
+import { AppSettings, getSettings, setSetting, ChatPosition, Theme, AutoSelectConfig } from '../utils/settings';
 import { BadgeOptions } from '../utils/badges';
 
 interface SettingsContextType {
@@ -10,7 +10,6 @@ interface SettingsContextType {
     updateChatPosition: (position: ChatPosition) => void;
     updateChatWidth: (width: number) => void;
     updateChatHeight: (height: number) => void;
-    updateChatSelection: (mode: ChatSelectionMode) => void;
     updateAutoSelectConfig: (config: AutoSelectConfig) => void;
     updateSettings: (partial: Partial<AppSettings>) => void;
 }
@@ -69,9 +68,6 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
         updateSetting('chatHeight', height);
     }, [updateSetting]);
 
-    const updateChatSelection = useCallback((mode: ChatSelectionMode) => {
-        updateSetting('chatSelection', mode);
-    }, [updateSetting]);
 
     const updateAutoSelectConfig = useCallback((config: AutoSelectConfig) => {
         updateSetting('autoSelectConfig', config);
@@ -94,7 +90,6 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
             updateChatPosition,
             updateChatWidth,
             updateChatHeight,
-            updateChatSelection,
             updateAutoSelectConfig,
             updateSettings
         }}>

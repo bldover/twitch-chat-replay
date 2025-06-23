@@ -10,6 +10,7 @@ interface NumericStepperProps {
     placeholder?: string;
     min?: number;
     max?: number;
+    disabled?: boolean;
 }
 
 const NumericStepper: FC<NumericStepperProps> = ({
@@ -19,7 +20,8 @@ const NumericStepper: FC<NumericStepperProps> = ({
     step = 1,
     placeholder,
     min,
-    max
+    max,
+    disabled = false
 }) => {
     const [displayValue, setDisplayValue] = useState<string>(value.toString());
 
@@ -74,7 +76,7 @@ const NumericStepper: FC<NumericStepperProps> = ({
     };
 
     return (
-        <div className={'numeric-stepper-container'}>
+        <div className={`numeric-stepper-container ${disabled ? 'numeric-stepper-disabled' : ''}`}>
             <input
                 type='number'
                 name={name}
@@ -86,11 +88,13 @@ const NumericStepper: FC<NumericStepperProps> = ({
                 onChange={handleInputChange}
                 onBlur={handleBlur}
                 placeholder={placeholder}
+                disabled={disabled}
             />
             <button
                 type='button'
                 className='numeric-stepper-button minus'
                 onClick={decrement}
+                disabled={disabled}
             >
                 <MinusIcon className='numeric-stepper-icon' />
             </button>
@@ -98,6 +102,7 @@ const NumericStepper: FC<NumericStepperProps> = ({
                 type='button'
                 className='numeric-stepper-button plus'
                 onClick={increment}
+                disabled={disabled}
             >
                 <PlusIcon className='numeric-stepper-icon' />
             </button>

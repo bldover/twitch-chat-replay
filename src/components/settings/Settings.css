@@ -122,18 +122,27 @@
     background-color: var(--button-accent-active);
 }
 
-.checkbox-container {
+.settings-section {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    cursor: pointer;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.checkbox-container input[type='checkbox'] {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--icon-accent);
-    cursor: pointer;
+.settings-section:not(:last-child) {
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.settings-section h4 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.settings-section-description {
+    margin: 0 0 16px 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
 }
