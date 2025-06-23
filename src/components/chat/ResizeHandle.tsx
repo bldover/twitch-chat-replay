@@ -10,6 +10,7 @@ interface ResizeHandleProps {
     onHeightChange: (height: number) => void;
     onDragStart: () => void;
     onDragEnd: () => void;
+    isAutoMode?: boolean;
 }
 
 const ResizeHandle: FC<ResizeHandleProps> = ({
@@ -19,7 +20,8 @@ const ResizeHandle: FC<ResizeHandleProps> = ({
     onWidthChange,
     onHeightChange,
     onDragStart,
-    onDragEnd
+    onDragEnd,
+    isAutoMode = false
 }) => {
     const isDragginRef = useRef(false);
     const startPositionRef = useRef({ x: 0, y: 0 });

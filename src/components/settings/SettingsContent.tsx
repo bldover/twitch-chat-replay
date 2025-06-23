@@ -76,6 +76,7 @@ const SettingsContent: FC<SettingsContentProps> = ({
                                 step={50}
                                 min={350}
                                 max={Math.floor(window.innerWidth * 0.8)}
+                                disabled={tempSettings.chatPosition === 'auto'}
                             />
                         </SettingItem>
                         <SettingItem
@@ -88,6 +89,7 @@ const SettingsContent: FC<SettingsContentProps> = ({
                                 step={50}
                                 min={350}
                                 max={Math.floor(window.innerHeight * 0.8)}
+                                disabled={tempSettings.chatPosition === 'auto'}
                             />
                         </SettingItem>
                     </>

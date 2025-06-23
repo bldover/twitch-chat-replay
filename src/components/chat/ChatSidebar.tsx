@@ -136,13 +136,14 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
             />
 
             <ResizeHandle
-                chatPosition={chatPosition.position}
+                chatPosition={chatPosition.actualPosition}
                 currentWidth={chatPosition.width}
                 currentHeight={chatPosition.height}
                 onWidthChange={handleResizeWidth}
                 onHeightChange={handleResizeHeight}
                 onDragStart={chatPosition.startResize}
                 onDragEnd={chatPosition.endResize}
+                isAutoMode={chatPosition.isAutoMode}
             />
         </div>
     )

@@ -8,6 +8,7 @@ export const THEME_OPTIONS: Theme[] = [
 ]
 
 export const CHAT_POSITION_OPTIONS = [
+    'auto',
     'right',
     'left',
     'top',
@@ -94,6 +95,8 @@ export const getThemeDisplayName = (theme: Theme): string => {
 
 export const getChatPositionName = (position: ChatPosition): string => {
     switch (position) {
+        case 'auto':
+            return 'Auto'
         case 'right':
             return 'Right'
         case 'left':

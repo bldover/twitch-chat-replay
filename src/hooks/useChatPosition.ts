@@ -13,28 +13,59 @@ export interface UseChatPositionReturn {
     startResize: () => void;
     endResize: () => void;
     getLayoutClass: () => string;
+    actualPosition: ChatPosition;
+    isAutoMode: boolean;
 }
 
 export const useChatPosition = (): UseChatPositionReturn => {
     const { settings, updateChatPosition, updateChatWidth, updateChatHeight } = useSettings();
     const [isResizing, setIsResizing] = useState<boolean>(false);
+    const [windowDimensions, setWindowDimensions] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight
+    });
+
+    const isAutoMode = settings.chatPosition === 'auto';
+    const isVerticalScreen = windowDimensions.width < (windowDimensions.height * 3 / 4);
+    const actualPosition: ChatPosition = isAutoMode ? (isVerticalScreen ? 'bottom' : 'right') : settings.chatPosition;
+    const actualWidth = isAutoMode ? (isVerticalScreen ? windowDimensions.width : 350) : settings.chatWidth;
+    const calculatedHeight = isVerticalScreen ? windowDimensions.height - (windowDimensions.width / (16 / 9)) : windowDimensions.height;
+    const actualHeight = isAutoMode ? Math.max(350, calculatedHeight) : settings.chatHeight;
 
     useEffect(() => {
-        document.documentElement.style.setProperty('--chat-width', `${settings.chatWidth}px`);
-        document.documentElement.style.setProperty('--chat-height', `${settings.chatHeight}px`);
-    }, [settings.chatWidth, settings.chatHeight]);
+        document.documentElement.style.setProperty('--chat-width', `${actualWidth}px`);
+        document.documentElement.style.setProperty('--chat-height', `${actualHeight}px`);
+    }, [actualWidth, actualHeight]);
+
+    useEffect(() => {
+        if (isAutoMode) {
+            const handleResize = () => {
+                setWindowDimensions({
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                });
+            };
+
+            window.addEventListener('resize', handleResize);
+            return () => window.removeEventListener('resize', handleResize);
+        }
+    }, [isAutoMode]);
 
 
     const startResize = useCallback(() => {
         setIsResizing(true);
-    }, []);
+        if (isAutoMode) {
+            updateChatPosition(actualPosition);
+        }
+    }, [isAutoMode, actualPosition, updateChatPosition]);
 
     const endResize = useCallback(() => {
         setIsResizing(false);
     }, []);
 
     const getLayoutClass = useCallback((): string => {
-        switch (settings.chatPosition) {
+        const positionToUse = isAutoMode ? actualPosition : settings.chatPosition;
+        switch (positionToUse) {
             case 'right':
                 return 'layout-row';
             case 'left':
@@ -46,18 +77,20 @@ export const useChatPosition = (): UseChatPositionReturn => {
             default:
                 return 'layout-row';
         }
-    }, [settings.chatPosition]);
+    }, [settings.chatPosition, isAutoMode, actualPosition]);
 
     return {
         position: settings.chatPosition,
-        width: settings.chatWidth,
-        height: settings.chatHeight,
+        width: actualWidth,
+        height: actualHeight,
         isResizing,
         updatePosition: updateChatPosition,
         updateWidth: updateChatWidth,
         updateHeight: updateChatHeight,
         startResize,
         endResize,
-        getLayoutClass
+        getLayoutClass,
+        actualPosition,
+        isAutoMode
     };
 };
