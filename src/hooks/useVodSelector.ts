@@ -154,8 +154,8 @@ export const useVodSelector = ({
 
         switch (state) {
             case 'vod-search':
-                if (selectedVod && hasMessages) {
-                    // vod selected before video played
+                if (hasMessages) {
+                    // vod selected/chat uploaded before video played
                     if (isVideoPlaying || hasVideoEverPlayed) {
                         if (isVideoPlaying && !hasVideoEverPlayed) {
                             setHasVideoEverPlayed(true);
@@ -210,7 +210,7 @@ export const useVodSelector = ({
                     return;
                 }
 
-                if (selectedVod && hasMessages) {
+                if (hasMessages) {
                     // YT autoplay is enabled so waiting is typically not used but keep it just in case
                     if (isVideoPlaying || hasVideoEverPlayed) {
                         if (isVideoPlaying && !hasVideoEverPlayed) {
@@ -264,7 +264,6 @@ export const useVodSelector = ({
     }, [
         state,
         searchFilter,
-        selectedVod,
         videoMetadata,
         hasMessages,
         isVideoPlaying,
