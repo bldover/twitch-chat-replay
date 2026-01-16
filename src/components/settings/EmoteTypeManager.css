@@ -1,0 +1,62 @@
+.emote-type-manager {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 4px;
+}
+
+.emote-type-manager-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.emote-type-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.emote-type-manager-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.emote-file-dropdown {
+    flex: 1;
+    min-width: 0;
+}
+
+.emote-manager-button {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-primary);
+    background-color: var(--button-primary);
+    color: var(--text-primary);
+    white-space: nowrap;
+    height: 32px;
+    box-sizing: border-box;
+}
+
+.emote-manager-button:hover:not(:disabled) {
+    background-color: var(--button-primary-hover);
+    border-color: var(--border-primary-hover);
+}
+
+.emote-manager-button:active:not(:disabled) {
+    background-color: var(--button-primary-active);
+    border-color: var(--border-primary-active);
+}
+
+.emote-manager-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}

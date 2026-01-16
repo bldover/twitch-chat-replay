@@ -1,19 +1,19 @@
 import './ChatMessage.css';
 import { FC } from 'react';
-import { ChatMessage as ChatMessageType, BttvEmoteMap } from '../../types';
+import { ChatMessage as ChatMessageType, EmoteMap } from '../../types';
 import { getColor } from '../../utils/colors';
 import UserBadges from './UserBadges';
 import TwitchEmote from './TwitchEmote';
-import BttvEmote from './BttvEmote';
+import Emote from './Emote';
 import { BadgeMap } from '../../utils/badges';
 
 type ChatMessageProps = {
     message: ChatMessageType;
-    bttvEmotes: BttvEmoteMap | null;
+    emotes: EmoteMap | null;
     badgeMap: BadgeMap | null;
 };
 
-const ChatMessage: FC<ChatMessageProps> = ({ message, bttvEmotes, badgeMap }) => {
+const ChatMessage: FC<ChatMessageProps> = ({ message, emotes, badgeMap }) => {
     const formatTimestamp = (content_offset: number): string => {
         const hours = Math.floor(content_offset / 3600) === 0 ? '' : Math.floor(content_offset / 3600) + ':';
         const minutes = Math.floor((content_offset / 60) % 60).toString().padStart(hours ? 2 : 1, '0');
@@ -43,14 +43,14 @@ const ChatMessage: FC<ChatMessageProps> = ({ message, bttvEmotes, badgeMap }) =>
                 const previousWord = words[j - 1] ?? null;
                 const nextWord = words[j + 1] ?? null;
 
-                if (modifiers[word] && bttvEmotes && nextWord && bttvEmotes[nextWord]) {
+                if (modifiers[word] && emotes && nextWord && emotes[nextWord]) {
                     return <span key={`${i}-${j}`}></span>;
                 }
 
-                if (bttvEmotes && bttvEmotes[word]) {
-                    return <BttvEmote
+                if (emotes && emotes[word]) {
+                    return <Emote
                         key={`${i}-${j}`}
-                        emoteId={bttvEmotes[word]}
+                        emote={emotes[word]}
                         text={word}
                         modifier={modifiers[previousWord]}
                     />;

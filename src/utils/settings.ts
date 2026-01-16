@@ -1,4 +1,25 @@
-import { BadgeOptions } from './badges'
+import { BadgeOptions } from './badges';
+
+export interface EmoteFileConfig {
+    id: string;
+    fileName: string;
+    uploadedAt: number;
+    content: string;
+    isBuiltIn?: boolean;
+}
+
+export interface EmoteTypeSettings {
+    enabled: boolean;
+    files: EmoteFileConfig[];
+    selectedFileId: string | null;
+}
+
+export interface CustomEmoteSettings {
+    bttv: EmoteTypeSettings;
+    sevenTv: EmoteTypeSettings;
+    ffz: EmoteTypeSettings;
+    twitch: EmoteTypeSettings;
+}
 
 export type Theme = 'ttv' | 'midnight';
 
@@ -33,6 +54,7 @@ export interface AppSettings {
     theme: Theme
     badges: BadgeOptions
     autoSelectConfig: AutoSelectConfig
+    customEmotes: CustomEmoteSettings
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -54,6 +76,36 @@ const DEFAULT_SETTINGS: AppSettings = {
         minMatchThreshold: 40,
         matchMarginThreshold: 15,
         autoSelectNotificationDuration: 5
+    },
+    customEmotes: {
+        bttv: {
+            enabled: true,
+            files: [
+                {
+                    id: 'northernlion-default',
+                    fileName: 'northernlion-default.json',
+                    uploadedAt: 0,
+                    content: '',
+                    isBuiltIn: true
+                }
+            ],
+            selectedFileId: 'northernlion-default'
+        },
+        sevenTv: {
+            enabled: true,
+            files: [],
+            selectedFileId: null
+        },
+        ffz: {
+            enabled: true,
+            files: [],
+            selectedFileId: null
+        },
+        twitch: {
+            enabled: true,
+            files: [],
+            selectedFileId: null
+        }
     }
 }
 

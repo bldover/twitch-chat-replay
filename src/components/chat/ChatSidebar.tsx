@@ -116,7 +116,7 @@ const ChatSidebar: FC<ChatSidebarProps> = ({
                 {vodSelector.shouldShowChat && (
                     <Chat
                         chatMessages={messagesToRender}
-                        bttvEmotes={vodState.currentVodBttvEmotes}
+                        emotes={vodState.currentEmotes}
                         badgeMap={badgeMap}
                     />
                 )}

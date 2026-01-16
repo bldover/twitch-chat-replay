@@ -2,11 +2,13 @@ import './SettingsContent.css';
 import { FC } from 'react';
 import { CHAT_POSITION_OPTIONS, THEME_OPTIONS, getThemeDisplayName, getChatPositionName, AutoSelectConfig, AppSettings } from '../../utils/settings';
 import { BadgeOptions as BadgeSettingsType } from '../../utils/badges';
+import { EmoteSource } from '../../types';
 import BadgeSettings from './BadgeSettings';
 import SettingItem from './SettingItem';
 import NumericStepper from './NumericStepper';
 import DropdownSelector from './DropdownSelector';
 import SimpleCheckbox from './SimpleCheckbox';
+import EmoteTypeManager from './EmoteTypeManager';
 
 interface SettingsContentProps {
     activeTab: string;
@@ -20,6 +22,10 @@ interface SettingsContentProps {
     onAutoSearchToggle: (enabled: boolean) => void;
     onAutoSelectToggle: (enabled: boolean) => void;
     onAutoSelectConfigChange: (key: keyof AutoSelectConfig, value: number | boolean) => void;
+    onEmoteEnabledToggle: (emoteType: EmoteSource, enabled: boolean) => void;
+    onEmoteFileSelect: (emoteType: EmoteSource, fileId: string) => void;
+    onEmoteFileAdd: (emoteType: EmoteSource, file: File) => Promise<void>;
+    onEmoteFileDelete: (emoteType: EmoteSource, fileId: string) => void;
 }
 
 const SettingsContent: FC<SettingsContentProps> = ({
@@ -33,7 +39,11 @@ const SettingsContent: FC<SettingsContentProps> = ({
     onBadgeToggle,
     onAutoSearchToggle,
     onAutoSelectToggle,
-    onAutoSelectConfigChange
+    onAutoSelectConfigChange,
+    onEmoteEnabledToggle,
+    onEmoteFileSelect,
+    onEmoteFileAdd,
+    onEmoteFileDelete
 }) => {
     const renderTabContent = () => {
         switch (activeTab) {
@@ -186,6 +196,51 @@ const SettingsContent: FC<SettingsContentProps> = ({
                                 disabled={!tempSettings.autoSelect}
                             />
                         </SettingItem>
+                    </>
+                );
+
+            case 'emotes':
+                return (
+                    <>
+                        <EmoteTypeManager
+                            emoteType='bttv'
+                            emoteTypeName='BTTV'
+                            settings={tempSettings.customEmotes.bttv}
+                            onEnabledToggle={onEmoteEnabledToggle}
+                            onFileSelect={onEmoteFileSelect}
+                            onFileAdd={onEmoteFileAdd}
+                            onFileDelete={onEmoteFileDelete}
+                        />
+
+                        <EmoteTypeManager
+                            emoteType='sevenTv'
+                            emoteTypeName='7TV'
+                            settings={tempSettings.customEmotes.sevenTv}
+                            onEnabledToggle={onEmoteEnabledToggle}
+                            onFileSelect={onEmoteFileSelect}
+                            onFileAdd={onEmoteFileAdd}
+                            onFileDelete={onEmoteFileDelete}
+                        />
+
+                        <EmoteTypeManager
+                            emoteType='ffz'
+                            emoteTypeName='FFZ'
+                            settings={tempSettings.customEmotes.ffz}
+                            onEnabledToggle={onEmoteEnabledToggle}
+                            onFileSelect={onEmoteFileSelect}
+                            onFileAdd={onEmoteFileAdd}
+                            onFileDelete={onEmoteFileDelete}
+                        />
+
+                        <EmoteTypeManager
+                            emoteType='twitch'
+                            emoteTypeName='Twitch'
+                            settings={tempSettings.customEmotes.twitch}
+                            onEnabledToggle={onEmoteEnabledToggle}
+                            onFileSelect={onEmoteFileSelect}
+                            onFileAdd={onEmoteFileAdd}
+                            onFileDelete={onEmoteFileDelete}
+                        />
                     </>
                 );
 

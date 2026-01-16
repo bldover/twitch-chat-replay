@@ -1,16 +1,16 @@
 import './Chat.css'
 import { FC, useEffect, useRef } from 'react'
-import { ChatMessage as ChatMessageType, BttvEmoteMap } from '../../types'
+import { ChatMessage as ChatMessageType, EmoteMap } from '../../types'
 import ChatMessage from './ChatMessage'
 import { BadgeMap } from '../../utils/badges'
 
 type ChatProps = {
     chatMessages: ChatMessageType[],
-    bttvEmotes: BttvEmoteMap | null,
+    emotes: EmoteMap | null,
     badgeMap: BadgeMap | null
 }
 
-const Chat: FC<ChatProps> = ({ chatMessages, bttvEmotes, badgeMap }) => {
+const Chat: FC<ChatProps> = ({ chatMessages, emotes, badgeMap }) => {
 
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -23,7 +23,7 @@ const Chat: FC<ChatProps> = ({ chatMessages, bttvEmotes, badgeMap }) => {
     return <>
         <div className='messages-container'>
             {chatMessages.map(message => (
-                <ChatMessage key={message._id} message={message} bttvEmotes={bttvEmotes} badgeMap={badgeMap} />
+                <ChatMessage key={message._id} message={message} emotes={emotes} badgeMap={badgeMap} />
             ))}
             <div key={'messagesEnd'} ref={messagesEndRef} />
         </div>

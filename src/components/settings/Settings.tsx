@@ -6,6 +6,8 @@ import { BadgeOptions as BadgeSettingsType } from '../../utils/badges';
 import { useSettings } from '../../contexts/SettingsContext';
 import SettingsContent from './SettingsContent';
 import TabNavigation, { Tab } from './TabNavigation';
+import { EmoteSource } from '../../types';
+import { processEmoteFile } from '../../utils/emoteFileProcessor';
 
 interface SettingsModalProps {
     isOpen: boolean
@@ -21,7 +23,8 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose }) => {
     const tabs: Tab[] = [
         { id: 'display', label: 'Display' },
         { id: 'behavior', label: 'Chat Behavior' },
-        { id: 'selection', label: 'Chat Selection' }
+        { id: 'selection', label: 'Chat Selection' },
+        { id: 'emotes', label: 'Emotes' }
     ];
 
     useEffect(() => {
@@ -87,6 +90,74 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose }) => {
         }))
     }
 
+    const handleEmoteEnabledToggle = (type: EmoteSource, enabled: boolean) => {
+        setTempSettings(prev => ({
+            ...prev,
+            customEmotes: {
+                ...prev.customEmotes,
+                [type]: {
+                    ...prev.customEmotes[type],
+                    enabled
+                }
+            }
+        }));
+    };
+
+    const handleEmoteFileSelect = (type: EmoteSource, fileId: string) => {
+        setTempSettings(prev => ({
+            ...prev,
+            customEmotes: {
+                ...prev.customEmotes,
+                [type]: {
+                    ...prev.customEmotes[type],
+                    selectedFileId: fileId
+                }
+            }
+        }));
+    };
+
+    const handleEmoteFileAdd = async (type: EmoteSource, file: File) => {
+        try {
+            const emoteFileConfig = await processEmoteFile(file, type);
+            setTempSettings(prev => ({
+                ...prev,
+                customEmotes: {
+                    ...prev.customEmotes,
+                    [type]: {
+                        ...prev.customEmotes[type],
+                        files: [...prev.customEmotes[type].files, emoteFileConfig],
+                        selectedFileId: emoteFileConfig.id
+                    }
+                }
+            }));
+        } catch (error) {
+            alert(`Error adding emote file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw error;
+        }
+    };
+
+    const handleEmoteFileDelete = (type: EmoteSource, fileId: string) => {
+        setTempSettings(prev => {
+            const typeSettings = prev.customEmotes[type];
+            const newFiles = typeSettings.files.filter(f => f.id !== fileId);
+            const newSelectedFileId = typeSettings.selectedFileId === fileId
+                ? (newFiles.length > 0 ? newFiles[0].id : null)
+                : typeSettings.selectedFileId;
+
+            return {
+                ...prev,
+                customEmotes: {
+                    ...prev.customEmotes,
+                    [type]: {
+                        ...typeSettings,
+                        files: newFiles,
+                        selectedFileId: newSelectedFileId
+                    }
+                }
+            };
+        });
+    };
+
     const handleSave = () => {
         updateSettings(tempSettings)
         onClose()
@@ -125,6 +196,10 @@ const Settings: FC<SettingsModalProps> = ({ isOpen, onClose }) => {
                         onAutoSearchToggle={handleAutoSearchToggle}
                         onAutoSelectToggle={handleAutoSelectToggle}
                         onAutoSelectConfigChange={handleAutoSelectConfigChange}
+                        onEmoteEnabledToggle={handleEmoteEnabledToggle}
+                        onEmoteFileSelect={handleEmoteFileSelect}
+                        onEmoteFileAdd={handleEmoteFileAdd}
+                        onEmoteFileDelete={handleEmoteFileDelete}
                     />
                 </div>
                 <div className='settings-modal-footer'>
