@@ -6,7 +6,7 @@ import { fetchChatMessages } from '../api/chatApi';
 import { fetchFunnyMoments } from '../api/funnyMomentApi';
 import { setQueryParam, getQueryParam } from '../utils/queryParams';
 import { useResetSubscription } from './useResetSubscription';
-import { normalizeBttvEmote } from '../utils/emoteNormalizer';
+import { normalizeBttvEmote } from '../utils/emoteFileProcessor';
 import { useSettings } from '../contexts/SettingsContext';
 import { EmoteTypeSettings, CustomEmoteSettings } from '../utils/settings';
 import { decodeEmoteFile } from '../utils/emoteFileProcessor';
@@ -43,7 +43,7 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
             .catch((err) => console.error('Loading vod summaries failed: ' + err));
     }, []);
 
-    const loadBttvEmotes = (bttvSettings: EmoteTypeSettings, broadcaster: string | null, vodDate: string): NormalizedEmote[] => {
+    const loadBttvEmotes = (bttvSettings: EmoteTypeSettings, vodDate: string): NormalizedEmote[] => {
         if (!bttvSettings.enabled || !bttvSettings.selectedFileId) {
             return [];
         }
@@ -56,10 +56,6 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
 
         try {
             if (selectedFile.id === 'northernlion-default') {
-                if (broadcaster !== 'northernlion') {
-                    return [];
-                }
-
                 const bttvDate = Object.keys(nlBttvEmotes).sort()
                     .filter((bttvDate) => bttvDate < vodDate)
                     .reduce((date1, date2) => date1 > date2 ? date1 : date2, '0');
@@ -76,50 +72,12 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
         }
     };
 
-    const load7TvEmotes = (sevenTvSettings: EmoteTypeSettings): NormalizedEmote[] => {
-        if (!sevenTvSettings.enabled || !sevenTvSettings.selectedFileId) {
+    const loadEmotes = (emoteSettings: EmoteTypeSettings): NormalizedEmote[] => {
+        if (!emoteSettings.enabled || !emoteSettings.selectedFileId) {
             return [];
         }
 
-        const selectedFile = sevenTvSettings.files.find(f => f.id === sevenTvSettings.selectedFileId);
-        if (!selectedFile) {
-            console.error('Selected 7TV file not found');
-            return [];
-        }
-
-        try {
-            return decodeEmoteFile(selectedFile.content);
-        } catch (error) {
-            console.error('Error loading 7TV emotes:', error);
-            return [];
-        }
-    };
-
-    const loadFfzEmotes = (ffzSettings: EmoteTypeSettings): NormalizedEmote[] => {
-        if (!ffzSettings.enabled || !ffzSettings.selectedFileId) {
-            return [];
-        }
-
-        const selectedFile = ffzSettings.files.find(f => f.id === ffzSettings.selectedFileId);
-        if (!selectedFile) {
-            console.error('Selected FFZ file not found');
-            return [];
-        }
-
-        try {
-            return decodeEmoteFile(selectedFile.content);
-        } catch (error) {
-            console.error('Error loading FFZ emotes:', error);
-            return [];
-        }
-    };
-
-    const loadTwitchEmotes = (twitchSettings: EmoteTypeSettings): NormalizedEmote[] => {
-        if (!twitchSettings.enabled || !twitchSettings.selectedFileId) {
-            return [];
-        }
-
-        const selectedFile = twitchSettings.files.find(f => f.id === twitchSettings.selectedFileId);
+        const selectedFile = emoteSettings.files.find(f => f.id === emoteSettings.selectedFileId);
         if (!selectedFile) {
             console.error('Selected Twitch file not found');
             return [];
@@ -136,29 +94,11 @@ export const useVodData = (setFunnyMoments: (moments: number[]) => void): VodDat
     const findCorrectEmotesForVod = useCallback((created_at: string, broadcaster: string | null, customEmotes: CustomEmoteSettings): EmoteMap => {
         console.debug('findCorrectEmotesForVod', { created_at, broadcaster });
 
-        const bttvEmotesArray = loadBttvEmotes(customEmotes.bttv, broadcaster, created_at);
-        const sevenTvEmotesArray = load7TvEmotes(customEmotes.sevenTv);
-        const ffzEmotesArray = loadFfzEmotes(customEmotes.ffz);
-        const twitchEmotesArray = loadTwitchEmotes(customEmotes.twitch);
-
         const emoteMap: EmoteMap = {};
-
-        twitchEmotesArray.forEach(emote => {
-            emoteMap[emote.code] = emote;
-        });
-
-        ffzEmotesArray.forEach(emote => {
-            emoteMap[emote.code] = emote;
-        });
-
-        sevenTvEmotesArray.forEach(emote => {
-            emoteMap[emote.code] = emote;
-        });
-
-        bttvEmotesArray.forEach(emote => {
-            emoteMap[emote.code] = emote;
-        });
-
+        loadBttvEmotes(customEmotes.bttv, created_at).forEach(emote => emoteMap[emote.code] = emote);;
+        loadEmotes(customEmotes.sevenTv).forEach(emote => emoteMap[emote.code] = emote);
+        loadEmotes(customEmotes.ffz).forEach(emote => emoteMap[emote.code] = emote);
+        loadEmotes(customEmotes.twitch).forEach(emote => emoteMap[emote.code] = emote);
         emoteMap['LUL'] = emoteMap['LuL'];
 
         return emoteMap;
